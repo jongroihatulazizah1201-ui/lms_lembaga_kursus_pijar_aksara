@@ -16,8 +16,7 @@ import {
   Eye, 
   EyeOff,
   Check,
-  X as XIcon,
-  Sparkles
+  X as XIcon
 } from 'lucide-react';
 
 export default function RegisterPage() {
@@ -244,9 +243,8 @@ export default function RegisterPage() {
 
               {/* Checklist Kriteria Keamanan Sandi */}
               <div className="mt-2.5 p-3 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1.5 text-[11px]">
-                <div className="text-slate-500 font-semibold mb-1 flex items-center gap-1">
-                  <Sparkles size={12} className="text-[#843bab]" />
-                  <span>Kriteria Kata Sandi Kuat:</span>
+                <div className="text-xs font-bold text-slate-700 mb-1">
+                  Kriteria Kata Sandi:
                 </div>
                 
                 <div className={`flex items-center gap-1.5 ${hasMinLength ? 'text-emerald-700 font-bold' : 'text-slate-500'}`}>

@@ -17,7 +17,6 @@ import {
   ArrowRight,
   ShieldCheck,
   ChevronRight,
-  Sparkles,
   GraduationCap,
   CalendarCheck,
   FileCheck2

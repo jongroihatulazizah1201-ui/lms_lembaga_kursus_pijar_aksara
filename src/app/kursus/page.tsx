@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { getPublishedCourses } from '@/lib/courses';
 import CourseCard from '@/components/CourseCard';
-import { Search, BookOpen, Filter, CheckCircle2, Users, Sparkles, Tag, ArrowUpDown } from 'lucide-react';
+import { Search, BookOpen, Filter, CheckCircle2, Users, Tag, ArrowUpDown } from 'lucide-react';
 
 interface Props {
   searchParams: Promise<{

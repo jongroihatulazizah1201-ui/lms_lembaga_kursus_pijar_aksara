@@ -25,8 +25,7 @@ import {
   Menu,
   X,
   ChevronRight,
-  ShieldAlert,
-  Sparkles
+  ShieldAlert
 } from 'lucide-react';
 
 interface SidebarProps {
