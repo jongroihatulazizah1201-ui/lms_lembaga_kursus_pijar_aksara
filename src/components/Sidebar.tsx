@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Logo from './Logo';
 import { logoutAction } from '@/app/auth/actions';
+import { createClient } from '@/lib/supabase/client';
 import {
   Home,
   BookOpen,
@@ -25,7 +26,10 @@ import {
   Menu,
   X,
   ChevronRight,
-  ShieldAlert
+  Shield,
+  User,
+  Sparkles,
+  Loader2
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -56,53 +60,175 @@ interface NavSection {
 export default function Sidebar({ user, profile }: SidebarProps) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [isSwitching, setIsSwitching] = useState<string | null>(null);
 
   const isPeserta = profile?.peran === 'peserta';
   const isInstruktur = profile?.peran === 'instruktur';
   const isAdmin = profile?.peran === 'admin';
 
-  // Struktur Menu Seluruh Fitur Platform LMS Pijar Aksara
-  const navSections: NavSection[] = [
-    {
-      title: 'Fitur Utama Publik',
-      items: [
-        { label: 'Beranda', href: '/', icon: Home },
-        { label: 'Katalog Kursus', href: '/kursus', icon: BookOpen },
-        { label: 'Verifikasi Sertifikat', href: '/sertifikat/cek', icon: ShieldCheck },
-      ],
-    },
-    {
-      title: 'Area Peserta (Belajar)',
-      items: [
-        { label: 'Kursus Saya', href: '/kursus-saya', icon: GraduationCap, badge: isPeserta ? 'Aktif' : undefined, badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
-        { label: 'Status Pendaftaran', href: '/kursus-saya#pendaftaran', icon: CreditCard },
-        { label: 'Sertifikat Kelulusan', href: '/kursus-saya#sertifikat', icon: Award },
-      ],
-    },
-    {
-      title: 'Studio Instruktur',
-      items: [
-        { label: 'Kelola Kursus & Silabus', href: '/instruktur', icon: FileEdit, badge: 'Instruktur', badgeColor: 'bg-[#843bab]/10 text-[#843bab] border-[#843bab]/20' },
-        { label: 'Buat Kursus Baru', href: '/instruktur/kursus/baru', icon: PlusCircle },
-        { label: 'Peserta & Nilai Kuis', href: '/instruktur/nilai', icon: ClipboardCheck },
-      ],
-    },
-    {
-      title: 'Panel Administrator',
-      items: [
-        { label: 'Tinjauan Kursus (BR-02)', href: '/admin?tab=kursus', icon: CheckSquare, badge: 'Admin', badgeColor: 'bg-rose-50 text-rose-700 border-rose-200' },
-        { label: 'Pendaftaran & Bayar', href: '/admin?tab=pendaftaran', icon: CreditCard },
-        { label: 'Kelola Akun & Peran', href: '/admin?tab=pengguna', icon: Users },
-        { label: 'Audit Log (BR-12)', href: '/admin?tab=audit', icon: FileText },
-        { label: 'Statistik Lembaga', href: '/admin/dashboard', icon: BarChart3 },
-        { label: 'Peserta & Nilai Kuis', href: '/instruktur/nilai', icon: ClipboardCheck },
-      ],
-    },
-  ];
+  // Quick switch role simulation handler (Latihan#2026)
+  const handleQuickSwitch = async (email: string, targetPath: string) => {
+    if (isSwitching) return;
+    setIsSwitching(email);
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password: 'Latihan#2026',
+      });
+      if (error) {
+        console.error('Quick switch error:', error);
+        alert('Gagal berganti akun: ' + error.message);
+        setIsSwitching(null);
+        return;
+      }
+      window.location.href = targetPath;
+    } catch (err) {
+      console.error(err);
+      setIsSwitching(null);
+    }
+  };
+
+  // =========================================================================
+  // STRUKTUR MENU DITATA SPESIFIK & RAPI BERDASARKAN PERAN PENGGUNA
+  // =========================================================================
+  let navSections: NavSection[] = [];
+
+  if (isAdmin) {
+    // 1. MENU KHUSUS ADMINISTRATOR
+    navSections = [
+      {
+        title: 'Panel Administrator',
+        items: [
+          {
+            label: 'Dashboard Statistik',
+            href: '/admin/dashboard',
+            icon: BarChart3,
+            badge: 'Analitik',
+            badgeColor: 'bg-purple-50 text-[#843bab] border-purple-200'
+          },
+          {
+            label: 'Tinjauan Kursus (BR-02)',
+            href: '/admin?tab=kursus',
+            icon: CheckSquare
+          },
+          {
+            label: 'Pendaftaran & Bayar',
+            href: '/admin?tab=pendaftaran',
+            icon: CreditCard
+          },
+          {
+            label: 'Kelola Akun & Peran',
+            href: '/admin?tab=pengguna',
+            icon: Users
+          },
+          {
+            label: 'Audit Log Sistem (BR-12)',
+            href: '/admin?tab=audit',
+            icon: FileText
+          },
+          {
+            label: 'Buku Nilai Seluruh Kursus',
+            href: '/instruktur/nilai',
+            icon: ClipboardCheck
+          },
+        ],
+      },
+      {
+        title: 'Akses Publik & Referensi',
+        items: [
+          { label: 'Katalog Kursus', href: '/kursus', icon: BookOpen },
+          { label: 'Beranda Utama', href: '/', icon: Home },
+          { label: 'Verifikasi Sertifikat', href: '/sertifikat/cek', icon: ShieldCheck },
+        ],
+      },
+    ];
+  } else if (isInstruktur) {
+    // 2. MENU KHUSUS INSTRUKTUR (Pendidik)
+    navSections = [
+      {
+        title: 'Studio Instruktur',
+        items: [
+          {
+            label: 'Kelola Kursus & Silabus',
+            href: '/instruktur',
+            icon: FileEdit,
+            badge: 'Kursus',
+            badgeColor: 'bg-[#843bab]/10 text-[#843bab] border-[#843bab]/20'
+          },
+          {
+            label: 'Buat Kursus Baru',
+            href: '/instruktur/kursus/baru',
+            icon: PlusCircle
+          },
+          {
+            label: 'Peserta & Nilai Kuis',
+            href: '/instruktur/nilai',
+            icon: ClipboardCheck,
+            badge: 'Nilai',
+            badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-200'
+          },
+        ],
+      },
+      {
+        title: 'Referensi Publik',
+        items: [
+          { label: 'Katalog Kursus', href: '/kursus', icon: BookOpen },
+          { label: 'Beranda Utama', href: '/', icon: Home },
+          { label: 'Verifikasi Sertifikat', href: '/sertifikat/cek', icon: ShieldCheck },
+        ],
+      },
+    ];
+  } else if (isPeserta) {
+    // 3. MENU KHUSUS PESERTA (Siswa Pembelajar)
+    navSections = [
+      {
+        title: 'Ruang Belajar Saya',
+        items: [
+          {
+            label: 'Kursus Saya',
+            href: '/kursus-saya',
+            icon: GraduationCap,
+            badge: 'Aktif',
+            badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-200'
+          },
+          {
+            label: 'Status Pendaftaran',
+            href: '/kursus-saya#pendaftaran',
+            icon: CreditCard
+          },
+          {
+            label: 'Sertifikat Kelulusan',
+            href: '/kursus-saya#sertifikat',
+            icon: Award
+          },
+        ],
+      },
+      {
+        title: 'Eksplorasi Kursus',
+        items: [
+          { label: 'Katalog Kursus', href: '/kursus', icon: BookOpen },
+          { label: 'Beranda Utama', href: '/', icon: Home },
+          { label: 'Verifikasi Sertifikat', href: '/sertifikat/cek', icon: ShieldCheck },
+        ],
+      },
+    ];
+  } else {
+    // 4. PENGUNJUNG TAMU (Belum Login)
+    navSections = [
+      {
+        title: 'Fitur Utama Publik',
+        items: [
+          { label: 'Beranda Utama', href: '/', icon: Home },
+          { label: 'Katalog Kursus', href: '/kursus', icon: BookOpen },
+          { label: 'Verifikasi Sertifikat', href: '/sertifikat/cek', icon: ShieldCheck },
+        ],
+      },
+    ];
+  }
 
   const isLinkActive = (href: string) => {
     if (href === '/') return pathname === '/';
-    // Remove query params or hashes for matching
     const baseHref = href.split('?')[0].split('#')[0];
     if (baseHref === '/admin') {
       if (pathname.startsWith('/admin/dashboard')) {
@@ -118,7 +244,7 @@ export default function Sidebar({ user, profile }: SidebarProps) {
   const sidebarContent = (
     <div className="flex flex-col h-full bg-white select-none">
       {/* Brand Logo Header */}
-      <div className="p-5 border-b border-slate-200 flex items-center justify-between">
+      <div className="p-4 border-b border-slate-200 flex items-center justify-between">
         <Logo size="sm" href="/" />
         {/* Mobile Close Button */}
         <button
@@ -130,6 +256,42 @@ export default function Sidebar({ user, profile }: SidebarProps) {
           <X size={20} />
         </button>
       </div>
+
+      {/* Role Badge Banner */}
+      {user && profile && (
+        <div className="px-4 py-2.5 bg-slate-50/80 border-b border-slate-200/80 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div
+              className={`w-2 h-2 rounded-full ${
+                isAdmin
+                  ? 'bg-rose-500'
+                  : isInstruktur
+                  ? 'bg-[#843bab]'
+                  : 'bg-emerald-500'
+              }`}
+            />
+            <span className="text-[11px] font-bold text-slate-600">
+              {isAdmin
+                ? 'Hak Akses Admin'
+                : isInstruktur
+                ? 'Hak Akses Instruktur'
+                : 'Hak Akses Peserta'}
+            </span>
+          </div>
+
+          <span
+            className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase border ${
+              isAdmin
+                ? 'bg-rose-50 text-rose-700 border-rose-200'
+                : isInstruktur
+                ? 'bg-purple-50 text-[#843bab] border-purple-200'
+                : 'bg-emerald-50 text-emerald-700 border-emerald-200'
+            }`}
+          >
+            {profile.peran}
+          </span>
+        </div>
+      )}
 
       {/* Feature Navigation List (Scrollable) */}
       <div className="flex-1 overflow-y-auto px-3.5 py-4 space-y-6 scrollbar-thin">
@@ -188,44 +350,105 @@ export default function Sidebar({ user, profile }: SidebarProps) {
         ))}
       </div>
 
-      {/* User Card / Auth Footer */}
-      <div className="p-4 border-t border-slate-200 bg-slate-50/70">
+      {/* =========================================================================
+          QUICK ROLE SWITCHER (Demo & Evaluasi Akun)
+         ========================================================================= */}
+      <div className="p-3 border-t border-slate-200 bg-slate-50/60">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 flex items-center gap-1">
+            <Sparkles size={11} className="text-[#843bab]" />
+            <span>Simulasi Peran Cepat:</span>
+          </span>
+          {isSwitching && (
+            <Loader2 size={12} className="animate-spin text-[#843bab]" />
+          )}
+        </div>
+
+        <div className="grid grid-cols-3 gap-1.5">
+          {/* 1. Siti Aminah (Peserta) */}
+          <button
+            type="button"
+            disabled={!!isSwitching}
+            onClick={() => handleQuickSwitch('siti.aminah@pijaraksara.test', '/kursus-saya')}
+            className={`py-1.5 px-2 rounded-lg text-[10px] font-bold text-center transition-all flex items-center justify-center gap-1 border ${
+              isPeserta
+                ? 'bg-emerald-100 text-emerald-800 border-emerald-300 shadow-2xs'
+                : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-200'
+            }`}
+            title="Masuk sebagai Peserta: Siti Aminah"
+          >
+            <User size={11} />
+            <span>Peserta</span>
+          </button>
+
+          {/* 2. Yudha Pratama (Instruktur) */}
+          <button
+            type="button"
+            disabled={!!isSwitching}
+            onClick={() => handleQuickSwitch('yudha@pijaraksara.test', '/instruktur')}
+            className={`py-1.5 px-2 rounded-lg text-[10px] font-bold text-center transition-all flex items-center justify-center gap-1 border ${
+              isInstruktur
+                ? 'bg-purple-100 text-[#843bab] border-purple-300 shadow-2xs'
+                : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-200'
+            }`}
+            title="Masuk sebagai Instruktur: Yudha Pratama"
+          >
+            <GraduationCap size={11} />
+            <span>Instruktur</span>
+          </button>
+
+          {/* 3. Ratna Kusumawati (Admin) */}
+          <button
+            type="button"
+            disabled={!!isSwitching}
+            onClick={() => handleQuickSwitch('ratna@pijaraksara.test', '/admin/dashboard')}
+            className={`py-1.5 px-2 rounded-lg text-[10px] font-bold text-center transition-all flex items-center justify-center gap-1 border ${
+              isAdmin
+                ? 'bg-rose-100 text-rose-800 border-rose-300 shadow-2xs'
+                : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-200'
+            }`}
+            title="Masuk sebagai Admin: Ratna Kusumawati"
+          >
+            <Shield size={11} />
+            <span>Admin</span>
+          </button>
+        </div>
+      </div>
+
+      {/* User Session Footer (Profile Capsule & Logout) */}
+      <div className="p-3 border-t border-slate-200 bg-white">
         {user && profile ? (
-          <div className="space-y-3">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-[#843bab] text-white flex items-center justify-center text-xs font-bold shrink-0 shadow-sm">
+          <div className="space-y-2">
+            <div className="flex items-center gap-2.5 p-2 rounded-xl bg-slate-50 border border-slate-200/80">
+              <div
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-black text-white shrink-0 shadow-2xs ${
+                  isAdmin
+                    ? 'bg-rose-600'
+                    : isInstruktur
+                    ? 'bg-[#843bab]'
+                    : 'bg-emerald-600'
+                }`}
+              >
                 {profile.nama_lengkap.charAt(0).toUpperCase()}
               </div>
+
               <div className="min-w-0 flex-1">
                 <div className="text-xs font-bold text-slate-900 truncate">
                   {profile.nama_lengkap}
                 </div>
-                <div className="flex items-center gap-1.5 mt-0.5">
-                  <span
-                    className={`text-[9px] font-extrabold px-1.5 py-0.2 rounded uppercase border ${
-                      isAdmin
-                        ? 'bg-rose-50 text-rose-700 border-rose-200'
-                        : isInstruktur
-                        ? 'bg-purple-50 text-[#843bab] border-purple-200'
-                        : 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                    }`}
-                  >
-                    {profile.peran}
-                  </span>
-                  <span className="text-[10px] text-slate-400 truncate max-w-[100px]">
-                    {user.email}
-                  </span>
+                <div className="text-[10px] text-slate-400 truncate">
+                  {user.email}
                 </div>
               </div>
             </div>
 
             {/* Logout Action */}
-            <form action={logoutAction} className="pt-1">
+            <form action={logoutAction}>
               <button
                 type="submit"
-                className="w-full flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold text-slate-600 hover:text-rose-700 hover:bg-rose-50 rounded-xl border border-slate-200 hover:border-rose-200 transition-colors min-h-[38px] cursor-pointer"
+                className="w-full flex items-center justify-center gap-2 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-rose-700 hover:bg-rose-50 rounded-xl border border-slate-200 hover:border-rose-200 transition-colors min-h-[36px] cursor-pointer"
               >
-                <LogOut size={14} />
+                <LogOut size={13} />
                 <span>Keluar dari Akun</span>
               </button>
             </form>
@@ -256,16 +479,12 @@ export default function Sidebar({ user, profile }: SidebarProps) {
 
   return (
     <>
-      {/* =====================================================================
-          1. DESKTOP PERMANENT LEFT SIDEBAR (lg:flex)
-         ===================================================================== */}
+      {/* 1. DESKTOP PERMANENT LEFT SIDEBAR */}
       <aside className="w-72 shrink-0 border-r border-slate-200 bg-white h-screen sticky top-0 hidden lg:block z-30">
         {sidebarContent}
       </aside>
 
-      {/* =====================================================================
-          2. MOBILE TOP BAR WITH SIDEBAR HAMBURGER (lg:hidden)
-         ===================================================================== */}
+      {/* 2. MOBILE TOP BAR WITH SIDEBAR HAMBURGER */}
       <div className="lg:hidden sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 px-4 py-2.5 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <button
@@ -280,19 +499,17 @@ export default function Sidebar({ user, profile }: SidebarProps) {
         </div>
 
         {user && profile ? (
-          <div className="flex items-center gap-2">
-            <span
-              className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase border ${
-                isAdmin
-                  ? 'bg-rose-50 text-rose-700 border-rose-200'
-                  : isInstruktur
-                  ? 'bg-purple-50 text-[#843bab] border-purple-200'
-                  : 'bg-emerald-50 text-emerald-700 border-emerald-200'
-              }`}
-            >
-              {profile.peran}
-            </span>
-          </div>
+          <span
+            className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase border ${
+              isAdmin
+                ? 'bg-rose-50 text-rose-700 border-rose-200'
+                : isInstruktur
+                ? 'bg-purple-50 text-[#843bab] border-purple-200'
+                : 'bg-emerald-50 text-emerald-700 border-emerald-200'
+            }`}
+          >
+            {profile.peran}
+          </span>
         ) : (
           <Link
             href="/login"
@@ -303,9 +520,7 @@ export default function Sidebar({ user, profile }: SidebarProps) {
         )}
       </div>
 
-      {/* =====================================================================
-          3. MOBILE OFF-CANVAS SLIDE-OVER SIDEBAR DRAWER (lg:hidden)
-         ===================================================================== */}
+      {/* 3. MOBILE OFF-CANVAS SLIDE-OVER SIDEBAR DRAWER */}
       {mobileOpen && (
         <div className="lg:hidden fixed inset-0 z-50 flex animate-fadeIn">
           {/* Backdrop */}
