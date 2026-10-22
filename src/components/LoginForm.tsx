@@ -103,15 +103,15 @@ export default function LoginForm({ redirectParam = '', errorParam = '' }: Props
             </p>
           </div>
 
-          {/* Ilustrasi Vektor Isometrik Edukasi Online (Background Dihapus) */}
-          <div className="relative z-10 mt-3 flex justify-center items-center">
-            <div className="relative w-full max-w-[340px] aspect-square flex items-center justify-center hover:scale-105 transition-transform duration-500">
+          {/* Ilustrasi Vokasi 3D Pilihan Pengguna */}
+          <div className="relative z-10 mt-2 flex justify-center items-center">
+            <div className="relative w-full max-w-[320px] flex items-center justify-center py-2">
               <Image
-                src="/auth-isometric.png"
-                alt="Ilustrasi Pembelajaran Vokasi Online Pijar Aksara"
-                width={380}
-                height={380}
-                className="w-full h-auto object-contain drop-shadow-2xl"
+                src="/login-illustration.png"
+                alt="Ilustrasi Pembelajaran Vokasi Pijar Aksara"
+                width={360}
+                height={360}
+                className="w-full h-auto object-contain drop-shadow-[0_20px_30px_rgba(0,0,0,0.35)] hover:scale-105 transition-transform duration-500"
                 priority
               />
             </div>
