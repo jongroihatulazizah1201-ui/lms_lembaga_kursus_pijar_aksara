@@ -110,7 +110,7 @@ export default function InstructorCourseSubmitModal({
             </>
           ) : (
             <>
-              <Lock size={16} className="text-rose-600" />
+              <Lock size={16} className="text-red-600" />
               <span>Kursus Sedang Ditutup</span>
             </>
           )}
@@ -155,8 +155,8 @@ export default function InstructorCourseSubmitModal({
 
       {/* Feedback Messages */}
       {errorMessage && (
-        <div className="flex items-center gap-2 p-3 text-xs rounded-xl bg-rose-50 border border-rose-200 text-rose-800">
-          <AlertCircle size={15} className="shrink-0 text-rose-600" />
+        <div className="flex items-center gap-2 p-3 text-xs rounded-xl bg-red-50 border border-red-200 text-red-800">
+          <AlertCircle size={15} className="shrink-0 text-red-600" />
           <span>{errorMessage}</span>
         </div>
       )}
@@ -182,7 +182,7 @@ export default function InstructorCourseSubmitModal({
             {isModulCountValid ? (
               <CheckCircle2 size={14} className="text-emerald-600 shrink-0" />
             ) : (
-              <XCircle size={14} className="text-rose-500 shrink-0" />
+              <XCircle size={14} className="text-red-500 shrink-0" />
             )}
             <span>
               Jumlah modul kursus: <strong>{totalModul}</strong> (Syarat: 2 s.d. 10 modul)
@@ -193,7 +193,7 @@ export default function InstructorCourseSubmitModal({
             {isSequenceValid ? (
               <CheckCircle2 size={14} className="text-emerald-600 shrink-0" />
             ) : (
-              <XCircle size={14} className="text-rose-500 shrink-0" />
+              <XCircle size={14} className="text-red-500 shrink-0" />
             )}
             <span>Urutan nomor modul terurut sempurna dari 1 hingga {totalModul || 1} tanpa celah</span>
           </li>
@@ -202,12 +202,12 @@ export default function InstructorCourseSubmitModal({
             {isQuestionsValid ? (
               <CheckCircle2 size={14} className="text-emerald-600 shrink-0 mt-0.5" />
             ) : (
-              <XCircle size={14} className="text-rose-500 shrink-0 mt-0.5" />
+              <XCircle size={14} className="text-red-500 shrink-0 mt-0.5" />
             )}
             <div>
               <span>Setiap modul wajib memiliki 3 s.d. 20 butir soal kuis evaluasi</span>
               {invalidModules.length > 0 && (
-                <div className="text-[11px] text-rose-600 mt-0.5">
+                <div className="text-[11px] text-red-600 mt-0.5">
                   Modul belum lengkap: {invalidModules.map((m) => `Modul ${m.urutan} (${m.soal?.length || 0} soal)`).join(', ')}
                 </div>
               )}

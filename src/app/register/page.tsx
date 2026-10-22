@@ -54,7 +54,7 @@ export default function RegisterPage() {
   // Evaluasi Level Kekuatan Sandi
   const getStrengthMeta = () => {
     if (password.length === 0) return { label: 'Belum diisi', color: 'bg-slate-200', text: 'text-slate-400', width: '0%' };
-    if (criteriaCount <= 2) return { label: 'Sangat Lemah', color: 'bg-rose-500', text: 'text-rose-600', width: '25%' };
+    if (criteriaCount <= 2) return { label: 'Sangat Lemah', color: 'bg-red-500', text: 'text-red-600', width: '25%' };
     if (criteriaCount === 3) return { label: 'Cukup', color: 'bg-amber-500', text: 'text-amber-600', width: '55%' };
     if (criteriaCount === 4) return { label: 'Kuat', color: 'bg-blue-500', text: 'text-blue-600', width: '80%' };
     return { label: 'Sangat Kuat (Aman)', color: 'bg-emerald-500', text: 'text-emerald-600', width: '100%' };
@@ -130,7 +130,7 @@ export default function RegisterPage() {
         {/* Register Form Card */}
         <div className="bg-white rounded-3xl border border-slate-200 shadow-xl p-6 sm:p-8 mb-6">
           {error && (
-            <div className="flex items-start gap-2.5 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium mb-5">
+            <div className="flex items-start gap-2.5 p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-medium mb-5">
               <AlertCircle size={16} className="shrink-0 mt-0.5" />
               <span>{error}</span>
             </div>
@@ -281,7 +281,7 @@ export default function RegisterPage() {
                   Ulangi Kata Sandi
                 </label>
                 {konfirmasiPassword && (
-                  <span className={`text-[11px] font-bold ${passwordsMatch ? 'text-emerald-600' : 'text-rose-600'}`}>
+                  <span className={`text-[11px] font-bold ${passwordsMatch ? 'text-emerald-600' : 'text-red-600'}`}>
                     {passwordsMatch ? '✓ Cocok' : '✕ Belum cocok'}
                   </span>
                 )}
@@ -298,7 +298,7 @@ export default function RegisterPage() {
                     konfirmasiPassword.length > 0
                       ? passwordsMatch
                         ? 'border-emerald-300 focus:border-emerald-500'
-                        : 'border-rose-300 focus:border-rose-500'
+                        : 'border-red-300 focus:border-red-500'
                       : 'border-slate-200 focus:border-[#843bab]'
                   }`}
                 />

@@ -435,14 +435,14 @@ export default function LearningRoom({
                 className={`p-4 rounded-2xl border text-sm flex items-center justify-between shadow-2xs ${
                   feedbackMsg.type === 'success'
                     ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
-                    : 'bg-rose-50 border-rose-200 text-rose-800'
+                    : 'bg-red-50 border-red-200 text-red-800'
                 }`}
               >
                 <div className="flex items-center gap-2.5">
                   {feedbackMsg.type === 'success' ? (
                     <CheckCircle2 size={18} className="text-emerald-600 shrink-0" />
                   ) : (
-                    <AlertCircle size={18} className="text-rose-600 shrink-0" />
+                    <AlertCircle size={18} className="text-red-600 shrink-0" />
                   )}
                   <span>{feedbackMsg.text}</span>
                 </div>
@@ -708,7 +708,7 @@ export default function LearningRoom({
                           <div
                             className={`text-base font-black ${
                               sisaPercobaan === 0
-                                ? 'text-rose-600'
+                                ? 'text-red-600'
                                 : sisaPercobaan === 1
                                 ? 'text-amber-600'
                                 : 'text-emerald-600'
@@ -749,7 +749,7 @@ export default function LearningRoom({
                             className={`p-6 rounded-2xl border space-y-3 shadow-xs ${
                               latestQuizResult.lulus
                                 ? 'bg-emerald-50 border-emerald-200 text-emerald-900'
-                                : 'bg-rose-50 border-rose-200 text-rose-900'
+                                : 'bg-red-50 border-red-200 text-red-900'
                             }`}
                           >
                             <div className="flex items-center gap-3">
@@ -758,7 +758,7 @@ export default function LearningRoom({
                                   <Award size={20} />
                                 </div>
                               ) : (
-                                <div className="w-10 h-10 rounded-xl bg-rose-500 text-white flex items-center justify-center shrink-0">
+                                <div className="w-10 h-10 rounded-xl bg-red-500 text-white flex items-center justify-center shrink-0">
                                   <XCircle size={20} />
                                 </div>
                               )}
@@ -828,7 +828,7 @@ export default function LearningRoom({
                                     setLatestQuizResult(null);
                                     setAnswers({});
                                   }}
-                                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold"
+                                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold"
                                 >
                                   <RotateCcw size={14} />
                                   <span>Coba Kuis Lagi</span>
@@ -848,7 +848,7 @@ export default function LearningRoom({
 
                         {/* Error Memuat Kuis */}
                         {quizError && (
-                          <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
+                          <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2">
                             <AlertCircle size={16} className="shrink-0" />
                             <span>{quizError}</span>
                           </div>
@@ -859,12 +859,12 @@ export default function LearningRoom({
                           <form onSubmit={handleSubmitQuiz} className="space-y-6 pt-2">
                             {/* Batas Percobaan Tercapai Warning */}
                             {sisaPercobaan === 0 && !isPassed ? (
-                              <div className="p-6 rounded-2xl bg-rose-50 border border-rose-200 text-rose-900 space-y-2">
+                              <div className="p-6 rounded-2xl bg-red-50 border border-red-200 text-red-900 space-y-2">
                                 <div className="font-bold text-sm flex items-center gap-2">
                                   <AlertCircle size={16} />
                                   <span>Batas Maksimal 3 Percobaan Tercapai (BR-10)</span>
                                 </div>
-                                <p className="text-xs leading-relaxed text-rose-800">
+                                <p className="text-xs leading-relaxed text-red-800">
                                   Anda telah menggunakan seluruh 3 kesempatan pengerjaan kuis pada modul ini. Hubungi instruktur atau tim Pijar Aksara jika Anda membutuhkan bimbingan materi lebih lanjut.
                                 </p>
                               </div>

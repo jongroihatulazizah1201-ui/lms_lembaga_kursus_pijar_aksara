@@ -113,8 +113,8 @@ export default async function InstructorGradebookPage({ searchParams }: Props) {
   if (errGradebook || !gradebookData) {
     return (
       <div className="min-h-[75vh] flex items-center justify-center p-6 bg-slate-50/60">
-        <div className="bg-white rounded-3xl border border-rose-200 p-8 sm:p-12 text-center max-w-lg shadow-sm">
-          <div className="w-16 h-16 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center mx-auto mb-5 shadow-xs">
+        <div className="bg-white rounded-3xl border border-red-200 p-8 sm:p-12 text-center max-w-lg shadow-sm">
+          <div className="w-16 h-16 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center mx-auto mb-5 shadow-xs">
             <ShieldAlert size={32} />
           </div>
           <h2 className="text-xl font-black text-slate-900 mb-2">

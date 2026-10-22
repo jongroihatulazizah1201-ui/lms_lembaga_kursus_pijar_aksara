@@ -44,8 +44,8 @@ export default function CourseStatusBadge({
         return {
           label: 'Ditutup',
           icon: Lock,
-          bgClass: 'bg-rose-50 text-rose-800 border-rose-200',
-          dotClass: 'bg-rose-500',
+          bgClass: 'bg-red-50 text-red-800 border-red-200',
+          dotClass: 'bg-red-600',
           desc: 'Pendaftaran baru ditutup. Peserta aktif tetap dapat belajar hingga selesai.',
         };
       default:

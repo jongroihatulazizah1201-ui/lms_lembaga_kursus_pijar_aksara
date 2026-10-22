@@ -188,8 +188,8 @@ export default function AdminRegistrations({ registrations }: Props) {
         );
       case 'dibatalkan':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200">
-            <XCircle size={12} className="text-rose-600" />
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-red-50 text-red-700 border border-red-200">
+            <XCircle size={12} className="text-red-600" />
             Dibatalkan
           </span>
         );
@@ -216,14 +216,14 @@ export default function AdminRegistrations({ registrations }: Props) {
           className={`flex items-center justify-between gap-3 p-4 rounded-2xl text-sm font-medium border shadow-xs animate-fadeIn ${
             feedbackMsg.type === 'success'
               ? 'bg-emerald-50 border-emerald-200 text-emerald-900'
-              : 'bg-rose-50 border-rose-200 text-rose-900'
+              : 'bg-red-50 border-red-200 text-red-900'
           }`}
         >
           <div className="flex items-center gap-2.5">
             {feedbackMsg.type === 'success' ? (
               <CheckCircle2 size={18} className="text-emerald-600 shrink-0" />
             ) : (
-              <AlertCircle size={18} className="text-rose-600 shrink-0" />
+              <AlertCircle size={18} className="text-red-600 shrink-0" />
             )}
             <span>{feedbackMsg.text}</span>
           </div>
@@ -468,7 +468,7 @@ export default function AdminRegistrations({ registrations }: Props) {
                         <div>{renderStatusBadge(reg.status)}</div>
                         {reg.alasan_batal && (
                           <div
-                            className="text-[11px] text-rose-600 mt-1 max-w-[160px] truncate mx-auto"
+                            className="text-[11px] text-red-600 mt-1 max-w-[160px] truncate mx-auto"
                             title={`Alasan Batal: "${reg.alasan_batal}"`}
                           >
                             Alasan: &ldquo;{reg.alasan_batal}&rdquo;
@@ -519,7 +519,7 @@ export default function AdminRegistrations({ registrations }: Props) {
                                 setCancelError(null);
                               }}
                               disabled={loadingId === reg.id}
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-rose-200 text-rose-700 hover:bg-rose-50 font-bold text-xs shadow-2xs transition-all cursor-pointer disabled:opacity-50"
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-red-200 text-red-700 hover:bg-red-50 font-bold text-xs shadow-2xs transition-all cursor-pointer disabled:opacity-50"
                               title="Batalkan Pendaftaran"
                             >
                               <XCircle size={13} />
@@ -618,7 +618,7 @@ export default function AdminRegistrations({ registrations }: Props) {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-fadeIn">
           <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-5">
             <div className="flex items-start gap-3.5">
-              <div className="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
+              <div className="w-12 h-12 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center shrink-0">
                 <AlertTriangle size={24} />
               </div>
               <div>
@@ -631,13 +631,13 @@ export default function AdminRegistrations({ registrations }: Props) {
               </div>
             </div>
 
-            <div className="bg-rose-50/60 rounded-2xl p-3.5 border border-rose-200 text-xs text-rose-800 leading-relaxed">
+            <div className="bg-red-50/60 rounded-2xl p-3.5 border border-red-200 text-xs text-red-800 leading-relaxed">
               <strong>Aturan Sistem (BR-07):</strong> Pembatalan pendaftaran akan mengembalikan 1 kuota kursi kursus dan mencatat riwayat pembatalan ke Audit Log. Alasan pembatalan wajib diisi minimal 10 karakter.
             </div>
 
             <div>
               <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                Alasan Pembatalan <span className="text-rose-600">*</span>
+                Alasan Pembatalan <span className="text-red-600">*</span>
               </label>
               <textarea
                 rows={3}
@@ -647,13 +647,13 @@ export default function AdminRegistrations({ registrations }: Props) {
                   if (cancelError) setCancelError(null);
                 }}
                 placeholder="Contoh: Bukti transfer tidak valid dan peserta tidak merespons konfirmasi dalam 24 jam..."
-                className="w-full p-3 rounded-xl bg-slate-50 border border-slate-300 text-xs text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all"
+                className="w-full p-3 rounded-xl bg-slate-50 border border-slate-300 text-xs text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all"
               />
               <div className="flex justify-between items-center mt-1 text-[11px]">
                 <span className={cancelReason.trim().length < 10 ? 'text-amber-600' : 'text-emerald-600'}>
                   {cancelReason.trim().length}/10 karakter minimal
                 </span>
-                {cancelError && <span className="text-rose-600 font-semibold">{cancelError}</span>}
+                {cancelError && <span className="text-red-600 font-semibold">{cancelError}</span>}
               </div>
             </div>
 
@@ -669,7 +669,7 @@ export default function AdminRegistrations({ registrations }: Props) {
                 type="button"
                 onClick={handleExecuteBatal}
                 disabled={loadingId === cancelModalReg.id || cancelReason.trim().length < 10}
-                className="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-xs hover:shadow transition-all cursor-pointer disabled:opacity-50"
+                className="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs shadow-xs hover:shadow transition-all cursor-pointer disabled:opacity-50"
               >
                 {loadingId === cancelModalReg.id ? 'Membatalkan...' : 'Batalkan Pendaftaran'}
               </button>

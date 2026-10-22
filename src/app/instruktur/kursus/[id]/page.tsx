@@ -86,7 +86,7 @@ export default async function CourseDetailPage({ params }: Props) {
     return (
       <div className="min-h-[75vh] flex items-center justify-center p-6 bg-slate-50/50">
         <div className="bg-white rounded-3xl border border-slate-200 p-8 sm:p-12 text-center max-w-lg shadow-sm space-y-4">
-          <div className="w-16 h-16 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center mx-auto">
+          <div className="w-16 h-16 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center mx-auto">
             <ShieldAlert size={32} />
           </div>
           <h2 className="text-xl font-bold text-slate-900">

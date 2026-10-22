@@ -150,8 +150,8 @@ export default function AdminUserManagement({ users, currentAdminId }: Props) {
     switch (role) {
       case 'admin':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200">
-            <Shield size={12} className="text-rose-600" />
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-purple-50 text-[#843bab] border border-purple-200">
+            <Shield size={12} className="text-[#843bab]" />
             Admin
           </span>
         );
@@ -186,14 +186,14 @@ export default function AdminUserManagement({ users, currentAdminId }: Props) {
           className={`flex items-center justify-between gap-3 p-4 rounded-2xl text-sm font-medium border shadow-xs animate-fadeIn ${
             feedbackMsg.type === 'success'
               ? 'bg-emerald-50 border-emerald-200 text-emerald-900'
-              : 'bg-rose-50 border-rose-200 text-rose-900'
+              : 'bg-red-50 border-red-200 text-red-900'
           }`}
         >
           <div className="flex items-center gap-2.5">
             {feedbackMsg.type === 'success' ? (
               <CheckCircle2 size={18} className="text-emerald-600 shrink-0" />
             ) : (
-              <AlertCircle size={18} className="text-rose-600 shrink-0" />
+              <AlertCircle size={18} className="text-red-600 shrink-0" />
             )}
             <span>{feedbackMsg.text}</span>
           </div>
@@ -254,11 +254,11 @@ export default function AdminUserManagement({ users, currentAdminId }: Props) {
             <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
               Administrator
             </span>
-            <div className="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-purple-50 text-[#843bab] flex items-center justify-center">
               <Shield size={16} />
             </div>
           </div>
-          <div className="text-3xl font-black text-rose-600">{totalAdmin}</div>
+          <div className="text-3xl font-black text-[#843bab]">{totalAdmin}</div>
           <div className="text-xs text-slate-500 mt-1">Pengelola sistem LMS</div>
         </div>
       </div>
@@ -331,7 +331,7 @@ export default function AdminUserManagement({ users, currentAdminId }: Props) {
                 setFilterRole('semua');
                 setFilterStatus('semua');
               }}
-              className="p-2 rounded-xl text-slate-500 hover:text-rose-600 hover:bg-rose-50 border border-slate-200 transition-colors"
+              className="p-2 rounded-xl text-slate-500 hover:text-red-600 hover:bg-red-50 border border-slate-200 transition-colors"
               title="Reset Filter"
             >
               <RotateCcw size={14} />
@@ -410,7 +410,7 @@ export default function AdminUserManagement({ users, currentAdminId }: Props) {
                           <div
                             className={`w-9 h-9 rounded-full flex items-center justify-center font-black text-xs text-white shadow-2xs shrink-0 ${
                               u.peran === 'admin'
-                                ? 'bg-gradient-to-br from-rose-500 to-rose-700'
+                                ? 'bg-[#843bab]'
                                 : u.peran === 'instruktur'
                                 ? 'bg-gradient-to-br from-[#843bab] to-purple-700'
                                 : 'bg-gradient-to-br from-blue-500 to-indigo-600'
@@ -463,8 +463,8 @@ export default function AdminUserManagement({ users, currentAdminId }: Props) {
                             Aktif
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200">
-                            <X size={11} className="text-rose-600" />
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-red-50 text-red-700 border border-red-200">
+                            <X size={11} className="text-red-600" />
                             Nonaktif
                           </span>
                         )}
@@ -498,7 +498,7 @@ export default function AdminUserManagement({ users, currentAdminId }: Props) {
                             disabled={loadingId === u.id || isCurrentAdmin}
                             className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-xl font-bold text-xs border shadow-2xs transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed ${
                               u.aktif
-                                ? 'bg-white border-rose-200 text-rose-700 hover:bg-rose-50'
+                                ? 'bg-white border-red-200 text-red-700 hover:bg-red-50'
                                 : 'bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-100'
                             }`}
                             title={isCurrentAdmin ? 'Tidak bisa menonaktifkan akun sendiri' : u.aktif ? 'Nonaktifkan Akun' : 'Aktifkan Akun'}
@@ -630,7 +630,7 @@ export default function AdminUserManagement({ users, currentAdminId }: Props) {
               <div
                 className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ${
                   statusModalUser.aktif
-                    ? 'bg-rose-50 text-rose-600'
+                    ? 'bg-red-50 text-red-600'
                     : 'bg-emerald-50 text-emerald-600'
                 }`}
               >
@@ -649,7 +649,7 @@ export default function AdminUserManagement({ users, currentAdminId }: Props) {
             <div
               className={`p-4 rounded-2xl border text-xs leading-relaxed ${
                 statusModalUser.aktif
-                  ? 'bg-rose-50/60 border-rose-200 text-rose-800'
+                  ? 'bg-red-50/60 border-red-200 text-red-800'
                   : 'bg-emerald-50/60 border-emerald-200 text-emerald-800'
               }`}
             >
@@ -678,7 +678,7 @@ export default function AdminUserManagement({ users, currentAdminId }: Props) {
                 disabled={loadingId === statusModalUser.id}
                 className={`px-5 py-2.5 rounded-xl text-white font-bold text-xs shadow-xs hover:shadow transition-all cursor-pointer disabled:opacity-50 ${
                   statusModalUser.aktif
-                    ? 'bg-rose-600 hover:bg-rose-700'
+                    ? 'bg-red-600 hover:bg-red-700'
                     : 'bg-emerald-600 hover:bg-emerald-700'
                 }`}
               >

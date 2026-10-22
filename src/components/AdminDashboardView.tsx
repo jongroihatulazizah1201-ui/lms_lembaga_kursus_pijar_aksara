@@ -724,7 +724,7 @@ export default function AdminDashboardView({
                 <span>40-69% Sedang</span>
               </span>
               <span className="flex items-center gap-1 ml-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-rose-500" />
+                <span className="w-2.5 h-2.5 rounded-full bg-red-500" />
                 <span>&lt; 40% Perhatian</span>
               </span>
             </div>
@@ -743,14 +743,14 @@ export default function AdminDashboardView({
                     ? 'bg-emerald-500'
                     : rate >= 40
                     ? 'bg-amber-500'
-                    : 'bg-rose-500';
+                    : 'bg-red-500';
 
                 const badgeBg =
                   rate >= 70
                     ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
                     : rate >= 40
                     ? 'bg-amber-50 text-amber-700 border-amber-200'
-                    : 'bg-rose-50 text-rose-700 border-rose-200';
+                    : 'bg-red-50 text-red-700 border-red-200';
 
                 return (
                   <div
@@ -846,7 +846,7 @@ export default function AdminDashboardView({
                         const passRate = m.first_pass_rate;
                         const badgeColor =
                           passRate < 55
-                            ? 'bg-rose-50 text-rose-700 border-rose-200'
+                            ? 'bg-red-50 text-red-700 border-red-200'
                             : 'bg-amber-50 text-amber-700 border-amber-200';
 
                         return (
@@ -891,7 +891,7 @@ export default function AdminDashboardView({
             <div>
               <div className="flex items-start justify-between gap-2.5 mb-3">
                 <div className="flex items-start gap-2.5">
-                  <div className="w-9 h-9 rounded-xl bg-rose-50 border border-rose-200 text-rose-600 flex items-center justify-center shrink-0">
+                  <div className="w-9 h-9 rounded-xl bg-red-50 border border-red-200 text-red-600 flex items-center justify-center shrink-0">
                     <Clock size={18} />
                   </div>
                   <div>
@@ -954,7 +954,7 @@ export default function AdminDashboardView({
                               <span
                                 className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full font-black text-xs border ${
                                   isFull
-                                    ? 'bg-rose-100 text-rose-800 border-rose-300'
+                                    ? 'bg-red-100 text-red-800 border-red-300'
                                     : 'bg-amber-100 text-amber-800 border-amber-300'
                                 }`}
                               >

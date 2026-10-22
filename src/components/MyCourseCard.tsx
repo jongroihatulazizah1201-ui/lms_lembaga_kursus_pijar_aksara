@@ -144,8 +144,8 @@ export default function MyCourseCard({ enrollment, onCancelRequest }: Props) {
         );
       case 'dibatalkan':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200 shadow-2xs">
-            <XCircle size={13} className="text-rose-600" />
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-50 text-red-700 border border-red-200 shadow-2xs">
+            <XCircle size={13} className="text-red-600" />
             Dibatalkan
           </span>
         );
@@ -282,7 +282,7 @@ export default function MyCourseCard({ enrollment, onCancelRequest }: Props) {
                   <div
                     className={`font-mono text-xs font-bold flex items-center gap-1 px-2 py-0.5 rounded-md ${
                       isExpired
-                        ? 'bg-rose-100 text-rose-700'
+                        ? 'bg-red-100 text-red-700'
                         : 'bg-amber-100 text-amber-900 animate-pulse'
                     }`}
                   >
@@ -341,7 +341,7 @@ export default function MyCourseCard({ enrollment, onCancelRequest }: Props) {
             <button
               type="button"
               onClick={() => onCancelRequest?.(id, kursus.judul)}
-              className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl border border-rose-300 hover:border-rose-400 text-rose-600 hover:bg-rose-50 text-xs font-bold transition-all cursor-pointer"
+              className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl border border-red-300 hover:border-red-400 text-red-600 hover:bg-red-50 text-xs font-bold transition-all cursor-pointer"
             >
               <XCircle size={14} />
               <span>Batalkan</span>

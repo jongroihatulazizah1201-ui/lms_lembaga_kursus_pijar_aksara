@@ -56,7 +56,7 @@ export default function CekSertifikatPage() {
                 />
               </div>
               {errorMsg && (
-                <p className="text-xs text-rose-600 pt-1">{errorMsg}</p>
+                <p className="text-xs text-red-600 pt-1">{errorMsg}</p>
               )}
             </div>
 

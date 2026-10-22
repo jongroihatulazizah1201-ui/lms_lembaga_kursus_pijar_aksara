@@ -82,7 +82,7 @@ export default function LoginPage() {
         {/* Login Form Card */}
         <div className="bg-white rounded-3xl border border-slate-200 shadow-xl p-8 mb-6">
           {error && (
-            <div className="flex items-start gap-2.5 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium mb-5">
+            <div className="flex items-start gap-2.5 p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-medium mb-5">
               <AlertCircle size={16} className="shrink-0 mt-0.5" />
               <span>{error}</span>
             </div>
@@ -180,7 +180,7 @@ export default function LoginPage() {
                 onClick={() => fillQuickAccount('ratna@pijaraksara.test')}
                 className="flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl text-xs font-semibold bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 hover:border-slate-300 transition-all"
               >
-                <Shield size={14} className="text-rose-600" />
+                <Shield size={14} className="text-[#843bab]" />
                 <span>Admin</span>
               </button>
             </div>

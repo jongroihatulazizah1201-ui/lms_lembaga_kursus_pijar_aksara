@@ -21,10 +21,10 @@ export default function UserNav({ user, profile }: Props) {
   const isAdmin = profile.peran === 'admin';
 
   const roleBadgeClass = isAdmin
-    ? 'bg-rose-50 text-rose-700 border-rose-200'
+    ? 'bg-purple-50 text-[#843bab] border-purple-200'
     : isInstruktur
     ? 'bg-purple-50 text-[#843bab] border-purple-200'
-    : 'bg-amber-50 text-amber-800 border-amber-200';
+    : 'bg-emerald-50 text-emerald-700 border-emerald-200';
 
   return (
     <div className="flex items-center gap-4">
@@ -64,7 +64,7 @@ export default function UserNav({ user, profile }: Props) {
               href="/admin"
               className="flex items-center gap-1.5 text-slate-700 hover:text-[#843bab] transition-colors"
             >
-              <Shield size={16} className="text-rose-600" />
+              <Shield size={16} className="text-[#843bab]" />
               <span>Panel Admin</span>
             </Link>
             <Link
@@ -102,7 +102,7 @@ export default function UserNav({ user, profile }: Props) {
       <form action={logoutAction}>
         <button
           type="submit"
-          className="p-2 rounded-xl text-slate-500 hover:text-rose-600 hover:bg-rose-50 border border-slate-200 hover:border-rose-200 transition-all"
+          className="p-2 rounded-xl text-slate-500 hover:text-red-700 hover:bg-red-50 border border-slate-200 hover:border-red-200 transition-all"
           title="Keluar dari akun"
         >
           <LogOut size={16} />

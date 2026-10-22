@@ -223,13 +223,13 @@ export default function AdminCourseReview({ courses }: Props) {
           className={`flex items-center gap-3 p-4 rounded-2xl text-sm font-medium border shadow-sm transition-all ${
             feedbackMsg.type === 'success'
               ? 'bg-emerald-50 border-emerald-200 text-emerald-900'
-              : 'bg-rose-50 border-rose-200 text-rose-900'
+              : 'bg-red-50 border-red-200 text-red-900'
           }`}
         >
           {feedbackMsg.type === 'success' ? (
             <CheckCircle2 size={18} className="text-emerald-600 shrink-0" />
           ) : (
-            <AlertCircle size={18} className="text-rose-600 shrink-0" />
+            <AlertCircle size={18} className="text-red-600 shrink-0" />
           )}
           <span>{feedbackMsg.text}</span>
         </div>
@@ -391,7 +391,7 @@ export default function AdminCourseReview({ courses }: Props) {
                             setNoteError(null);
                           }}
                           disabled={loadingId === c.id}
-                          className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold text-rose-700 bg-rose-50 border border-rose-200 hover:bg-rose-100 transition-colors min-h-[44px]"
+                          className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold text-red-700 bg-red-50 border border-red-200 hover:bg-red-100 transition-colors min-h-[44px]"
                         >
                           <RotateCcw size={14} />
                           <span>Kembalikan ke Draf (BR-02)</span>
@@ -430,7 +430,7 @@ export default function AdminCourseReview({ courses }: Props) {
                           type="button"
                           onClick={() => handleTutup(c)}
                           disabled={loadingId === c.id}
-                          className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold text-rose-700 bg-rose-50 border border-rose-200 hover:bg-rose-100 transition-colors min-h-[44px]"
+                          className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold text-red-700 bg-red-50 border border-red-200 hover:bg-red-100 transition-colors min-h-[44px]"
                         >
                           <Lock size={14} />
                           <span>Tutup Kursus (BR-02)</span>
@@ -558,8 +558,8 @@ export default function AdminCourseReview({ courses }: Props) {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fadeIn">
           <div className="bg-white rounded-2xl max-w-md w-full border border-slate-200 shadow-2xl p-6 space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-rose-50 border border-rose-100 flex items-center justify-center shrink-0">
-                <RotateCcw size={20} className="text-rose-600" />
+              <div className="w-10 h-10 rounded-full bg-red-50 border border-red-100 flex items-center justify-center shrink-0">
+                <RotateCcw size={20} className="text-red-600" />
               </div>
               <div>
                 <h4 className="text-base font-bold text-slate-900">Kembalikan Kursus ke Draf</h4>
@@ -583,7 +583,7 @@ export default function AdminCourseReview({ courses }: Props) {
                   if (noteError) setNoteError(null);
                 }}
                 placeholder="Contoh: Modul 2 materi pengantar terlalu singkat dan butir soal kuis pada modul 1 perlu diperbaiki pilihan gandanya."
-                className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-400 transition-all resize-none"
+                className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-400 transition-all resize-none"
               />
 
               <div className="flex items-center justify-between text-[11px] pt-1">
@@ -596,7 +596,7 @@ export default function AdminCourseReview({ courses }: Props) {
               </div>
 
               {noteError && (
-                <div className="text-xs text-rose-600 flex items-center gap-1.5 pt-1">
+                <div className="text-xs text-red-600 flex items-center gap-1.5 pt-1">
                   <AlertCircle size={14} className="shrink-0" />
                   <span>{noteError}</span>
                 </div>
@@ -617,7 +617,7 @@ export default function AdminCourseReview({ courses }: Props) {
                 disabled={loadingId === returnModalCourse.id || returnNote.trim().length < 10}
                 className={`flex items-center gap-2 px-5 py-2 text-xs font-bold rounded-xl transition-colors min-h-[44px] ${
                   returnNote.trim().length >= 10
-                    ? 'bg-rose-600 text-white hover:bg-rose-700 shadow-sm cursor-pointer'
+                    ? 'bg-red-600 text-white hover:bg-red-700 shadow-sm cursor-pointer'
                     : 'bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed'
                 }`}
               >
@@ -666,7 +666,7 @@ export default function AdminCourseReview({ courses }: Props) {
                 className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#843bab]/30 focus:border-[#843bab] transition-all"
               />
               {quotaError && (
-                <div className="text-xs text-rose-600 flex items-center gap-1.5 pt-1">
+                <div className="text-xs text-red-600 flex items-center gap-1.5 pt-1">
                   <AlertCircle size={14} className="shrink-0" />
                   <span>{quotaError}</span>
                 </div>

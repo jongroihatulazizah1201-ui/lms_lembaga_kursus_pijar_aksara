@@ -272,13 +272,13 @@ export default function CourseEditor({ course }: Props) {
           className={`flex items-center gap-2.5 p-4 rounded-2xl text-sm font-medium border shadow-sm ${
             feedbackMsg.type === 'success'
               ? 'bg-emerald-50 border-emerald-200 text-emerald-900'
-              : 'bg-rose-50 border-rose-200 text-rose-900'
+              : 'bg-red-50 border-red-200 text-red-900'
           }`}
         >
           {feedbackMsg.type === 'success' ? (
             <CheckCircle2 size={18} className="text-emerald-600 shrink-0" />
           ) : (
-            <AlertCircle size={18} className="text-rose-600 shrink-0" />
+            <AlertCircle size={18} className="text-red-600 shrink-0" />
           )}
           <span>{feedbackMsg.text}</span>
         </div>
@@ -472,7 +472,7 @@ export default function CourseEditor({ course }: Props) {
                         type="button"
                         onClick={() => handleDeleteModul(modul.id)}
                         disabled={submittingAction}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 transition-colors self-start sm:self-auto min-h-[36px]"
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-red-600 hover:bg-red-50 transition-colors self-start sm:self-auto min-h-[36px]"
                         title="Hapus Modul"
                       >
                         <Trash2 size={14} />
@@ -627,7 +627,7 @@ export default function CourseEditor({ course }: Props) {
                                 <button
                                   type="button"
                                   onClick={() => handleDeleteSoal(q.id)}
-                                  className="text-slate-400 hover:text-rose-600 transition-colors p-1"
+                                  className="text-slate-400 hover:text-red-600 transition-colors p-1"
                                   title="Hapus Soal"
                                 >
                                   <Trash2 size={13} />

@@ -263,7 +263,7 @@ export default function Sidebar({ user, profile }: SidebarProps) {
             <div
               className={`w-2 h-2 rounded-full ${
                 isAdmin
-                  ? 'bg-rose-500'
+                  ? 'bg-[#843bab]'
                   : isInstruktur
                   ? 'bg-[#843bab]'
                   : 'bg-emerald-500'
@@ -281,7 +281,7 @@ export default function Sidebar({ user, profile }: SidebarProps) {
           <span
             className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase border ${
               isAdmin
-                ? 'bg-rose-50 text-rose-700 border-rose-200'
+                ? 'bg-purple-50 text-[#843bab] border-purple-200'
                 : isInstruktur
                 ? 'bg-purple-50 text-[#843bab] border-purple-200'
                 : 'bg-emerald-50 text-emerald-700 border-emerald-200'
@@ -402,7 +402,7 @@ export default function Sidebar({ user, profile }: SidebarProps) {
             onClick={() => handleQuickSwitch('ratna@pijaraksara.test', '/admin/dashboard')}
             className={`py-1.5 px-2 rounded-lg text-[10px] font-bold text-center transition-all flex items-center justify-center gap-1 border ${
               isAdmin
-                ? 'bg-rose-100 text-rose-800 border-rose-300 shadow-2xs'
+                ? 'bg-purple-100 text-[#843bab] border-purple-300 shadow-2xs'
                 : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-200'
             }`}
             title="Masuk sebagai Admin: Ratna Kusumawati"
@@ -421,7 +421,7 @@ export default function Sidebar({ user, profile }: SidebarProps) {
               <div
                 className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-black text-white shrink-0 shadow-2xs ${
                   isAdmin
-                    ? 'bg-rose-600'
+                    ? 'bg-[#843bab]'
                     : isInstruktur
                     ? 'bg-[#843bab]'
                     : 'bg-emerald-600'
@@ -444,7 +444,7 @@ export default function Sidebar({ user, profile }: SidebarProps) {
             <form action={logoutAction}>
               <button
                 type="submit"
-                className="w-full flex items-center justify-center gap-2 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-rose-700 hover:bg-rose-50 rounded-xl border border-slate-200 hover:border-rose-200 transition-colors min-h-[36px] cursor-pointer"
+                className="w-full flex items-center justify-center gap-2 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-red-700 hover:bg-red-50 rounded-xl border border-slate-200 hover:border-red-200 transition-colors min-h-[36px] cursor-pointer"
               >
                 <LogOut size={13} />
                 <span>Keluar dari Akun</span>
@@ -500,7 +500,7 @@ export default function Sidebar({ user, profile }: SidebarProps) {
           <span
             className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase border ${
               isAdmin
-                ? 'bg-rose-50 text-rose-700 border-rose-200'
+                ? 'bg-purple-50 text-[#843bab] border-purple-200'
                 : isInstruktur
                 ? 'bg-purple-50 text-[#843bab] border-purple-200'
                 : 'bg-emerald-50 text-emerald-700 border-emerald-200'

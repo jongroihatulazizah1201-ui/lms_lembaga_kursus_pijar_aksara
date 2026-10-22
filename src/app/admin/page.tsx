@@ -205,8 +205,8 @@ export default async function AdminPanelPage({ searchParams }: Props) {
               </span>
             </div>
 
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200 shadow-2xs">
-              <ShieldCheck size={13} className="text-rose-600" />
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-purple-50 text-[#843bab] border border-purple-200 shadow-2xs">
+              <ShieldCheck size={13} className="text-[#843bab]" />
               Administrator: {profile.nama_lengkap} ({profile.email})
             </span>
           </div>
@@ -214,7 +214,7 @@ export default async function AdminPanelPage({ searchParams }: Props) {
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
             <div className="space-y-2 max-w-2xl">
               <div>
-                <span className="text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-800 uppercase tracking-wider border border-rose-200">
+                <span className="text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-purple-100 text-[#843bab] uppercase tracking-wider border border-purple-200">
                   Pusat Pengelola Lembaga
                 </span>
                 <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mt-1">

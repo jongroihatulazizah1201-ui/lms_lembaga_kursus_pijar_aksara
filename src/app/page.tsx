@@ -278,7 +278,7 @@ export default async function HomePage() {
                           {/* Item 5 */}
                           <div className="bg-white p-1.5 rounded-xl border border-slate-200/80 shadow-2xs flex items-center justify-between">
                             <div className="flex items-center gap-1.5">
-                              <div className="w-6 h-6 rounded-lg bg-rose-100 text-rose-800 flex items-center justify-center shrink-0">
+                              <div className="w-6 h-6 rounded-lg bg-purple-100 text-[#843bab] flex items-center justify-center shrink-0">
                                 <Languages size={13} />
                               </div>
                               <div>

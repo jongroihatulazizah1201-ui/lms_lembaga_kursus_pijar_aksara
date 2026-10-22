@@ -135,7 +135,7 @@ export default function AdminAuditLog({ logs }: Props) {
         );
       case 'tutup_kursus':
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200">
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-red-50 text-red-700 border border-red-200">
             Tutup Kursus
           </span>
         );
@@ -165,7 +165,7 @@ export default function AdminAuditLog({ logs }: Props) {
         );
       case 'batalkan_pendaftaran':
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200">
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-red-50 text-red-700 border border-red-200">
             Batal Pendaftaran
           </span>
         );
@@ -177,7 +177,7 @@ export default function AdminAuditLog({ logs }: Props) {
         );
       case 'ubah_status_pengguna':
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200">
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-red-50 text-red-700 border border-red-200">
             Ubah Status Akun
           </span>
         );
@@ -309,7 +309,7 @@ export default function AdminAuditLog({ logs }: Props) {
                 setSearchQuery('');
                 setFilterCategory('semua');
               }}
-              className="p-2 rounded-xl text-slate-500 hover:text-rose-600 hover:bg-rose-50 border border-slate-200 transition-colors"
+              className="p-2 rounded-xl text-slate-500 hover:text-red-600 hover:bg-red-50 border border-slate-200 transition-colors"
               title="Reset Filter"
             >
               <RotateCcw size={14} />
@@ -469,8 +469,8 @@ export default function AdminAuditLog({ logs }: Props) {
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono">
                                 {/* Data Sebelum */}
                                 <div className="space-y-1.5">
-                                  <div className="font-sans font-bold text-rose-700 text-[11px] flex items-center gap-1">
-                                    <span className="w-2 h-2 rounded-full bg-rose-500" />
+                                  <div className="font-sans font-bold text-red-700 text-[11px] flex items-center gap-1">
+                                    <span className="w-2 h-2 rounded-full bg-red-500" />
                                     Data Sebelum (Old State)
                                   </div>
                                   <pre className="p-3 bg-slate-900 text-slate-100 rounded-xl overflow-x-auto text-[11px] leading-relaxed max-h-60">

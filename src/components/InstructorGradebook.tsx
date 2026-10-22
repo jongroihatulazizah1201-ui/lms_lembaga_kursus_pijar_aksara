@@ -267,7 +267,7 @@ export default function InstructorGradebook({
         );
       case 'dibatalkan':
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200">
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-red-50 text-red-700 border border-red-200">
             <XCircle size={12} />
             Dibatalkan
           </span>
@@ -314,8 +314,8 @@ export default function InstructorGradebook({
             {/* Role Privilege Indicator */}
             <div className="flex items-center gap-2">
               {currentUser.peran === 'admin' ? (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200 shadow-2xs">
-                  <ShieldCheck size={13} className="text-rose-600" />
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-purple-50 text-[#843bab] border border-purple-200 shadow-2xs">
+                  <ShieldCheck size={13} className="text-[#843bab]" />
                   Mode Administrator (Semua Kursus)
                 </span>
               ) : (
@@ -583,7 +583,7 @@ export default function InstructorGradebook({
                     setProgresFilter('semua');
                     setSortBy('terbaru');
                   }}
-                  className="p-2 rounded-xl text-slate-500 hover:text-rose-600 hover:bg-rose-50 border border-slate-200 transition-colors"
+                  className="p-2 rounded-xl text-slate-500 hover:text-red-600 hover:bg-red-50 border border-slate-200 transition-colors"
                   title="Reset Filter"
                 >
                   <RotateCcw size={14} />
@@ -613,7 +613,7 @@ export default function InstructorGradebook({
                 Lulus (≥ 70)
               </span>
               <span className="inline-flex items-center gap-1">
-                <span className="w-2.5 h-2.5 rounded-full bg-rose-500" />
+                <span className="w-2.5 h-2.5 rounded-full bg-red-500" />
                 Belum Lulus (&lt; 70)
               </span>
               <span className="inline-flex items-center gap-1">
@@ -819,14 +819,14 @@ export default function InstructorGradebook({
                                   className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg font-black text-xs shadow-2xs border ${
                                     isPassed
                                       ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                                      : 'bg-rose-50 text-rose-700 border-rose-200'
+                                      : 'bg-red-50 text-red-700 border-red-200'
                                   }`}
                                   title={`Nilai Terbaik: ${bestScore} (${isPassed ? 'Lulus' : 'Belum Lulus'})`}
                                 >
                                   {isPassed ? (
                                     <CheckCircle2 size={12} className="text-emerald-600" />
                                   ) : (
-                                    <AlertCircle size={12} className="text-rose-600" />
+                                    <AlertCircle size={12} className="text-red-600" />
                                   )}
                                   <span>{bestScore}</span>
                                 </div>
@@ -970,7 +970,7 @@ export default function InstructorGradebook({
                                 <div className="text-xs text-slate-400">Nilai Terbaik</div>
                                 <div
                                   className={`text-lg font-black ${
-                                    passed ? 'text-emerald-600' : 'text-rose-600'
+                                    passed ? 'text-emerald-600' : 'text-red-600'
                                   }`}
                                 >
                                   {best ?? 0}
@@ -980,7 +980,7 @@ export default function InstructorGradebook({
                                 className={`px-3 py-1 rounded-full text-xs font-bold border ${
                                   passed
                                     ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                                    : 'bg-rose-50 text-rose-700 border-rose-200'
+                                    : 'bg-red-50 text-red-700 border-red-200'
                                 }`}
                               >
                                 {passed ? 'Lulus' : 'Belum Lulus'}

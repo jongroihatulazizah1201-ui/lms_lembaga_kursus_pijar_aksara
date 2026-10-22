@@ -180,15 +180,15 @@ export default function InstructorCoursesClient({ initialCourses, profile }: Pro
               onClick={() => setActiveTab('revisi')}
               className={`p-4 rounded-2xl border text-left transition-all cursor-pointer ${
                 activeTab === 'revisi'
-                  ? 'bg-white border-rose-500 ring-2 ring-rose-500/20 shadow-sm'
+                  ? 'bg-white border-red-500 ring-2 ring-red-500/20 shadow-sm'
                   : 'bg-white/80 border-slate-200 hover:border-slate-300 hover:bg-white'
               }`}
             >
               <div className="flex items-center justify-between mb-1">
-                <span className="text-xs font-bold text-rose-700 uppercase tracking-wider">Perlu Perbaikan</span>
-                <RotateCcw size={16} className="text-rose-500" />
+                <span className="text-xs font-bold text-red-700 uppercase tracking-wider">Perlu Perbaikan</span>
+                <RotateCcw size={16} className="text-red-500" />
               </div>
-              <div className="text-2xl sm:text-3xl font-black text-rose-600">{revisiCount}</div>
+              <div className="text-2xl sm:text-3xl font-black text-red-600">{revisiCount}</div>
               <div className="text-[11px] text-slate-500 mt-1">Ada catatan revisi admin</div>
             </button>
           </div>
@@ -252,8 +252,8 @@ export default function InstructorCoursesClient({ initialCourses, profile }: Pro
                 onClick={() => setActiveTab('revisi')}
                 className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all cursor-pointer ${
                   activeTab === 'revisi'
-                    ? 'bg-rose-600 text-white shadow-xs'
-                    : 'bg-white text-rose-700 hover:text-rose-900 border border-rose-200'
+                    ? 'bg-red-600 text-white shadow-xs'
+                    : 'bg-white text-red-700 hover:text-red-900 border border-red-200'
                 }`}
               >
                 Catatan Revisi ({revisiCount})

@@ -104,8 +104,8 @@ export default function CreateCourseForm() {
 
       {/* Error Alert */}
       {errorMsg && (
-        <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs sm:text-sm flex items-center gap-2.5 shadow-2xs">
-          <AlertCircle size={18} className="text-rose-600 shrink-0" />
+        <div className="p-4 rounded-2xl bg-red-50 border border-red-200 text-red-800 text-xs sm:text-sm flex items-center gap-2.5 shadow-2xs">
+          <AlertCircle size={18} className="text-red-600 shrink-0" />
           <span>{errorMsg}</span>
         </div>
       )}

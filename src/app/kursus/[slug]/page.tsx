@@ -415,7 +415,7 @@ export default async function CourseDetailPage({ params }: Props) {
                 {/* Sisa Kursi Alert Box (BR-06) */}
                 <div className={`p-4 rounded-2xl border space-y-2.5 ${
                   isFull
-                    ? 'bg-rose-50 border-rose-200'
+                    ? 'bg-red-50 border-red-200'
                     : isLastSeat
                     ? 'bg-amber-50 border-amber-300'
                     : 'bg-slate-50 border-slate-200'
@@ -423,7 +423,7 @@ export default async function CourseDetailPage({ params }: Props) {
                   <div className="flex items-center justify-between text-xs font-bold">
                     <span className="text-slate-700">Ketersediaan Kursi:</span>
                     {isFull ? (
-                      <span className="text-rose-700 flex items-center gap-1">
+                      <span className="text-red-700 flex items-center gap-1">
                         <Lock size={12} />
                         Kuota Penuh
                       </span>
@@ -445,7 +445,7 @@ export default async function CourseDetailPage({ params }: Props) {
                     <div
                       className={`h-full rounded-full transition-all duration-500 ${
                         isFull
-                          ? 'bg-rose-500'
+                          ? 'bg-red-500'
                           : isLastSeat
                           ? 'bg-amber-500'
                           : 'bg-[#843bab]'

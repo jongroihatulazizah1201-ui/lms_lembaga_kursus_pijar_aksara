@@ -98,7 +98,7 @@ export default function CourseCard({ course }: { course: CourseData }) {
           <div className="flex items-center justify-between pt-1 text-[11px]">
             <span className="text-slate-500">Kapasitas Kelas:</span>
             {isFull ? (
-              <span className="inline-flex items-center gap-1 font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded border border-rose-200">
+              <span className="inline-flex items-center gap-1 font-bold text-red-700 bg-red-50 px-2 py-0.5 rounded border border-red-200">
                 <Lock size={11} />
                 Kuota Penuh
               </span>
