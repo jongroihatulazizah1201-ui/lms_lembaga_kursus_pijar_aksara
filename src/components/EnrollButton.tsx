@@ -15,7 +15,8 @@ import {
   AlertCircle,
   ExternalLink,
   ShieldCheck,
-  X
+  X,
+  Lock
 } from 'lucide-react';
 
 interface Props {
@@ -61,33 +62,21 @@ export default function EnrollButton({
       return (
         <button
           disabled
-          className="btn"
-          style={{
-            width: '100%',
-            backgroundColor: 'rgba(255, 255, 255, 0.05)',
-            color: 'var(--text-dim)',
-            cursor: 'not-allowed',
-            padding: '14px',
-            justifyContent: 'center'
-          }}
+          type="button"
+          className="w-full py-3.5 px-5 rounded-xl text-sm font-bold bg-slate-200 text-slate-400 cursor-not-allowed flex items-center justify-center gap-2"
         >
-          Pendaftaran Ditutup (Penuh)
+          <Lock size={16} />
+          <span>Pendaftaran Ditutup (Penuh)</span>
         </button>
       );
     }
     return (
       <Link
         href={`/login?redirect=/kursus/${slug}`}
-        className="btn btn-primary"
-        style={{
-          width: '100%',
-          padding: '14px',
-          fontSize: '1rem',
-          justifyContent: 'center'
-        }}
+        className="w-full py-3.5 px-5 rounded-xl text-sm font-black text-slate-900 bg-[#ffdf0f] hover:bg-[#eacb0d] shadow-sm hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2"
       >
         <span>Masuk untuk Mendaftar</span>
-        <ArrowRight size={18} />
+        <ArrowRight size={16} />
       </Link>
     );
   }
@@ -95,19 +84,11 @@ export default function EnrollButton({
   // 2. Jika login tetapi perannya bukan Peserta (BR-05)
   if (userRole && userRole !== 'peserta') {
     return (
-      <div style={{
-        padding: '14px 16px',
-        backgroundColor: 'rgba(245, 158, 11, 0.1)',
-        border: '1px solid rgba(245, 158, 11, 0.25)',
-        borderRadius: 'var(--radius-md)',
-        fontSize: '0.84rem',
-        color: '#fbbf24',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '8px'
-      }}>
-        <AlertCircle size={18} />
-        <span>Anda masuk sebagai <strong>{userRole}</strong>. Hanya akun Peserta yang dapat mendaftar (BR-05).</span>
+      <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-800 flex items-start gap-2.5">
+        <AlertCircle size={16} className="shrink-0 mt-0.5 text-amber-600" />
+        <div>
+          Anda masuk sebagai <strong className="capitalize">{userRole}</strong>. Sesuai <strong>BR-05</strong>, hanya akun <strong>Peserta</strong> yang dapat melakukan pendaftaran kursus.
+        </div>
       </div>
     );
   }
@@ -116,52 +97,30 @@ export default function EnrollButton({
   if (initialEnrollment) {
     if (initialEnrollment.status === 'aktif') {
       return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
-          <div style={{
-            padding: '8px 12px',
-            borderRadius: 'var(--radius-sm)',
-            backgroundColor: 'rgba(16, 185, 129, 0.12)',
-            border: '1px solid rgba(16, 185, 129, 0.3)',
-            color: '#34d399',
-            fontSize: '0.82rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px'
-          }}>
-            <CheckCircle2 size={15} />
+        <div className="space-y-2 w-full">
+          <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center gap-2">
+            <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />
             <span>Anda sudah terdaftar aktif di kursus ini</span>
           </div>
           <Link
             href={`/belajar/${slug}`}
-            className="btn btn-primary"
-            style={{ width: '100%', padding: '12px', justifyContent: 'center' }}
+            className="w-full py-3.5 px-5 rounded-xl text-sm font-bold text-white bg-[#843bab] hover:bg-[#722f95] shadow-sm hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2"
           >
-            <span>Lanjut Belajar</span>
+            <span>Lanjut Belajar di Ruang Kelas</span>
             <ArrowRight size={16} />
           </Link>
         </div>
       );
     } else if (initialEnrollment.status === 'menunggu_bayar') {
       return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
-          <div style={{
-            padding: '8px 12px',
-            borderRadius: 'var(--radius-sm)',
-            backgroundColor: 'rgba(245, 158, 11, 0.12)',
-            border: '1px solid rgba(245, 158, 11, 0.3)',
-            color: '#fbbf24',
-            fontSize: '0.82rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px'
-          }}>
-            <Clock size={15} />
-            <span>Pendaftaran menunggu pembayaran</span>
+        <div className="space-y-2 w-full">
+          <div className="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs font-semibold flex items-center gap-2">
+            <Clock size={16} className="text-amber-600 shrink-0" />
+            <span>Pendaftaran Anda menunggu pembayaran</span>
           </div>
           <Link
             href="/kursus-saya"
-            className="btn btn-primary"
-            style={{ width: '100%', padding: '12px', justifyContent: 'center', backgroundColor: '#f59e0b' }}
+            className="w-full py-3.5 px-5 rounded-xl text-sm font-bold text-slate-900 bg-[#ffdf0f] hover:bg-[#eacb0d] shadow-sm hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2"
           >
             <span>Lihat Tagihan & Bayar</span>
             <ArrowRight size={16} />
@@ -172,10 +131,9 @@ export default function EnrollButton({
       return (
         <Link
           href="/kursus-saya"
-          className="btn btn-outline"
-          style={{ width: '100%', padding: '12px', justifyContent: 'center', borderColor: '#10b981', color: '#34d399' }}
+          className="w-full py-3.5 px-5 rounded-xl text-sm font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 transition-all flex items-center justify-center gap-2"
         >
-          <CheckCircle2 size={16} />
+          <CheckCircle2 size={16} className="text-emerald-600" />
           <span>Kursus Selesai (Lihat Sertifikat)</span>
         </Link>
       );
@@ -187,28 +145,22 @@ export default function EnrollButton({
     return (
       <button
         disabled
-        className="btn"
-        style={{
-          width: '100%',
-          backgroundColor: 'rgba(255, 255, 255, 0.05)',
-          color: 'var(--text-dim)',
-          cursor: 'not-allowed',
-          padding: '14px',
-          justifyContent: 'center'
-        }}
+        type="button"
+        className="w-full py-3.5 px-5 rounded-xl text-sm font-bold bg-slate-200 text-slate-400 cursor-not-allowed flex items-center justify-center gap-2"
       >
-        Pendaftaran Ditutup (Penuh)
+        <Lock size={16} />
+        <span>Pendaftaran Ditutup (Kuota Penuh)</span>
       </button>
     );
   }
 
-  // Handle direct enrollment for free course or submit modal
+  // Handle pendaftaran kursus (gratis langsung / berbayar via modal)
   const handleEnroll = async (selectedMetode: string = 'gratis') => {
     setLoading(true);
     setError('');
 
     // Sesuai enum metode_bayar_enum: 'gratis', 'transfer_manual', 'mayar'
-    const dbMetode = (selectedMetode === 'qris' || selectedMetode === 'va') ? 'mayar' : selectedMetode;
+    const dbMetode = selectedMetode === 'qris' || selectedMetode === 'va' ? 'mayar' : selectedMetode;
 
     const res = await daftarKursusAction(courseId, dbMetode);
     setLoading(false);
@@ -231,289 +183,230 @@ export default function EnrollButton({
 
   return (
     <>
-      {/* Trigger Button */}
+      {/* Trigger Button Pendaftaran */}
       {isFree ? (
         <button
+          type="button"
           onClick={() => handleEnroll('gratis')}
           disabled={loading}
-          className="btn btn-primary"
-          style={{
-            width: '100%',
-            padding: '14px',
-            fontSize: '1rem',
-            justifyContent: 'center',
-            backgroundColor: '#10b981'
-          }}
+          className="w-full py-3.5 px-5 rounded-xl text-sm font-black text-slate-900 bg-[#ffdf0f] hover:bg-[#eacb0d] shadow-sm hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
         >
-          {loading ? <span>Mendaftarkan...</span> : (
+          {loading ? (
+            <span>Mendaftarkan Kursus...</span>
+          ) : (
             <>
               <span>Daftar Kursus Gratis Ini</span>
-              <ArrowRight size={18} />
+              <ArrowRight size={16} />
             </>
           )}
         </button>
       ) : (
         <button
+          type="button"
           onClick={() => setModalOpen(true)}
-          className="btn btn-primary"
-          style={{
-            width: '100%',
-            padding: '14px',
-            fontSize: '1rem',
-            justifyContent: 'center'
-          }}
+          className="w-full py-3.5 px-5 rounded-xl text-sm font-black text-slate-900 bg-[#ffdf0f] hover:bg-[#eacb0d] shadow-sm hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 cursor-pointer"
         >
           <span>Daftar & Pilih Pembayaran</span>
-          <ArrowRight size={18} />
+          <ArrowRight size={16} />
         </button>
       )}
 
-      {/* Payment Selection Modal for Paid Courses */}
+      {/* Modal Pilihan Metode Pembayaran (Kursus Berbayar) */}
       {modalOpen && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(5, 8, 15, 0.85)',
-          backdropFilter: 'blur(8px)',
-          zIndex: 100,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '16px'
-        }}>
-          <div className="glass-panel" style={{
-            width: '100%',
-            maxWidth: '480px',
-            padding: '32px',
-            position: 'relative',
-            maxHeight: '90vh',
-            overflowY: 'auto'
-          }}>
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-lg p-6 sm:p-8 relative max-h-[90vh] overflow-y-auto text-slate-900 animate-fadeIn">
             {/* Close Button */}
             <button
-              onClick={() => { setModalOpen(false); setSuccessData(null); setError(''); }}
-              style={{
-                position: 'absolute',
-                top: '20px',
-                right: '20px',
-                background: 'none',
-                border: 'none',
-                color: 'var(--text-dim)',
-                cursor: 'pointer'
+              type="button"
+              onClick={() => {
+                setModalOpen(false);
+                setSuccessData(null);
+                setError('');
               }}
+              className="absolute top-5 right-5 text-slate-400 hover:text-slate-700 p-2 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer"
+              aria-label="Tutup modal"
             >
               <X size={20} />
             </button>
 
-            {/* Success State */}
+            {/* State Berhasil */}
             {successData ? (
-              <div style={{ textAlign: 'center', padding: '16px 0' }}>
-                <div style={{
-                  width: '56px',
-                  height: '56px',
-                  borderRadius: '50%',
-                  backgroundColor: 'rgba(16, 185, 129, 0.15)',
-                  color: '#34d399',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginBottom: '16px'
-                }}>
+              <div className="text-center py-4 space-y-4">
+                <div className="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto">
                   <CheckCircle2 size={32} />
                 </div>
-                <h3 style={{ fontSize: '1.3rem', color: '#ffffff', marginBottom: '8px' }}>
-                  Pendaftaran Berhasil!
+                <h3 className="text-xl font-black text-slate-900">
+                  Pendaftaran Kursus Berhasil!
                 </h3>
-                <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', marginBottom: '24px' }}>
+                <p className="text-sm text-slate-600 max-w-sm mx-auto leading-relaxed">
                   {successData.message}
                 </p>
 
                 {successData.paymentUrl ? (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <div className="pt-2 flex flex-col gap-2.5">
                     <a
                       href={successData.paymentUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="btn btn-primary"
-                      style={{ padding: '12px', justifyContent: 'center' }}
+                      className="w-full py-3 px-5 rounded-xl text-sm font-bold text-slate-900 bg-[#ffdf0f] hover:bg-[#eacb0d] shadow-sm transition-all flex items-center justify-center gap-2"
                     >
                       <span>Lanjut Bayar via Mayar</span>
                       <ExternalLink size={16} />
                     </a>
                     <Link
                       href="/kursus-saya"
-                      className="btn btn-outline"
-                      style={{ padding: '12px', justifyContent: 'center' }}
+                      className="w-full py-3 px-5 rounded-xl text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-all flex items-center justify-center"
                     >
-                      Ke Halaman Kursus Saya
+                      Buka Halaman Kursus Saya
                     </Link>
                   </div>
                 ) : (
-                  <Link
-                    href="/kursus-saya"
-                    className="btn btn-primary"
-                    style={{ padding: '12px', width: '100%', justifyContent: 'center' }}
-                  >
-                    Buka Kursus Saya
-                  </Link>
+                  <div className="pt-2">
+                    <Link
+                      href="/kursus-saya"
+                      className="w-full py-3 px-5 rounded-xl text-sm font-bold text-white bg-[#843bab] hover:bg-[#722f95] transition-all flex items-center justify-center"
+                    >
+                      Buka Ruang Belajar Saya
+                    </Link>
+                  </div>
                 )}
               </div>
             ) : (
-              <div>
-                <h3 style={{ fontSize: '1.3rem', color: '#ffffff', marginBottom: '6px' }}>
-                  Pendaftaran Kursus Berbayar
-                </h3>
-                <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', marginBottom: '20px' }}>
-                  Pilih metode pembayaran yang Anda inginkan.
-                </p>
+              <div className="space-y-5">
+                <div>
+                  <h3 className="text-xl font-black text-slate-900 tracking-tight">
+                    Pendaftaran Kursus Berbayar
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-1">
+                    Silakan tentukan metode pembayaran yang Anda inginkan untuk reservasi kursi.
+                  </p>
+                </div>
 
                 {error && (
-                  <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    padding: '10px 14px',
-                    borderRadius: 'var(--radius-md)',
-                    backgroundColor: 'var(--danger-bg)',
-                    border: '1px solid rgba(239, 68, 68, 0.3)',
-                    color: '#f87171',
-                    fontSize: '0.84rem',
-                    marginBottom: '16px'
-                  }}>
-                    <AlertCircle size={16} />
+                  <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
+                    <AlertCircle size={16} className="shrink-0" />
                     <span>{error}</span>
                   </div>
                 )}
 
-                {/* Amount Summary */}
-                <div style={{
-                  padding: '16px',
-                  borderRadius: 'var(--radius-md)',
-                  backgroundColor: 'rgba(255, 255, 255, 0.04)',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
-                  marginBottom: '20px',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center'
-                }}>
-                  <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Total Biaya:</span>
-                  <span style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--accent)' }}>
+                {/* Ringkasan Biaya */}
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+                  <span className="text-xs font-bold text-slate-600 uppercase tracking-wider">
+                    Total Biaya Kursus:
+                  </span>
+                  <span className="text-xl font-black text-slate-900">
                     {formatRupiah(harga)}
                   </span>
                 </div>
 
-                {/* Payment Methods */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '24px' }}>
+                {/* Opsi Metode Pembayaran */}
+                <div className="space-y-2.5">
                   <label
                     onClick={() => setMetodeBayar('qris')}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '14px',
-                      padding: '14px',
-                      borderRadius: 'var(--radius-md)',
-                      backgroundColor: metodeBayar === 'qris' ? 'rgba(59, 130, 246, 0.12)' : 'rgba(255, 255, 255, 0.02)',
-                      border: `1px solid ${metodeBayar === 'qris' ? 'var(--primary)' : 'rgba(255, 255, 255, 0.08)'}`,
-                      cursor: 'pointer'
-                    }}
+                    className={`flex items-center gap-3.5 p-3.5 rounded-2xl border cursor-pointer transition-all ${
+                      metodeBayar === 'qris'
+                        ? 'border-[#843bab] bg-purple-50/50 ring-2 ring-[#843bab]/20'
+                        : 'border-slate-200 hover:border-slate-300 bg-white'
+                    }`}
                   >
-                    <QrCode size={20} color={metodeBayar === 'qris' ? 'var(--primary)' : 'var(--text-dim)'} />
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: 600, color: '#ffffff', fontSize: '0.92rem' }}>QRIS (Gopay / OVO / Dana / BCA)</div>
-                      <div style={{ fontSize: '0.78rem', color: 'var(--text-dim)' }}>Pembayaran instan via scan barcode Mayar</div>
+                    <div className="w-9 h-9 rounded-xl bg-purple-100 text-[#843bab] flex items-center justify-center shrink-0">
+                      <QrCode size={20} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-xs font-bold text-slate-900">
+                        QRIS (GoPay / OVO / Dana / BCA / LinkAja)
+                      </div>
+                      <div className="text-[11px] text-slate-500 mt-0.5">
+                        Pembayaran instan otomatis via Mayar Payment Gateway
+                      </div>
                     </div>
                     <input
                       type="radio"
                       name="metode"
                       checked={metodeBayar === 'qris'}
                       onChange={() => setMetodeBayar('qris')}
+                      className="accent-[#843bab]"
                     />
                   </label>
 
                   <label
                     onClick={() => setMetodeBayar('va')}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '14px',
-                      padding: '14px',
-                      borderRadius: 'var(--radius-md)',
-                      backgroundColor: metodeBayar === 'va' ? 'rgba(59, 130, 246, 0.12)' : 'rgba(255, 255, 255, 0.02)',
-                      border: `1px solid ${metodeBayar === 'va' ? 'var(--primary)' : 'rgba(255, 255, 255, 0.08)'}`,
-                      cursor: 'pointer'
-                    }}
+                    className={`flex items-center gap-3.5 p-3.5 rounded-2xl border cursor-pointer transition-all ${
+                      metodeBayar === 'va'
+                        ? 'border-[#843bab] bg-purple-50/50 ring-2 ring-[#843bab]/20'
+                        : 'border-slate-200 hover:border-slate-300 bg-white'
+                    }`}
                   >
-                    <CreditCard size={20} color={metodeBayar === 'va' ? 'var(--primary)' : 'var(--text-dim)'} />
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: 600, color: '#ffffff', fontSize: '0.92rem' }}>Virtual Account Bank</div>
-                      <div style={{ fontSize: '0.78rem', color: 'var(--text-dim)' }}>BCA, Mandiri, BNI, BRI otomatis</div>
+                    <div className="w-9 h-9 rounded-xl bg-purple-100 text-[#843bab] flex items-center justify-center shrink-0">
+                      <CreditCard size={20} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-xs font-bold text-slate-900">
+                        Virtual Account Bank
+                      </div>
+                      <div className="text-[11px] text-slate-500 mt-0.5">
+                        BCA, Mandiri, BNI, BRI, Permata terkonfirmasi otomatis
+                      </div>
                     </div>
                     <input
                       type="radio"
                       name="metode"
                       checked={metodeBayar === 'va'}
                       onChange={() => setMetodeBayar('va')}
+                      className="accent-[#843bab]"
                     />
                   </label>
 
                   <label
                     onClick={() => setMetodeBayar('transfer_manual')}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '14px',
-                      padding: '14px',
-                      borderRadius: 'var(--radius-md)',
-                      backgroundColor: metodeBayar === 'transfer_manual' ? 'rgba(59, 130, 246, 0.12)' : 'rgba(255, 255, 255, 0.02)',
-                      border: `1px solid ${metodeBayar === 'transfer_manual' ? 'var(--primary)' : 'rgba(255, 255, 255, 0.08)'}`,
-                      cursor: 'pointer'
-                    }}
+                    className={`flex items-center gap-3.5 p-3.5 rounded-2xl border cursor-pointer transition-all ${
+                      metodeBayar === 'transfer_manual'
+                        ? 'border-[#843bab] bg-purple-50/50 ring-2 ring-[#843bab]/20'
+                        : 'border-slate-200 hover:border-slate-300 bg-white'
+                    }`}
                   >
-                    <Building size={20} color={metodeBayar === 'transfer_manual' ? 'var(--primary)' : 'var(--text-dim)'} />
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: 600, color: '#ffffff', fontSize: '0.92rem' }}>Transfer Bank Manual</div>
-                      <div style={{ fontSize: '0.78rem', color: 'var(--text-dim)' }}>Konfirmasi manual oleh staf admin Pijar Aksara</div>
+                    <div className="w-9 h-9 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center shrink-0">
+                      <Building size={20} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-xs font-bold text-slate-900">
+                        Transfer Bank Manual
+                      </div>
+                      <div className="text-[11px] text-slate-500 mt-0.5">
+                        Verifikasi slip transfer oleh admin LKP Pijar Aksara
+                      </div>
                     </div>
                     <input
                       type="radio"
                       name="metode"
                       checked={metodeBayar === 'transfer_manual'}
                       onChange={() => setMetodeBayar('transfer_manual')}
+                      className="accent-[#843bab]"
                     />
                   </label>
                 </div>
 
-                {/* BR-07 Notice */}
-                <div style={{
-                  padding: '12px 14px',
-                  borderRadius: 'var(--radius-md)',
-                  backgroundColor: 'rgba(245, 158, 11, 0.08)',
-                  border: '1px solid rgba(245, 158, 11, 0.2)',
-                  fontSize: '0.8rem',
-                  color: '#fbbf24',
-                  marginBottom: '20px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px'
-                }}>
-                  <Clock size={16} />
-                  <span>Sesuai <strong>BR-07</strong>: Pendaftaran berlaku selama <strong>24 jam</strong>. Jika tidak dibayar sebelum batas waktu, pendaftaran kedaluwarsa dan kursi kembali terbuka.</span>
+                {/* BR-07 Notice: Batas 24 Jam */}
+                <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-[11px] text-amber-900 flex items-start gap-2">
+                  <Clock size={15} className="text-amber-700 shrink-0 mt-0.5" />
+                  <div>
+                    Sesuai ketentuan <strong>BR-07</strong>: Pendaftaran berlaku selama <strong>24 jam</strong>. Jika tidak diselesaikan sebelum batas waktu, reservasi kursi dibatalkan otomatis.
+                  </div>
                 </div>
 
                 {/* Submit Action */}
                 <button
+                  type="button"
                   onClick={() => handleEnroll(metodeBayar)}
                   disabled={loading}
-                  className="btn btn-primary"
-                  style={{ width: '100%', padding: '14px', fontSize: '1rem', justifyContent: 'center' }}
+                  className="w-full py-3.5 px-5 rounded-xl text-sm font-black text-slate-900 bg-[#ffdf0f] hover:bg-[#eacb0d] shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                 >
-                  {loading ? <span>Memproses Reservasi Kursi...</span> : (
+                  {loading ? (
+                    <span>Memproses Reservasi Kursi...</span>
+                  ) : (
                     <>
                       <span>Konfirmasi & Lanjut Bayar</span>
-                      <ArrowRight size={18} />
+                      <ArrowRight size={16} />
                     </>
                   )}
                 </button>
