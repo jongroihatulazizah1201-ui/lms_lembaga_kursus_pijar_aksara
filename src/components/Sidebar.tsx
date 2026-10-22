@@ -21,6 +21,7 @@ import {
   LogOut,
   LogIn,
   UserPlus,
+  User,
   Menu,
   X
 } from 'lucide-react';
@@ -33,6 +34,8 @@ interface SidebarProps {
   profile: {
     nama_lengkap: string;
     peran: 'peserta' | 'instruktur' | 'admin';
+    no_hp?: string | null;
+    avatar_url?: string | null;
   } | null;
 }
 
@@ -106,6 +109,11 @@ export default function Sidebar({ user, profile }: SidebarProps) {
             href: '/instruktur/nilai',
             icon: ClipboardCheck
           },
+          {
+            label: 'Profil Admin',
+            href: '/profil',
+            icon: User
+          },
         ],
       },
       {
@@ -140,6 +148,11 @@ export default function Sidebar({ user, profile }: SidebarProps) {
             badge: 'Nilai',
             badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-200'
           },
+          {
+            label: 'Profil Instruktur',
+            href: '/profil',
+            icon: User
+          },
         ],
       },
       {
@@ -161,6 +174,11 @@ export default function Sidebar({ user, profile }: SidebarProps) {
             icon: GraduationCap,
             badge: 'Aktif',
             badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-200'
+          },
+          {
+            label: 'Profil Saya',
+            href: '/profil',
+            icon: User
           },
         ],
       },
@@ -355,28 +373,45 @@ export default function Sidebar({ user, profile }: SidebarProps) {
       <div className="p-3 border-t border-slate-200 bg-white">
         {user && profile ? (
           <div className="space-y-2">
-            <div className="flex items-center gap-2.5 p-2 rounded-xl bg-slate-50 border border-slate-200/80">
-              <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-black text-white shrink-0 shadow-2xs ${
-                  isAdmin
-                    ? 'bg-[#843bab]'
-                    : isInstruktur
-                    ? 'bg-[#843bab]'
-                    : 'bg-emerald-600'
-                }`}
-              >
-                {profile.nama_lengkap.charAt(0).toUpperCase()}
-              </div>
+            <Link
+              href="/profil"
+              onClick={closeMobile}
+              className="flex items-center gap-2.5 p-2 rounded-xl bg-slate-50 hover:bg-purple-50/70 border border-slate-200/80 hover:border-purple-200 transition-all group"
+              title="Kelola Profil Saya"
+            >
+              {profile.avatar_url ? (
+                <img
+                  src={profile.avatar_url}
+                  alt={profile.nama_lengkap}
+                  className="w-8 h-8 rounded-full object-cover shrink-0 border border-slate-200 shadow-2xs"
+                />
+              ) : (
+                <div
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-black text-white shrink-0 shadow-2xs ${
+                    isAdmin
+                      ? 'bg-[#843bab]'
+                      : isInstruktur
+                      ? 'bg-[#843bab]'
+                      : 'bg-emerald-600'
+                  }`}
+                >
+                  {profile.nama_lengkap.charAt(0).toUpperCase()}
+                </div>
+              )}
 
               <div className="min-w-0 flex-1">
-                <div className="text-xs font-bold text-slate-900 truncate">
+                <div className="text-xs font-bold text-slate-900 group-hover:text-[#843bab] transition-colors truncate">
                   {profile.nama_lengkap}
                 </div>
                 <div className="text-[10px] text-slate-400 truncate">
                   {user.email}
                 </div>
               </div>
-            </div>
+
+              <span className="text-[10px] font-bold text-[#843bab] bg-purple-50 px-1.5 py-0.5 rounded border border-purple-100 shrink-0">
+                Ubah
+              </span>
+            </Link>
 
             {/* Logout Action */}
             <button

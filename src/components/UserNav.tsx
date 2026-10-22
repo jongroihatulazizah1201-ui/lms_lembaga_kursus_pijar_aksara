@@ -14,6 +14,7 @@ interface Props {
   profile: {
     nama_lengkap: string;
     peran: 'peserta' | 'instruktur' | 'admin';
+    avatar_url?: string | null;
   };
 }
 
@@ -89,17 +90,29 @@ export default function UserNav({ user, profile }: Props) {
       </nav>
 
       {/* User Info Capsule */}
-      <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-50 border border-slate-200 shadow-sm">
-        <div className="w-7 h-7 rounded-full bg-[#843bab] text-white flex items-center justify-center text-xs font-bold shadow-sm">
-          {profile.nama_lengkap.charAt(0).toUpperCase()}
-        </div>
+      <Link
+        href="/profil"
+        className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-50 hover:bg-slate-100 border border-slate-200 shadow-sm transition-colors cursor-pointer"
+        title="Lihat & Kelola Profil Saya"
+      >
+        {profile.avatar_url ? (
+          <img
+            src={profile.avatar_url}
+            alt={profile.nama_lengkap}
+            className="w-7 h-7 rounded-full object-cover shrink-0 border border-slate-200 shadow-2xs"
+          />
+        ) : (
+          <div className="w-7 h-7 rounded-full bg-[#843bab] text-white flex items-center justify-center text-xs font-bold shadow-sm shrink-0">
+            {profile.nama_lengkap.charAt(0).toUpperCase()}
+          </div>
+        )}
         <span className="text-xs font-semibold text-slate-800 max-w-[120px] truncate">
           {profile.nama_lengkap}
         </span>
         <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase border ${roleBadgeClass}`}>
           {profile.peran}
         </span>
-      </div>
+      </Link>
 
       {/* Logout Action */}
       <button

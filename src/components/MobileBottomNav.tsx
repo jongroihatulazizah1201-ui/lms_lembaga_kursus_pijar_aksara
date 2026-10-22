@@ -121,12 +121,14 @@ export default function MobileBottomNav({ user, profile }: Props) {
         {/* Tab 4: Profil / Akun Pengguna */}
         {user ? (
           <Link
-            href={isAdmin ? '/admin/dashboard' : isInstruktur ? '/instruktur' : '/kursus-saya'}
-            className="flex flex-col items-center justify-center h-full min-h-[48px] py-1 transition-colors text-slate-500 hover:text-slate-900"
+            href="/profil"
+            className={`flex flex-col items-center justify-center h-full min-h-[48px] py-1 transition-colors ${
+              pathname === '/profil' ? 'text-[#843bab] font-semibold' : 'text-slate-500 hover:text-slate-900'
+            }`}
           >
-            <UserCircle size={20} />
+            <UserCircle size={20} className={pathname === '/profil' ? 'stroke-[2.5]' : ''} />
             <span className="text-[11px] mt-1 truncate max-w-[64px]">
-              {profile?.nama_lengkap?.split(' ')[0] || 'Akun'}
+              {profile?.nama_lengkap?.split(' ')[0] || 'Profil'}
             </span>
           </Link>
         ) : (
