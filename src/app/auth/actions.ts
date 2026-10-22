@@ -51,18 +51,52 @@ export async function loginAction(formData: FormData) {
 }
 
 export async function registerAction(formData: FormData) {
-  const namaLengkap = formData.get('nama_lengkap') as string;
-  const email = formData.get('email') as string;
-  const nomorHp = formData.get('nomor_hp') as string;
-  const password = formData.get('password') as string;
+  const namaLengkap = (formData.get('nama_lengkap') as string || '').trim();
+  const email = (formData.get('email') as string || '').trim().toLowerCase();
+  const rawNomorHp = (formData.get('nomor_hp') as string || '').trim();
+  const password = formData.get('password') as string || '';
   const redirectTo = (formData.get('redirect') as string) || '';
 
-  if (!namaLengkap || !email || !password) {
-    return { error: 'Nama lengkap, email, dan kata sandi wajib diisi.' };
+  // 1. Validasi Kelengkapan Field
+  if (!namaLengkap || !email || !rawNomorHp || !password) {
+    return { error: 'Nama lengkap, email, nomor HP, dan kata sandi wajib diisi.' };
   }
 
-  if (password.length < 6) {
-    return { error: 'Kata sandi minimal 6 karakter.' };
+  // 2. Validasi Nama Lengkap (3-100 karakter)
+  if (namaLengkap.length < 3 || namaLengkap.length > 100) {
+    return { error: 'Nama lengkap harus antara 3 hingga 100 karakter.' };
+  }
+
+  // 3. Validasi Format Email
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return { error: 'Format alamat email tidak valid.' };
+  }
+
+  // 4. Validasi & Normalisasi Nomor HP (Standar Indonesia 08xxxxxxxxxx, 10-13 digit)
+  let cleanHp = rawNomorHp.replace(/[^0-9]/g, '');
+  if (cleanHp.startsWith('62')) {
+    cleanHp = '0' + cleanHp.slice(2);
+  }
+  if (!/^08[0-9]{8,11}$/.test(cleanHp)) {
+    return { error: 'Format nomor HP tidak valid. Gunakan format 08xxxxxxxxxx (10-13 digit).' };
+  }
+
+  // 5. Validasi Kata Sandi Kuat (Strong Password)
+  if (password.length < 8) {
+    return { error: 'Kata sandi minimal 8 karakter.' };
+  }
+  if (!/[A-Z]/.test(password)) {
+    return { error: 'Kata sandi wajib mengandung minimal 1 huruf besar (A-Z).' };
+  }
+  if (!/[a-z]/.test(password)) {
+    return { error: 'Kata sandi wajib mengandung minimal 1 huruf kecil (a-z).' };
+  }
+  if (!/[0-9]/.test(password)) {
+    return { error: 'Kata sandi wajib mengandung minimal 1 angka (0-9).' };
+  }
+  if (!/[!@#$%^&*(),.?":{}|<>_+\-=\[\]\\\/~`']/.test(password)) {
+    return { error: 'Kata sandi wajib mengandung minimal 1 karakter simbol / tanda khusus (!@#$%^&*).' };
   }
 
   const supabase = await createClient();
@@ -73,7 +107,7 @@ export async function registerAction(formData: FormData) {
     options: {
       data: {
         nama_lengkap: namaLengkap,
-        nomor_hp: nomorHp || null,
+        no_hp: cleanHp,
         peran: 'peserta', // Sesuai PRD Bagian 3: Akun baru selalu berperan Peserta
       },
     },
@@ -83,12 +117,12 @@ export async function registerAction(formData: FormData) {
     return { error: error?.message || 'Gagal mendaftar akun.' };
   }
 
-  // Pastikan profile terisi (trigger handle_new_user atau upsert)
+  // Pastikan profile terisi di tabel profiles
   await supabase.from('profiles').upsert({
     id: data.user.id,
     nama_lengkap: namaLengkap,
     email: email,
-    nomor_hp: nomorHp || null,
+    no_hp: cleanHp,
     peran: 'peserta',
     aktif: true,
   });
