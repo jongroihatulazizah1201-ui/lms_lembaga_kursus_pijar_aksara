@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
 import Logo from './Logo';
+import LogoutConfirmModal from './LogoutConfirmModal';
 import { logoutAction } from '@/app/auth/actions';
 import {
   Home,
@@ -55,6 +56,7 @@ export default function Sidebar({ user, profile }: SidebarProps) {
   const currentTab = searchParams.get('tab');
 
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const isPeserta = profile?.peran === 'peserta';
   const isInstruktur = profile?.peran === 'instruktur';
@@ -377,15 +379,14 @@ export default function Sidebar({ user, profile }: SidebarProps) {
             </div>
 
             {/* Logout Action */}
-            <form action={logoutAction}>
-              <button
-                type="submit"
-                className="w-full flex items-center justify-center gap-2 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-red-700 hover:bg-red-50 rounded-xl border border-slate-200 hover:border-red-200 transition-colors min-h-[36px] cursor-pointer"
-              >
-                <LogOut size={13} />
-                <span>Keluar dari Akun</span>
-              </button>
-            </form>
+            <button
+              type="button"
+              onClick={() => setShowLogoutModal(true)}
+              className="w-full flex items-center justify-center gap-2 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-red-700 hover:bg-red-50 rounded-xl border border-slate-200 hover:border-red-200 transition-colors min-h-[36px] cursor-pointer"
+            >
+              <LogOut size={13} />
+              <span>Keluar dari Akun</span>
+            </button>
           </div>
         ) : (
           <div className="space-y-2">
@@ -469,6 +470,13 @@ export default function Sidebar({ user, profile }: SidebarProps) {
           </div>
         </div>
       )}
+
+      {/* Confirmation Modal when logging out */}
+      <LogoutConfirmModal
+        isOpen={showLogoutModal}
+        onClose={() => setShowLogoutModal(false)}
+        userName={profile?.nama_lengkap}
+      />
     </>
   );
 }

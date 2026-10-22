@@ -1,6 +1,8 @@
 'use client';
 
+import React, { useState } from 'react';
 import Link from 'next/link';
+import LogoutConfirmModal from './LogoutConfirmModal';
 import { logoutAction } from '@/app/auth/actions';
 import { LogOut, Award, Shield, LayoutDashboard, PenTool } from 'lucide-react';
 
@@ -16,6 +18,7 @@ interface Props {
 }
 
 export default function UserNav({ user, profile }: Props) {
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const isPeserta = profile.peran === 'peserta';
   const isInstruktur = profile.peran === 'instruktur';
   const isAdmin = profile.peran === 'admin';
@@ -99,15 +102,22 @@ export default function UserNav({ user, profile }: Props) {
       </div>
 
       {/* Logout Action */}
-      <form action={logoutAction}>
-        <button
-          type="submit"
-          className="p-2 rounded-xl text-slate-500 hover:text-red-700 hover:bg-red-50 border border-slate-200 hover:border-red-200 transition-all"
-          title="Keluar dari akun"
-        >
-          <LogOut size={16} />
-        </button>
-      </form>
+      <button
+        type="button"
+        onClick={() => setShowLogoutModal(true)}
+        className="p-2 rounded-xl text-slate-500 hover:text-red-700 hover:bg-red-50 border border-slate-200 hover:border-red-200 transition-all cursor-pointer"
+        title="Keluar dari akun"
+        aria-label="Keluar dari akun"
+      >
+        <LogOut size={16} />
+      </button>
+
+      {/* Confirmation Modal when logging out */}
+      <LogoutConfirmModal
+        isOpen={showLogoutModal}
+        onClose={() => setShowLogoutModal(false)}
+        userName={profile.nama_lengkap}
+      />
     </div>
   );
 }
