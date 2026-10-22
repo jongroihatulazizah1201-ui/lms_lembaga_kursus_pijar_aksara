@@ -95,6 +95,7 @@ export default function Sidebar({ user, profile }: SidebarProps) {
         { label: 'Kelola Akun & Peran', href: '/admin?tab=pengguna', icon: Users },
         { label: 'Audit Log (BR-12)', href: '/admin?tab=audit', icon: FileText },
         { label: 'Statistik Lembaga', href: '/admin/dashboard', icon: BarChart3 },
+        { label: 'Peserta & Nilai Kuis', href: '/instruktur/nilai', icon: ClipboardCheck },
       ],
     },
   ];

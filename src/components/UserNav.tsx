@@ -74,6 +74,13 @@ export default function UserNav({ user, profile }: Props) {
               <LayoutDashboard size={15} />
               <span>Dashboard</span>
             </Link>
+            <Link
+              href="/instruktur/nilai"
+              className="flex items-center gap-1.5 text-slate-600 hover:text-[#843bab] transition-colors"
+            >
+              <Award size={15} className="text-[#843bab]" />
+              <span>Peserta & Nilai</span>
+            </Link>
           </>
         )}
       </nav>
