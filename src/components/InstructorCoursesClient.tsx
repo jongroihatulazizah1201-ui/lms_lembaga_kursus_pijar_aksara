@@ -86,9 +86,121 @@ export default function InstructorCoursesClient({ initialCourses, profile }: Pro
   return (
     <div className="min-h-screen bg-slate-50/50 pb-24 text-slate-900">
       {/* =========================================================
+          STICKY SEARCH & FAST FILTER TOOLBAR (Berada di Atas & Stay Saat Di-scroll)
+         ========================================================= */}
+      <section
+        aria-label="Pencarian dan Filter Kursus Instruktur"
+        className="sticky top-[57px] lg:top-0 z-20 bg-white/95 backdrop-blur-md pt-3.5 pb-3 border-b border-slate-200/80 shadow-xs transition-all"
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+            {/* Search Box: Cari judul atau kategori... */}
+            <div className="relative flex-1 w-full max-w-md">
+              <Search
+                size={18}
+                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
+              />
+              <input
+                type="text"
+                placeholder="Cari judul atau kategori..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-9 py-2.5 rounded-xl text-xs sm:text-sm bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#843bab]/30 focus:border-[#843bab] focus:bg-white transition-all shadow-2xs"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 text-xs font-bold p-1 cursor-pointer"
+                  title="Hapus pencarian"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+
+            {/* Quick Status Tabs */}
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 scrollbar-none shrink-0">
+              <button
+                type="button"
+                onClick={() => setActiveTab('semua')}
+                className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+                  activeTab === 'semua'
+                    ? 'bg-[#843bab] text-white shadow-xs'
+                    : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-200 hover:bg-slate-50'
+                }`}
+              >
+                Semua ({totalCount})
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('draf')}
+                className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+                  activeTab === 'draf'
+                    ? 'bg-slate-800 text-white shadow-xs'
+                    : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-200 hover:bg-slate-50'
+                }`}
+              >
+                Draf ({drafCount})
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('diajukan')}
+                className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+                  activeTab === 'diajukan'
+                    ? 'bg-amber-500 text-slate-950 shadow-xs'
+                    : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-200 hover:bg-slate-50'
+                }`}
+              >
+                Sedang Ditinjau ({diajukanCount})
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('terbit')}
+                className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+                  activeTab === 'terbit'
+                    ? 'bg-emerald-600 text-white shadow-xs'
+                    : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-200 hover:bg-slate-50'
+                }`}
+              >
+                Terbit ({terbitCount})
+              </button>
+              {revisiCount > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('revisi')}
+                  className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+                    activeTab === 'revisi'
+                      ? 'bg-red-600 text-white shadow-xs'
+                      : 'bg-white text-red-700 hover:text-red-900 border border-red-200 hover:bg-red-50'
+                  }`}
+                >
+                  Catatan Revisi ({revisiCount})
+                </button>
+              )}
+
+              {(searchQuery || activeTab !== 'semua') && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveTab('semua');
+                    setSearchQuery('');
+                  }}
+                  className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-500 hover:text-slate-900 bg-white border border-slate-200 hover:bg-slate-100 transition-colors shrink-0 cursor-pointer"
+                  title="Reset Filter & Pencarian"
+                >
+                  Reset
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================
           1. HEADER BANNER: Profil Instruktur & Quick Stats
          ========================================================= */}
-      <section className="bg-gradient-to-b from-purple-50/70 via-white to-slate-50/50 border-b border-slate-200 py-10">
+      <section className="bg-gradient-to-b from-purple-50/70 via-white to-slate-50/50 border-b border-slate-200 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6">
             <div className="space-y-2">
@@ -196,83 +308,33 @@ export default function InstructorCoursesClient({ initialCourses, profile }: Pro
       </section>
 
       {/* =========================================================
-          2. FILTER TABS & DAFTAR KURSUS
+          2. DAFTAR KURSUS INSTRUKTUR
          ========================================================= */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-          {/* Tab Buttons */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-none">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+        {/* Info Filter Aktif */}
+        {(searchQuery || activeTab !== 'semua') && (
+          <div className="flex items-center justify-between text-xs text-slate-500 mb-6 pb-2.5 border-b border-slate-200/60">
+            <div>
+              Menampilkan <span className="font-bold text-slate-800">{filteredCourses.length}</span> kursus
+              {searchQuery && (
+                <> untuk pencarian "<span className="font-semibold text-slate-800">{searchQuery}</span>"</>
+              )}
+              {activeTab !== 'semua' && (
+                <> pada filter <span className="font-semibold text-[#843bab] capitalize">{activeTab}</span></>
+              )}
+            </div>
             <button
               type="button"
-              onClick={() => setActiveTab('semua')}
-              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all cursor-pointer ${
-                activeTab === 'semua'
-                  ? 'bg-[#843bab] text-white shadow-xs'
-                  : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-200'
-              }`}
+              onClick={() => {
+                setActiveTab('semua');
+                setSearchQuery('');
+              }}
+              className="text-[#843bab] hover:underline font-bold cursor-pointer"
             >
-              Semua ({totalCount})
+              Hapus Filter
             </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab('draf')}
-              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all cursor-pointer ${
-                activeTab === 'draf'
-                  ? 'bg-slate-800 text-white shadow-xs'
-                  : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-200'
-              }`}
-            >
-              Draf ({drafCount})
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab('diajukan')}
-              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all cursor-pointer ${
-                activeTab === 'diajukan'
-                  ? 'bg-amber-500 text-slate-950 shadow-xs'
-                  : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-200'
-              }`}
-            >
-              Sedang Ditinjau ({diajukanCount})
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab('terbit')}
-              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all cursor-pointer ${
-                activeTab === 'terbit'
-                  ? 'bg-emerald-600 text-white shadow-xs'
-                  : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-200'
-              }`}
-            >
-              Terbit ({terbitCount})
-            </button>
-            {revisiCount > 0 && (
-              <button
-                type="button"
-                onClick={() => setActiveTab('revisi')}
-                className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all cursor-pointer ${
-                  activeTab === 'revisi'
-                    ? 'bg-red-600 text-white shadow-xs'
-                    : 'bg-white text-red-700 hover:text-red-900 border border-red-200'
-                }`}
-              >
-                Catatan Revisi ({revisiCount})
-              </button>
-            )}
           </div>
-
-          {/* Search Box */}
-          <div className="relative min-w-[240px] sm:w-72">
-            <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input
-              type="text"
-              placeholder="Cari judul atau kategori..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-[#843bab] focus:ring-1 focus:ring-[#843bab] shadow-2xs"
-            />
-          </div>
-        </div>
+        )}
 
         {/* =========================================================
             3. GRID KURSUS / EMPTY STATE
