@@ -293,8 +293,8 @@ export default function AdminRegistrations({ registrations }: Props) {
         </div>
       </div>
 
-      {/* 2. Filter & Search Toolbar */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+      {/* 2. Filter & Search Toolbar (Sticky saat di-scroll) */}
+      <div className="sticky top-[60px] lg:top-3 z-20 bg-white/95 backdrop-blur-md rounded-2xl border border-slate-200/90 p-4 shadow-sm hover:shadow-md flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 transition-all">
         {/* Search Box */}
         <div className="relative flex-1 min-w-[280px]">
           <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
