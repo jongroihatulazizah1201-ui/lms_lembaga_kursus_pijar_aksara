@@ -140,27 +140,31 @@ export default function RegisterForm({ redirectParam = '' }: Props) {
             </div>
           </div>
 
-          {/* Konten Teks Bersih (Tanpa Stiker / Pop-up Blur) */}
-          <div className="relative z-10 my-6">
-            <div className="text-xs font-black text-[#ffdf0f] uppercase tracking-widest mb-2.5">
+          {/* Konten Teks Bersih dengan Proporsi Pas */}
+          <div className="relative z-10 mt-6 mb-3 sm:mt-8 sm:mb-4">
+            <div className="text-xs font-black text-[#ffdf0f] uppercase tracking-widest mb-3">
               Pendaftaran Peserta Didik
             </div>
-            <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight">
-              Mulai Perjalanan Belajarmu Hari Ini.
+            <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-snug">
+              Tingkatkan Keahlian <span className="text-[#ffdf0f]">Anda</span> untuk Masa Depan Gemilang.
             </h2>
             <p className="text-xs sm:text-sm text-purple-100/90 mt-3 leading-relaxed">
               Daftarkan dirimu untuk mengakses kurikulum kursus vokasi berkualitas, video pembelajaran terstruktur, kuis kompetensi, dan sertifikat resmi berstandar industri.
             </p>
           </div>
 
-          {/* Ilustrasi Karakter Pembelajaran Pijar Aksara */}
-          <div className="relative z-10 mt-auto pt-4 flex justify-center items-end">
-            <div className="relative w-full max-w-[280px] h-[300px] sm:h-[340px] lg:h-[360px]">
+          {/* Ilustrasi Karakter Pembelajaran Pijar Aksara dengan Bayangan Realistis */}
+          <div className="relative z-10 mt-auto pt-4 flex flex-col items-center justify-end w-full">
+            <div className="relative w-full max-w-[340px] sm:max-w-[380px] h-[360px] sm:h-[420px] lg:h-[450px] flex items-end justify-center">
+              {/* Efek Bayangan Lantai Realistis (Ground Contact Shadow) */}
+              <div className="absolute bottom-1 w-4/5 max-w-[280px] h-6 bg-black/40 rounded-full blur-md pointer-events-none" />
+              <div className="absolute bottom-2 w-3/5 max-w-[200px] h-3 bg-black/60 rounded-full blur-xs pointer-events-none" />
+              
               <Image
                 src="/login-character.png"
                 alt="Karakter Pembelajaran Pijar Aksara"
                 fill
-                className="object-contain object-bottom hover:scale-105 transition-transform duration-300 drop-shadow-2xl"
+                className="object-contain object-bottom hover:scale-[1.03] transition-transform duration-300 drop-shadow-[0_20px_25px_rgba(0,0,0,0.45)]"
                 priority
               />
             </div>
