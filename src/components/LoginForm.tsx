@@ -103,15 +103,15 @@ export default function LoginForm({ redirectParam = '', errorParam = '' }: Props
             </p>
           </div>
 
-          {/* Ilustrasi Vektor Belajar Asli (Bukan AI 3D) */}
-          <div className="relative z-10 mt-2 flex justify-center items-center">
-            <div className="w-full max-w-[340px] bg-white/95 rounded-2xl p-4 sm:p-5 shadow-xl border border-white/40 flex items-center justify-center hover:scale-[1.02] transition-transform duration-300">
+          {/* Ilustrasi Vektor Isometrik Edukasi Online (Background Dihapus) */}
+          <div className="relative z-10 mt-3 flex justify-center items-center">
+            <div className="relative w-full max-w-[340px] aspect-square flex items-center justify-center hover:scale-105 transition-transform duration-500">
               <Image
-                src="/auth-illustration.svg"
-                alt="Ilustrasi Pembelajaran Vokasi Pijar Aksara"
-                width={320}
-                height={230}
-                className="w-full h-auto object-contain"
+                src="/auth-isometric.png"
+                alt="Ilustrasi Pembelajaran Vokasi Online Pijar Aksara"
+                width={380}
+                height={380}
+                className="w-full h-auto object-contain drop-shadow-2xl"
                 priority
               />
             </div>
