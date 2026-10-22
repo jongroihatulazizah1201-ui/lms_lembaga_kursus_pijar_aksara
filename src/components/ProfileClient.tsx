@@ -19,7 +19,6 @@ import {
   Save,
   ArrowLeft,
   GraduationCap,
-  Sparkles,
 } from 'lucide-react';
 
 interface ProfileData {
@@ -162,7 +161,7 @@ export default function ProfileClient({ profile }: Props) {
       label: 'Peserta Pelatihan',
       color: 'bg-emerald-100 text-emerald-800 border-emerald-200',
       description: 'Mengikuti kelas kursus vokasi, mengerjakan kuis evaluasi berkala, dan mengunduh sertifikat kelulusan.',
-      icon: Sparkles,
+      icon: User,
     },
   }[profile.peran];
 
