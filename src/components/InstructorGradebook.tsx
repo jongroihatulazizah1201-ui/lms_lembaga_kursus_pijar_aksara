@@ -21,7 +21,6 @@ import {
   Eye,
   X,
   ExternalLink,
-  ShieldCheck,
   BookOpen,
   TrendingUp,
   Copy,
@@ -294,38 +293,7 @@ export default function InstructorGradebook({
          ========================================================================= */}
       <section className="bg-gradient-to-b from-purple-50/70 via-white to-slate-50/50 border-b border-slate-200 pt-8 pb-10 print:hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Breadcrumb & Akses Guard */}
-          <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-            <div className="flex items-center gap-2 text-xs font-medium text-slate-500">
-              <Link href="/" className="hover:text-[#843bab] transition-colors">
-                Beranda
-              </Link>
-              <span>/</span>
-              <Link
-                href={currentUser.peran === 'admin' ? '/admin' : '/instruktur'}
-                className="hover:text-[#843bab] transition-colors"
-              >
-                {currentUser.peran === 'admin' ? 'Panel Admin' : 'Kelola Kursus'}
-              </Link>
-              <span>/</span>
-              <span className="text-slate-800 font-semibold">Peserta & Nilai</span>
-            </div>
 
-            {/* Role Privilege Indicator */}
-            <div className="flex items-center gap-2">
-              {currentUser.peran === 'admin' ? (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-purple-50 text-[#843bab] border border-purple-200 shadow-2xs">
-                  <ShieldCheck size={13} className="text-[#843bab]" />
-                  Mode Administrator (Semua Kursus)
-                </span>
-              ) : (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-purple-50 text-[#843bab] border border-purple-200 shadow-2xs">
-                  <ShieldCheck size={13} className="text-[#843bab]" />
-                  Instruktur Pemilik (Akses Terproteksi)
-                </span>
-              )}
-            </div>
-          </div>
 
           {/* Judul & Kontrol Kursus */}
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
