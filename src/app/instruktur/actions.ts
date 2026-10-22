@@ -29,16 +29,16 @@ export async function createKursusAction(formData: {
     .single();
 
   if (!profile || (profile.peran !== 'instruktur' && profile.peran !== 'admin')) {
-    return { error: 'Hanya instruktur atau admin yang berhak membuat kursus (BR-02).' };
+    return { error: 'Hanya instruktur atau admin yang berhak membuat kursus.' };
   }
 
   // Validasi BR-03
   if (formData.harga !== 0 && (formData.harga < 50000 || formData.harga > 5000000)) {
-    return { error: 'Harga kursus harus Rp0 (gratis) atau antara Rp50.000 hingga Rp5.000.000 (BR-03).' };
+    return { error: 'Harga kursus harus Rp0 (gratis) atau antara Rp50.000 hingga Rp5.000.000.' };
   }
 
   if (formData.kuota < 1 || formData.kuota > 100) {
-    return { error: 'Kuota peserta harus antara 1 sampai 100 orang (BR-03).' };
+    return { error: 'Kuota peserta harus antara 1 sampai 100 orang.' };
   }
 
   const { data, error } = await supabase

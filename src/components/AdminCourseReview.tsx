@@ -116,7 +116,7 @@ export default function AdminCourseReview({ courses }: Props) {
     } else {
       setFeedbackMsg({
         type: 'success',
-        text: `Kursus "${course.judul}" berhasil diterbitkan ke katalog publik (BR-02). Peserta kini dapat mendaftar!`
+        text: `Kursus "${course.judul}" berhasil diterbitkan ke katalog publik. Peserta kini dapat mendaftar!`
       });
       router.refresh();
     }
@@ -124,7 +124,7 @@ export default function AdminCourseReview({ courses }: Props) {
 
   // Action: Tutup Kursus (terbit -> ditutup, BR-02)
   const handleTutup = async (course: CourseItem) => {
-    if (!confirm(`Tutup kursus "${course.judul}"? Kursus akan disembunyikan dari katalog publik dan menolak pendaftaran baru (BR-02). Peserta aktif tetap dapat belajar.`)) return;
+    if (!confirm(`Tutup kursus "${course.judul}"? Kursus akan disembunyikan dari katalog publik dan menolak pendaftaran baru. Peserta aktif tetap dapat belajar.`)) return;
 
     setLoadingId(course.id);
     setFeedbackMsg(null);
@@ -136,7 +136,7 @@ export default function AdminCourseReview({ courses }: Props) {
     } else {
       setFeedbackMsg({
         type: 'success',
-        text: `Kursus "${course.judul}" berhasil ditutup dari katalog publik (BR-02).`
+        text: `Kursus "${course.judul}" berhasil ditutup dari katalog publik.`
       });
       router.refresh();
     }
@@ -156,7 +156,7 @@ export default function AdminCourseReview({ courses }: Props) {
     } else {
       setFeedbackMsg({
         type: 'success',
-        text: `Kursus "${course.judul}" berhasil dibuka kembali di katalog publik (BR-02)!`
+        text: `Kursus "${course.judul}" berhasil dibuka kembali di katalog publik!`
       });
       router.refresh();
     }
@@ -167,7 +167,7 @@ export default function AdminCourseReview({ courses }: Props) {
     if (!quotaModalCourse) return;
 
     if (isNaN(newQuotaInput) || newQuotaInput < 1 || newQuotaInput > 100) {
-      setQuotaError('Kuota harus antara 1 sampai 100 peserta (BR-03).');
+      setQuotaError('Kuota harus antara 1 sampai 100 peserta.');
       return;
     }
 
@@ -181,7 +181,7 @@ export default function AdminCourseReview({ courses }: Props) {
     } else {
       setFeedbackMsg({
         type: 'success',
-        text: `Kuota kursus "${quotaModalCourse.judul}" berhasil diubah menjadi ${newQuotaInput} kursi (BR-06).`
+        text: `Kuota kursus "${quotaModalCourse.judul}" berhasil diubah menjadi ${newQuotaInput} kursi.`
       });
       setQuotaModalCourse(null);
       router.refresh();
@@ -193,7 +193,7 @@ export default function AdminCourseReview({ courses }: Props) {
     if (!returnModalCourse) return;
 
     if (returnNote.trim().length < 10) {
-      setNoteError('Catatan pengembalian wajib minimal 10 karakter sesuai aturan BR-02.');
+      setNoteError('Catatan pengembalian wajib minimal 10 karakter sesuai ketentuan sistem.');
       return;
     }
 
@@ -209,7 +209,7 @@ export default function AdminCourseReview({ courses }: Props) {
       setReturnNote('');
       setFeedbackMsg({
         type: 'success',
-        text: `Kursus "${returnModalCourse.judul}" berhasil dikembalikan ke status draf dengan catatan revisi untuk instruktur (BR-02).`
+        text: `Kursus "${returnModalCourse.judul}" berhasil dikembalikan ke status draf dengan catatan revisi untuk instruktur.`
       });
       router.refresh();
     }
@@ -359,7 +359,7 @@ export default function AdminCourseReview({ courses }: Props) {
                   <div className="bg-amber-50/70 border border-amber-200 rounded-xl p-3.5 text-xs text-slate-700">
                     <div className="flex items-center gap-1.5 font-bold text-amber-900 mb-0.5">
                       <RotateCcw size={14} className="text-amber-700 shrink-0" />
-                      <span>Catatan Revisi Terakhir (BR-02):</span>
+                      <span>Catatan Revisi Terakhir:</span>
                     </div>
                     <p className="italic pl-5 leading-relaxed">&ldquo;{c.catatan_tinjauan}&rdquo;</p>
                   </div>
@@ -380,7 +380,7 @@ export default function AdminCourseReview({ courses }: Props) {
 
                   {/* BR-02 Role-based Transitions */}
                   <div className="flex items-center gap-2.5 flex-wrap">
-                    {/* Status: ditinjau -> Aksi Admin: Terbitkan ATAU Kembalikan ke Draf (BR-02) */}
+                    {/* Status: ditinjau -> Aksi Admin: Terbitkan ATAU Kembalikan ke Draf */}
                     {c.status === 'ditinjau' && (
                       <>
                         <button
@@ -394,7 +394,7 @@ export default function AdminCourseReview({ courses }: Props) {
                           className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold text-red-700 bg-red-50 border border-red-200 hover:bg-red-100 transition-colors min-h-[44px]"
                         >
                           <RotateCcw size={14} />
-                          <span>Kembalikan ke Draf (BR-02)</span>
+                          <span>Kembalikan ke Draf</span>
                         </button>
 
                         <button
@@ -409,7 +409,7 @@ export default function AdminCourseReview({ courses }: Props) {
                       </>
                     )}
 
-                    {/* Status: terbit -> Aksi Admin: Ubah Kuota (BR-06) & Tutup Kursus (BR-02) */}
+                    {/* Status: terbit -> Aksi Admin: Ubah Kuota (BR-06) & Tutup Kursus */}
                     {c.status === 'terbit' && (
                       <>
                         <button
@@ -433,13 +433,13 @@ export default function AdminCourseReview({ courses }: Props) {
                           className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold text-red-700 bg-red-50 border border-red-200 hover:bg-red-100 transition-colors min-h-[44px]"
                         >
                           <Lock size={14} />
-                          <span>Tutup Kursus (BR-02)</span>
+                          <span>Tutup Kursus</span>
                         </button>
 
                         {/* Indikator Aturan BR-02: Kursus Terbit Tidak Bisa Kembali ke Draf */}
                         <div
                           className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-50 border border-slate-200 text-[11px] text-slate-500"
-                          title="Sesuai BR-02: Kursus terbit tidak bisa kembali ke draf."
+                          title="Kursus terbit tidak bisa kembali ke draf."
                         >
                           <Info size={12} className="text-slate-400" />
                           <span>Tidak bisa kembali ke draf</span>
@@ -464,7 +464,7 @@ export default function AdminCourseReview({ courses }: Props) {
                     {c.status === 'draf' && (
                       <div className="flex items-center gap-1.5 text-xs text-slate-500 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-100">
                         <Clock size={13} className="text-slate-400" />
-                        <span>Menunggu instruktur pemilik mengajukan ke tahap tinjauan (BR-02)</span>
+                        <span>Menunggu instruktur pemilik mengajukan ke tahap tinjauan</span>
                       </div>
                     )}
                   </div>
@@ -563,7 +563,7 @@ export default function AdminCourseReview({ courses }: Props) {
               </div>
               <div>
                 <h4 className="text-base font-bold text-slate-900">Kembalikan Kursus ke Draf</h4>
-                <p className="text-xs text-slate-500">Aturan Bisnis BR-02 LMS Pijar Aksara</p>
+                <p className="text-xs text-slate-500">Ketentuan Tinjauan Kursus Pijar Aksara</p>
               </div>
             </div>
 
@@ -588,7 +588,7 @@ export default function AdminCourseReview({ courses }: Props) {
 
               <div className="flex items-center justify-between text-[11px] pt-1">
                 <span className={returnNote.trim().length >= 10 ? 'text-emerald-600 font-semibold' : 'text-amber-600 font-semibold'}>
-                  {returnNote.trim().length >= 10 ? 'Syarat panjang catatan terpenuhi' : 'Minimal 10 karakter (BR-02)'}
+                  {returnNote.trim().length >= 10 ? 'Syarat panjang catatan terpenuhi' : 'Minimal 10 karakter'}
                 </span>
                 <span className="text-slate-400">
                   {returnNote.trim().length} karakter
@@ -638,7 +638,7 @@ export default function AdminCourseReview({ courses }: Props) {
               </div>
               <div>
                 <h4 className="text-base font-bold text-slate-900">Ubah Kuota Kursus</h4>
-                <p className="text-xs text-slate-500">Aturan Bisnis BR-06 LMS Pijar Aksara</p>
+                <p className="text-xs text-slate-500">Ketentuan Kuota Kursus Pijar Aksara</p>
               </div>
             </div>
 
@@ -647,7 +647,7 @@ export default function AdminCourseReview({ courses }: Props) {
             </p>
 
             <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-600">
-              <strong className="text-slate-800">Aturan Bisnis BR-06:</strong> Kuota kursus terbit tidak boleh lebih kecil dari kursi terpakai (pendaftaran aktif, selesai, dan menunggu bayar).
+              <strong className="text-slate-800">Ketentuan Kuota:</strong> Kuota kursus terbit tidak boleh lebih kecil dari kursi terpakai (pendaftaran aktif, selesai, dan menunggu bayar).
             </div>
 
             <div className="space-y-1.5">

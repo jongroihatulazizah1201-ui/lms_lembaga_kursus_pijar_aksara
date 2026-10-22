@@ -62,7 +62,7 @@ export default async function CertificatePage({ params }: Props) {
           </h2>
 
           <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem', marginBottom: '28px', lineHeight: 1.6 }}>
-            {error?.message || 'Sertifikat ini tidak ditemukan atau Anda tidak memiliki hak akses untuk melihatnya sesuai aturan privasi (BR-12).'}
+            {error?.message || 'Sertifikat ini tidak ditemukan atau Anda tidak memiliki hak akses untuk melihatnya sesuai ketentuan privasi sistem.'}
           </p>
 
           <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>

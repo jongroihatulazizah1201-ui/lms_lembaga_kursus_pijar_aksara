@@ -128,7 +128,7 @@ export default function AdminRegistrations({ registrations }: Props) {
     } else {
       setFeedbackMsg({
         type: 'success',
-        text: `Pembayaran ${confirmModalReg.peserta.nama_lengkap} (${formatRupiah(confirmModalReg.nominal)}) berhasil dikonfirmasi. Status pendaftaran kini Aktif Belajar (BR-07).`,
+        text: `Pembayaran ${confirmModalReg.peserta.nama_lengkap} (${formatRupiah(confirmModalReg.nominal)}) berhasil dikonfirmasi. Status pendaftaran kini Aktif Belajar.`,
       });
       setConfirmModalReg(null);
       router.refresh();
@@ -140,7 +140,7 @@ export default function AdminRegistrations({ registrations }: Props) {
     if (!cancelModalReg) return;
 
     if (cancelReason.trim().length < 10) {
-      setCancelError('Alasan pembatalan pendaftaran wajib diisi minimal 10 karakter sesuai aturan BR-07.');
+      setCancelError('Alasan pembatalan pendaftaran wajib diisi minimal 10 karakter sesuai ketentuan sistem.');
       return;
     }
 
@@ -154,7 +154,7 @@ export default function AdminRegistrations({ registrations }: Props) {
     } else {
       setFeedbackMsg({
         type: 'success',
-        text: `Pendaftaran ${cancelModalReg.peserta.nama_lengkap} pada kursus "${cancelModalReg.kursus.judul}" berhasil dibatalkan (BR-07).`,
+        text: `Pendaftaran ${cancelModalReg.peserta.nama_lengkap} pada kursus "${cancelModalReg.kursus.judul}" berhasil dibatalkan.`,
       });
       setCancelModalReg(null);
       setCancelReason('');
@@ -366,7 +366,7 @@ export default function AdminRegistrations({ registrations }: Props) {
           </div>
 
           <span className="text-xs text-slate-500">
-            Aksi admin: konfirmasi manual atau batalkan pendaftaran (BR-07)
+            Aksi admin: konfirmasi manual atau batalkan pendaftaran
           </span>
         </div>
 
@@ -558,7 +558,7 @@ export default function AdminRegistrations({ registrations }: Props) {
                   Konfirmasi Pembayaran
                 </h3>
                 <p className="text-xs text-slate-600 mt-1">
-                  Verifikasi pembayaran masuk dan aktifkan akses ruang belajar peserta (BR-07).
+                  Verifikasi pembayaran masuk dan aktifkan akses ruang belajar peserta.
                 </p>
               </div>
             </div>
@@ -632,7 +632,7 @@ export default function AdminRegistrations({ registrations }: Props) {
             </div>
 
             <div className="bg-red-50/60 rounded-2xl p-3.5 border border-red-200 text-xs text-red-800 leading-relaxed">
-              <strong>Aturan Sistem (BR-07):</strong> Pembatalan pendaftaran akan mengembalikan 1 kuota kursi kursus dan mencatat riwayat pembatalan ke Audit Log. Alasan pembatalan wajib diisi minimal 10 karakter.
+              <strong>Ketentuan Pembatalan:</strong> Pembatalan pendaftaran akan mengembalikan 1 kuota kursi kursus dan mencatat riwayat pembatalan ke Audit Log. Alasan pembatalan wajib diisi minimal 10 karakter.
             </div>
 
             <div>

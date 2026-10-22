@@ -321,7 +321,7 @@ export default function InstructorGradebook({
               ) : (
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-purple-50 text-[#843bab] border border-purple-200 shadow-2xs">
                   <ShieldCheck size={13} className="text-[#843bab]" />
-                  Instruktur Pemilik (BR-12 Terisolasi)
+                  Instruktur Pemilik (Akses Terproteksi)
                 </span>
               )}
             </div>

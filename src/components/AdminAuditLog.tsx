@@ -204,7 +204,7 @@ export default function AdminAuditLog({ logs }: Props) {
             </div>
           </div>
           <div className="text-3xl font-black text-slate-900">{totalLogs}</div>
-          <div className="text-xs text-slate-500 mt-1">Audit trail sistem (BR-12)</div>
+          <div className="text-xs text-slate-500 mt-1">Audit trail aktivitas sistem</div>
         </div>
 
         <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs">
@@ -331,7 +331,7 @@ export default function AdminAuditLog({ logs }: Props) {
           </div>
 
           <span className="text-xs text-slate-500">
-            Immutable Audit Trail sesuai ketentuan BR-12
+            Immutable Audit Trail sesuai standar integritas sistem
           </span>
         </div>
 

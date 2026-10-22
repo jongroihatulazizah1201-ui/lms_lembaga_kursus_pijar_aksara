@@ -118,7 +118,7 @@ export default async function InstructorGradebookPage({ searchParams }: Props) {
             <ShieldAlert size={32} />
           </div>
           <h2 className="text-xl font-black text-slate-900 mb-2">
-            Akses Ditolak (BR-12)
+            Akses Ditolak
           </h2>
           <p className="text-sm text-slate-600 mb-6 leading-relaxed">
             {errGradebook?.message ||

@@ -261,7 +261,7 @@ export default function CourseEditor({ course }: Props) {
         {isLocked && (
           <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-100 border border-slate-200 text-xs font-semibold text-slate-700 w-fit">
             <Lock size={14} className="text-[#843bab]" />
-            <span>Konten Terkunci ({course.status}) &bull; BR-04</span>
+            <span>Konten Terkunci ({course.status})</span>
           </div>
         )}
       </div>
@@ -403,7 +403,7 @@ export default function CourseEditor({ course }: Props) {
                     rows={5}
                     value={modulIsi}
                     onChange={(e) => setModulIsi(e.target.value)}
-                    placeholder="Tuliskan materi pembelajaran lengkap yang wajib dibaca peserta (BR-08)..."
+                    placeholder="Tuliskan materi pembelajaran lengkap yang wajib dibaca peserta..."
                     className="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#843bab]/30 focus:border-[#843bab] transition-all resize-y"
                   />
                 </div>
@@ -431,7 +431,7 @@ export default function CourseEditor({ course }: Props) {
           {/* Modules List */}
           {sortedModules.length === 0 ? (
             <div className="bg-slate-50 border border-slate-200 rounded-2xl p-8 text-center text-slate-500 text-xs">
-              Belum ada modul yang dibuat. Silakan tambahkan minimal 2 modul pembelajaran untuk memenuhi syarat pengajuan (BR-03).
+              Belum ada modul yang dibuat. Silakan tambahkan minimal 2 modul pembelajaran untuk memenuhi syarat pengajuan.
             </div>
           ) : (
             sortedModules.map((modul) => {
@@ -610,7 +610,7 @@ export default function CourseEditor({ course }: Props) {
                     {/* Soal List Items */}
                     {soalList.length === 0 ? (
                       <div className="text-[11px] text-amber-700 bg-amber-50/60 p-2.5 rounded-lg border border-amber-200">
-                        Modul ini belum memiliki butir soal kuis. Tambahkan minimal 3 soal agar memenuhi syarat pengajuan (BR-03).
+                        Modul ini belum memiliki butir soal kuis. Tambahkan minimal 3 soal agar memenuhi syarat pengajuan.
                       </div>
                     ) : (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
@@ -737,7 +737,7 @@ export default function CourseEditor({ course }: Props) {
                   onChange={(e) => setEditHarga(parseInt(e.target.value || '0', 10))}
                   className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#843bab]/30 focus:border-[#843bab] transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                 />
-                <span className="text-[10px] text-slate-400">0 untuk gratis, atau Rp50.000 s/d Rp5.000.000 (BR-03)</span>
+                <span className="text-[10px] text-slate-400">0 untuk gratis, atau Rp50.000 s/d Rp5.000.000</span>
               </div>
 
               <div className="space-y-1">
@@ -752,7 +752,7 @@ export default function CourseEditor({ course }: Props) {
                   onChange={(e) => setEditKuota(parseInt(e.target.value || '20', 10))}
                   className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#843bab]/30 focus:border-[#843bab] transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                 />
-                <span className="text-[10px] text-slate-400">1 s/d 100 peserta (BR-03)</span>
+                <span className="text-[10px] text-slate-400">1 s/d 100 peserta</span>
               </div>
             </div>
 

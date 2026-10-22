@@ -87,7 +87,7 @@ export default function EnrollButton({
       <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-800 flex items-start gap-2.5">
         <AlertCircle size={16} className="shrink-0 mt-0.5 text-amber-600" />
         <div>
-          Anda masuk sebagai <strong className="capitalize">{userRole}</strong>. Sesuai <strong>BR-05</strong>, hanya akun <strong>Peserta</strong> yang dapat melakukan pendaftaran kursus.
+          Anda masuk sebagai <strong className="capitalize">{userRole}</strong>. Hanya akun <strong>Peserta</strong> yang dapat melakukan pendaftaran kursus.
         </div>
       </div>
     );
@@ -390,7 +390,7 @@ export default function EnrollButton({
                 <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-[11px] text-amber-900 flex items-start gap-2">
                   <Clock size={15} className="text-amber-700 shrink-0 mt-0.5" />
                   <div>
-                    Sesuai ketentuan <strong>BR-07</strong>: Pendaftaran berlaku selama <strong>24 jam</strong>. Jika tidak diselesaikan sebelum batas waktu, reservasi kursi dibatalkan otomatis.
+                    Pendaftaran berlaku selama <strong>24 jam</strong>. Jika tidak diselesaikan sebelum batas waktu, reservasi kursi dibatalkan otomatis.
                   </div>
                 </div>
 

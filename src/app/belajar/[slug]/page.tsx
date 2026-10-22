@@ -54,7 +54,7 @@ export default async function RuangBelajarPage({ params, searchParams }: Props) 
 
           <p className="text-slate-600 text-sm leading-relaxed">
             {error?.message ||
-              'Materi pembelajaran hanya dapat dibuka oleh peserta dengan pendaftaran berstatus aktif atau selesai (BR-08).'}
+              'Materi pembelajaran hanya dapat dibuka oleh peserta dengan pendaftaran berstatus aktif atau selesai.'}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center pt-3">

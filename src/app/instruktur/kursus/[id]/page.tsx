@@ -90,10 +90,10 @@ export default async function CourseDetailPage({ params }: Props) {
             <ShieldAlert size={32} />
           </div>
           <h2 className="text-xl font-bold text-slate-900">
-            Akses Ditolak (BR-12)
+            Akses Ditolak
           </h2>
           <p className="text-slate-600 text-sm leading-relaxed">
-            Sesuai aturan bisnis, instruktur hanya dapat mengelola kursus miliknya sendiri. Anda tidak memiliki akses ke kursus ini.
+            Instruktur hanya dapat mengelola kursus miliknya sendiri. Anda tidak memiliki akses ke kursus ini.
           </p>
           <div className="pt-2">
             <Link

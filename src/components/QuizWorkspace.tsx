@@ -134,7 +134,7 @@ export default function QuizWorkspace({
           </h2>
 
           <p style={{ color: 'var(--text-muted)', fontSize: '0.94rem', lineHeight: 1.6, marginBottom: '28px' }}>
-            Sesuai aturan bisnis <strong>BR-10</strong>: Setelah lulus, kuis modul ini tidak bisa dikerjakan lagi. Anda dapat melanjutkan ke modul berikutnya atau meninjau materi kembali.
+            Setelah lulus, kuis modul ini tidak bisa dikerjakan lagi. Anda dapat melanjutkan ke modul berikutnya atau meninjau materi kembali.
           </p>
 
           <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -196,7 +196,7 @@ export default function QuizWorkspace({
           </h2>
 
           <p style={{ color: 'var(--text-muted)', fontSize: '0.94rem', lineHeight: 1.6, marginBottom: '28px' }}>
-            Sesuai aturan bisnis <strong>BR-10</strong>: Setiap modul paling banyak <strong>3 percobaan kuis</strong> per pendaftaran. Anda telah menggunakan ketiga kesempatan tersebut. Silakan hubungi admin atau instruktur untuk bimbingan lebih lanjut.
+            Setiap modul paling banyak <strong>3 percobaan kuis</strong> per pendaftaran. Anda telah menggunakan ketiga kesempatan tersebut. Silakan hubungi admin atau instruktur untuk bimbingan lebih lanjut.
           </p>
 
           <Link
@@ -247,10 +247,10 @@ export default function QuizWorkspace({
           {/* Quick Metrics Badges */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
             <span className="badge" style={{ backgroundColor: 'rgba(245, 158, 11, 0.12)', color: '#fbbf24', border: '1px solid rgba(245, 158, 11, 0.3)' }}>
-              Percobaan {currentAttemptNumber} dari 3 (BR-10)
+              Percobaan {currentAttemptNumber} dari 3
             </span>
             <span className="badge" style={{ backgroundColor: 'rgba(59, 130, 246, 0.12)', color: '#60a5fa', border: '1px solid rgba(59, 130, 246, 0.3)' }}>
-              Standar Lulus &ge; {nilaiLulus} (BR-09)
+              Standar Lulus &ge; {nilaiLulus}
             </span>
           </div>
         </div>
@@ -397,7 +397,7 @@ export default function QuizWorkspace({
             gap: '16px'
           }}>
             <div style={{ fontSize: '0.84rem', color: 'var(--text-dim)' }}>
-              Sesuai <strong>BR-09</strong>: Penilaian dilakukan langsung di server. Kunci jawaban tidak pernah dibocorkan.
+              Penilaian dilakukan langsung di server. Kunci jawaban tidak pernah dibocorkan.
             </div>
 
             <button
@@ -488,7 +488,7 @@ export default function QuizWorkspace({
                   {resultData.nilai}
                 </div>
                 <div style={{ fontSize: '0.72rem', color: 'var(--text-dim)', textTransform: 'uppercase' }}>
-                  Nilai Kuis (BR-09)
+                  Nilai Kuis
                 </div>
               </div>
 
@@ -516,7 +516,7 @@ export default function QuizWorkspace({
                   {resultData.sisa_percobaan}
                 </div>
                 <div style={{ fontSize: '0.72rem', color: 'var(--text-dim)', textTransform: 'uppercase' }}>
-                  Sisa Percobaan (BR-10)
+                  Sisa Percobaan
                 </div>
               </div>
             </div>

@@ -111,7 +111,7 @@ export default async function QuizPage({ params, searchParams }: Props) {
             <Lock size={32} />
           </div>
           <h2 style={{ fontSize: '1.4rem', color: '#ffffff', marginBottom: '10px' }}>
-            Modul {currentModule.urutan} Masih Terkunci (BR-08)
+            Modul {currentModule.urutan} Masih Terkunci
           </h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem', marginBottom: '28px', lineHeight: 1.6 }}>
             Modul terbuka berurutan. Anda wajib menyelesaikan modul sebelumnya sebelum dapat mengerjakan kuis modul ini.
@@ -150,7 +150,7 @@ export default async function QuizPage({ params, searchParams }: Props) {
             <BookOpen size={32} />
           </div>
           <h2 style={{ fontSize: '1.4rem', color: '#ffffff', marginBottom: '10px' }}>
-            Materi Belum Selesai Dibaca (BR-08)
+            Materi Belum Selesai Dibaca
           </h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem', marginBottom: '28px', lineHeight: 1.6 }}>
             Sesuai aturan bisnis, Anda wajib membaca materi dan menandai &quot;Tandai Materi Sudah Dibaca&quot; sebelum dapat memulai pengerjaan kuis.

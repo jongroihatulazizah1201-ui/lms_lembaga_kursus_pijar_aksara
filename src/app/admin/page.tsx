@@ -222,7 +222,7 @@ export default async function AdminPanelPage({ searchParams }: Props) {
                 </h1>
               </div>
               <p className="text-sm text-slate-600 leading-relaxed">
-                Pusat kendali siklus penerbitan kursus (BR-02), konfirmasi transaksi pendaftaran (BR-07), tata kelola peran pengguna, dan audit log lembaga (BR-12).
+                Pusat kendali siklus penerbitan kursus, konfirmasi transaksi pendaftaran, tata kelola peran pengguna, dan audit log lembaga.
               </p>
             </div>
 
@@ -325,7 +325,7 @@ export default async function AdminPanelPage({ searchParams }: Props) {
             }`}
           >
             <FileText size={15} />
-            <span>Audit Log (BR-12)</span>
+            <span>Audit Log</span>
             <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600">
               {auditLogs?.length || 0}
             </span>

@@ -160,7 +160,7 @@ export default function LearningRoom({
     if (target?.status_akses === 'terkunci') {
       setFeedbackMsg({
         type: 'error',
-        text: `Modul ${urutan} masih terkunci. Anda harus menyelesaikan dan lulus kuis pada modul sebelumnya terlebih dahulu (BR-08).`,
+        text: `Modul ${urutan} masih terkunci. Anda harus menyelesaikan dan lulus kuis pada modul sebelumnya terlebih dahulu.`,
       });
       return;
     }
@@ -337,7 +337,7 @@ export default function LearningRoom({
               </div>
 
               <p className="text-xs text-slate-500 leading-relaxed mb-4">
-                Sesuai aturan <strong>BR-08</strong>: Modul terbuka berurutan. Selesaikan materi &amp; kuis untuk membuka modul berikutnya.
+                Modul terbuka berurutan. Selesaikan materi &amp; kuis untuk membuka modul berikutnya.
               </p>
 
               {/* List of Modules */}
@@ -458,7 +458,7 @@ export default function LearningRoom({
 
             {isLocked ? (
               /* =========================================================
-                  KONTEN TERKUNCI (BR-08)
+                  KONTEN TERKUNCI
                  ========================================================= */
               <div className="bg-white rounded-3xl border border-slate-200 p-8 sm:p-12 text-center shadow-xs space-y-4">
                 <div className="w-16 h-16 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto">
@@ -468,7 +468,7 @@ export default function LearningRoom({
                   Modul {activeModule.urutan} Masih Terkunci
                 </h3>
                 <p className="text-sm text-slate-600 max-w-md mx-auto leading-relaxed">
-                  Sesuai aturan kurikulum vokasi berstandar industri (<strong>BR-08</strong>), modul ini akan terbuka otomatis setelah Anda lulus kuis pada Modul {activeModule.urutan - 1}.
+                  Sesuai aturan kurikulum vokasi berstandar industri, modul ini akan terbuka otomatis setelah Anda lulus kuis pada Modul {activeModule.urutan - 1}.
                 </p>
                 <button
                   type="button"
@@ -635,7 +635,7 @@ export default function LearningRoom({
                             ? 'Anda telah lulus kuis modul ini. Silakan lanjut ke modul berikutnya.'
                             : isRead
                             ? 'Materi telah ditandai dibaca. Anda dapat langsung membuka kuis modul.'
-                            : 'Wajib menandai materi sudah dibaca untuk membuka akses pengerjaan kuis (BR-08).'}
+                            : 'Wajib menandai materi sudah dibaca untuk membuka akses pengerjaan kuis.'}
                         </p>
                       </div>
 
@@ -690,7 +690,7 @@ export default function LearningRoom({
                           Kuis Objektif Modul {activeModule.urutan}
                         </h3>
                         <p className="text-xs text-slate-500">
-                          Passing grade minimal: <strong className="text-slate-800">70 poin</strong>. Maksimal 3 kali percobaan (BR-10).
+                          Passing grade minimal: <strong className="text-slate-800">70 poin</strong>. Maksimal 3 kali percobaan.
                         </p>
                       </div>
 
@@ -730,7 +730,7 @@ export default function LearningRoom({
                           Kuis Masih Terkunci
                         </h4>
                         <p className="text-xs text-slate-600 max-w-md mx-auto">
-                          Sesuai aturan bisnis <strong>BR-08</strong>, Anda wajib membaca materi dan menekan tombol &quot;Tandai Materi Sudah Dibaca&quot; di tab Materi terlebih dahulu.
+                          Anda wajib membaca materi dan menekan tombol &quot;Tandai Materi Sudah Dibaca&quot; di tab Materi terlebih dahulu.
                         </p>
                         <button
                           type="button"
@@ -862,7 +862,7 @@ export default function LearningRoom({
                               <div className="p-6 rounded-2xl bg-red-50 border border-red-200 text-red-900 space-y-2">
                                 <div className="font-bold text-sm flex items-center gap-2">
                                   <AlertCircle size={16} />
-                                  <span>Batas Maksimal 3 Percobaan Tercapai (BR-10)</span>
+                                  <span>Batas Maksimal 3 Percobaan Tercapai</span>
                                 </div>
                                 <p className="text-xs leading-relaxed text-red-800">
                                   Anda telah menggunakan seluruh 3 kesempatan pengerjaan kuis pada modul ini. Hubungi instruktur atau tim Pijar Aksara jika Anda membutuhkan bimbingan materi lebih lanjut.

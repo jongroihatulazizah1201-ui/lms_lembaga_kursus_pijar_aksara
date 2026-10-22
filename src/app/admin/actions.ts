@@ -24,13 +24,13 @@ export async function ubahStatusKursusAction(
     .single();
 
   if (!profile || profile.peran !== 'admin') {
-    return { error: 'Akses ditolak: Hanya admin yang berhak melakukan aksi ini (BR-02).' };
+    return { error: 'Akses ditolak: Hanya admin yang berhak melakukan aksi ini.' };
   }
 
   // Validasi catatan jika mengembalikan ke draf (BR-02)
   if (statusBaru === 'draf') {
     if (!catatan || catatan.trim().length < 10) {
-      return { error: 'Pengembalian ke draf wajib menyertakan catatan tinjauan minimal 10 karakter (BR-02).' };
+      return { error: 'Pengembalian ke draf wajib menyertakan catatan tinjauan minimal 10 karakter.' };
     }
   }
 
@@ -67,7 +67,7 @@ export async function ubahKuotaKursusAction(
   }
 
   if (isNaN(kuotaBaru) || kuotaBaru < 1 || kuotaBaru > 100) {
-    return { error: 'Kuota harus antara 1 sampai 100 peserta (BR-03).' };
+    return { error: 'Kuota harus antara 1 sampai 100 peserta.' };
   }
 
   const { data, error } = await supabase.rpc('admin_ubah_kuota_kursus', {
@@ -118,7 +118,7 @@ export async function batalkanPendaftaranAction(
   }
 
   if (!alasan || alasan.trim().length < 10) {
-    return { error: 'Pembatalan pendaftaran aktif wajib menyertakan alasan minimal 10 karakter (BR-07).' };
+    return { error: 'Pembatalan pendaftaran aktif wajib menyertakan alasan minimal 10 karakter.' };
   }
 
   const { data, error } = await supabase.rpc('admin_batalkan_pendaftaran', {
@@ -147,7 +147,7 @@ export async function ubahPeranPenggunaAction(
   }
 
   if (user.id === userId && peranBaru !== 'admin') {
-    return { error: 'Admin tidak boleh menurunkan peran akunnya sendiri (BR-12).' };
+    return { error: 'Admin tidak boleh menurunkan peran akunnya sendiri.' };
   }
 
   const { data, error } = await supabase.rpc('admin_ubah_peran_pengguna', {
@@ -176,7 +176,7 @@ export async function ubahStatusPenggunaAction(
   }
 
   if (user.id === userId && !aktif) {
-    return { error: 'Admin tidak boleh menonaktifkan akunnya sendiri (BR-12).' };
+    return { error: 'Admin tidak boleh menonaktifkan akunnya sendiri.' };
   }
 
   const { data, error } = await supabase.rpc('admin_ubah_status_pengguna', {

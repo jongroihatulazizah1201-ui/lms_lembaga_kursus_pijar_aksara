@@ -40,17 +40,17 @@ export default function CreateCourseForm() {
     }
 
     if (harga !== 0 && (harga < 50000 || harga > 5000000)) {
-      setErrorMsg('Sesuai BR-03: Harga kursus harus Rp0 (gratis) atau antara Rp50.000 s/d Rp5.000.000.');
+      setErrorMsg('Harga kursus harus Rp0 (gratis) atau antara Rp50.000 s/d Rp5.000.000.');
       return;
     }
 
     if (kuota < 1 || kuota > 100) {
-      setErrorMsg('Sesuai BR-03: Kuota peserta harus antara 1 sampai 100.');
+      setErrorMsg('Kuota peserta harus antara 1 sampai 100.');
       return;
     }
 
     if (nilaiLulus < 50 || nilaiLulus > 100) {
-      setErrorMsg('Sesuai BR-03: Nilai kelulusan kuis harus antara 50 sampai 100.');
+      setErrorMsg('Nilai kelulusan kuis harus antara 50 sampai 100.');
       return;
     }
 
@@ -89,7 +89,7 @@ export default function CreateCourseForm() {
           Buat Kursus Baru (Status: Draf)
         </h1>
         <p className="text-xs text-slate-500">
-          Kursus baru otomatis berstatus draf (BR-02). Anda dapat menyusun modul dan butir soal setelah informasi dasar ini disimpan.
+          Kursus baru otomatis berstatus draf. Anda dapat menyusun modul dan butir soal setelah informasi dasar ini disimpan.
         </p>
       </div>
 
@@ -165,7 +165,7 @@ export default function CreateCourseForm() {
               onChange={(e) => setHarga(parseInt(e.target.value || '0', 10))}
               className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#843bab]/30 focus:border-[#843bab] transition-all"
             />
-            <span className="text-[11px] text-slate-500">Rp0 untuk gratis, atau Rp50.000 s/d Rp5.000.000 (BR-03)</span>
+            <span className="text-[11px] text-slate-500">Rp0 untuk gratis, atau Rp50.000 s/d Rp5.000.000</span>
           </div>
 
           <div className="space-y-1.5">
@@ -180,7 +180,7 @@ export default function CreateCourseForm() {
               onChange={(e) => setKuota(parseInt(e.target.value || '20', 10))}
               className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#843bab]/30 focus:border-[#843bab] transition-all"
             />
-            <span className="text-[11px] text-slate-500">Antara 1 - 100 peserta (BR-03)</span>
+            <span className="text-[11px] text-slate-500">Antara 1 - 100 peserta</span>
           </div>
 
           <div className="space-y-1.5">
@@ -195,7 +195,7 @@ export default function CreateCourseForm() {
               onChange={(e) => setNilaiLulus(parseInt(e.target.value || '70', 10))}
               className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#843bab]/30 focus:border-[#843bab] transition-all"
             />
-            <span className="text-[11px] text-slate-500">Standar kelulusan: 70 poin (BR-03)</span>
+            <span className="text-[11px] text-slate-500">Standar kelulusan: 70 poin</span>
           </div>
         </div>
 

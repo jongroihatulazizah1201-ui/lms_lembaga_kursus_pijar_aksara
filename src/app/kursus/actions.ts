@@ -24,7 +24,7 @@ export async function daftarKursusAction(kursusId: string, metodeBayar: string =
   }
 
   if (kursus.status !== 'terbit') {
-    return { error: 'Hanya kursus berstatus terbit yang dapat didaftar (BR-01, BR-05).' };
+    return { error: 'Hanya kursus berstatus terbit yang dapat didaftar.' };
   }
 
   // 2. Eksekusi RPC daftar_kursus (memiliki FOR UPDATE row-locking di database untuk cegah race condition)

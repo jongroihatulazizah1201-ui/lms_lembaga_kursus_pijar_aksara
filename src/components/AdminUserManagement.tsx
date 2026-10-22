@@ -96,7 +96,7 @@ export default function AdminUserManagement({ users, currentAdminId }: Props) {
     if (!roleModalUser) return;
 
     if (roleModalUser.id === currentAdminId && selectedNewRole !== 'admin') {
-      alert('Demi keamanan sistem, Admin tidak diizinkan menurunkan peran akunnya sendiri (BR-12).');
+      alert('Demi keamanan sistem, Admin tidak diizinkan menurunkan peran akunnya sendiri.');
       return;
     }
 
@@ -110,7 +110,7 @@ export default function AdminUserManagement({ users, currentAdminId }: Props) {
     } else {
       setFeedbackMsg({
         type: 'success',
-        text: `Peran akun "${roleModalUser.nama_lengkap}" berhasil diperbarui menjadi ${selectedNewRole.toUpperCase()} (BR-12).`,
+        text: `Peran akun "${roleModalUser.nama_lengkap}" berhasil diperbarui menjadi ${selectedNewRole.toUpperCase()} .`,
       });
       setRoleModalUser(null);
       router.refresh();
@@ -124,7 +124,7 @@ export default function AdminUserManagement({ users, currentAdminId }: Props) {
     const newStatus = !statusModalUser.aktif;
 
     if (statusModalUser.id === currentAdminId && !newStatus) {
-      alert('Admin tidak boleh menonaktifkan akunnya sendiri (BR-12).');
+      alert('Admin tidak boleh menonaktifkan akunnya sendiri.');
       return;
     }
 
@@ -138,7 +138,7 @@ export default function AdminUserManagement({ users, currentAdminId }: Props) {
     } else {
       setFeedbackMsg({
         type: 'success',
-        text: `Status akun "${statusModalUser.nama_lengkap}" berhasil diubah menjadi ${newStatus ? 'Aktif' : 'Dinonaktifkan'} (BR-12).`,
+        text: `Status akun "${statusModalUser.nama_lengkap}" berhasil diubah menjadi ${newStatus ? 'Aktif' : 'Dinonaktifkan'} .`,
       });
       setStatusModalUser(null);
       router.refresh();
@@ -353,7 +353,7 @@ export default function AdminUserManagement({ users, currentAdminId }: Props) {
           </div>
 
           <span className="text-xs text-slate-500">
-            Aksi admin: ubah peran akun atau nonaktifkan akses (BR-12)
+            Aksi admin: ubah peran akun atau nonaktifkan akses
           </span>
         </div>
 

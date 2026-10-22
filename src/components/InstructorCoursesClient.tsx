@@ -104,7 +104,7 @@ export default function InstructorCoursesClient({ initialCourses, profile }: Pro
                 Kelola Kursus &amp; Silabus
               </h1>
               <p className="text-sm text-slate-600 max-w-2xl leading-relaxed">
-                Kelola kursus milik sendiri, susun kurikulum modul bertahap, materi bacaan &amp; video, bank soal kuis, serta pantau catatan tinjauan dari admin lembaga (BR-02, BR-12).
+                Kelola kursus milik sendiri, susun kurikulum modul bertahap, materi bacaan &amp; video, bank soal kuis, serta pantau catatan tinjauan dari admin lembaga.
               </p>
             </div>
 
@@ -389,7 +389,7 @@ export default function InstructorCoursesClient({ initialCourses, profile }: Pro
                     </div>
 
                     {/* =========================================================
-                        CATATAN PENGEMBALIAN DARI ADMIN (BR-02)
+                        CATATAN PENGEMBALIAN DARI ADMIN
                        ========================================================= */}
                     {course.catatan_tinjauan && (
                       <div className="bg-amber-50/90 border border-amber-200 rounded-2xl p-4 text-xs space-y-1.5 shadow-2xs">
@@ -410,7 +410,7 @@ export default function InstructorCoursesClient({ initialCourses, profile }: Pro
                     {isLocked && (
                       <div className="flex items-center gap-1.5 text-xs text-slate-500 bg-slate-50 px-3 py-2 rounded-xl border border-slate-200">
                         <Lock size={13} className="text-slate-400 shrink-0" />
-                        <span>Materi terkunci selama masa peninjauan / terbit (BR-04)</span>
+                        <span>Materi terkunci selama masa peninjauan / terbit</span>
                       </div>
                     )}
                   </div>

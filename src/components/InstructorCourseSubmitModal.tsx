@@ -117,9 +117,9 @@ export default function InstructorCourseSubmitModal({
         </div>
         <p className="text-xs text-slate-600 leading-relaxed">
           {currentStatus === 'ditinjau'
-            ? 'Kursus telah diajukan ke tim pengelola. Sesuai BR-04, seluruh modul dan soal terkunci dari penyuntingan selama masa evaluasi.'
+            ? 'Kursus telah diajukan ke tim pengelola. Seluruh modul dan soal terkunci dari penyuntingan selama masa evaluasi.'
             : currentStatus === 'terbit'
-            ? 'Kursus berstatus terbit dan aktif di katalog publik. Sesuai BR-02, kursus yang telah terbit tidak dapat dikembalikan ke draf.'
+            ? 'Kursus berstatus terbit dan aktif di katalog publik. Kursus yang telah terbit tidak dapat dikembalikan ke draf.'
             : 'Kursus ditutup oleh admin. Pendaftaran baru dinonaktifkan.'}
         </p>
       </div>
@@ -131,7 +131,7 @@ export default function InstructorCourseSubmitModal({
       {/* Header Info */}
       <div className="flex items-center justify-between pb-3 border-b border-slate-100">
         <div>
-          <h3 className="text-sm font-bold text-slate-900">Pengajuan Kursus (BR-02)</h3>
+          <h3 className="text-sm font-bold text-slate-900">Pengajuan Kursus</h3>
           <p className="text-xs text-slate-500">Ajukan kursus dari status draf ke ditinjau untuk diverifikasi admin.</p>
         </div>
         <span className="text-xs px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 font-medium border border-slate-200">
@@ -171,7 +171,7 @@ export default function InstructorCourseSubmitModal({
       {/* Checklist Kesiapan Pengajuan (BR-03) */}
       <div className="bg-slate-50 rounded-xl p-3.5 space-y-2 text-xs">
         <div className="font-semibold text-slate-800 flex items-center justify-between">
-          <span>Syarat Kelayakan Pengajuan (BR-03):</span>
+          <span>Syarat Kelayakan Pengajuan:</span>
           <span className={isEligibleToSubmit ? 'text-emerald-700 font-bold' : 'text-amber-700 font-bold'}>
             {isEligibleToSubmit ? 'Siap Diajukan' : 'Belum Memenuhi'}
           </span>
@@ -249,7 +249,7 @@ export default function InstructorCourseSubmitModal({
               </div>
               <div>
                 <h4 className="text-base font-bold text-slate-900">Konfirmasi Pengajuan Kursus</h4>
-                <p className="text-xs text-slate-500">Aturan Bisnis BR-02 & BR-04</p>
+                <p className="text-xs text-slate-500">Ketentuan Pengajuan Kursus</p>
               </div>
             </div>
 
@@ -260,7 +260,7 @@ export default function InstructorCourseSubmitModal({
               <div className="flex items-start gap-2 text-slate-600 bg-white p-2.5 rounded-lg border border-slate-200">
                 <Lock size={15} className="text-[#843bab] shrink-0 mt-0.5" />
                 <span className="text-[11px] leading-relaxed">
-                  <strong>Perhatian:</strong> Sesuai aturan BR-04, setelah kursus diajukan, seluruh materi modul dan bank soal akan <strong>terkunci</strong> dan tidak dapat diedit selama masa peninjauan oleh admin lembaga.
+                  <strong>Perhatian:</strong> Setelah kursus diajukan, seluruh materi modul dan bank soal akan <strong>terkunci</strong> dan tidak dapat diedit selama masa peninjauan oleh admin lembaga.
                 </span>
               </div>
             </div>

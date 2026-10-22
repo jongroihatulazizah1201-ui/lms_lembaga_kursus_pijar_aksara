@@ -405,7 +405,7 @@ export default function AdminDashboardView({
                 </div>
               </div>
               <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-                <span className="text-slate-500 font-medium">Nomor unik terverifikasi (BR-11)</span>
+                <span className="text-slate-500 font-medium">Nomor unik terverifikasi</span>
                 <span className="font-bold text-[#843bab] bg-purple-50 px-2 py-0.5 rounded-full">
                   Resmi Terbit
                 </span>
@@ -899,7 +899,7 @@ export default function AdminDashboardView({
                       Kursus Hampir Penuh
                     </h3>
                     <p className="text-xs text-slate-500">
-                      Kursus terbit dengan sisa kursi &le; 2 (BR-06 &amp; PRD Bagian 9 Poin 6)
+                      Kursus terbit dengan sisa kursi &le; 2 (Prioritas Monitoring)
                     </p>
                   </div>
                 </div>
@@ -974,7 +974,7 @@ export default function AdminDashboardView({
             </div>
 
             <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-              <span>Sesuai aturan BR-06 ketersediaan kursi</span>
+              <span>Sesuai batas ketersediaan kuota kursi</span>
               <Link
                 href="/admin?tab=kursus"
                 className="font-bold text-[#843bab] hover:underline flex items-center gap-1"
