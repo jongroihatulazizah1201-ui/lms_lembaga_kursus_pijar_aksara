@@ -18,7 +18,6 @@ import {
   Printer,
   ShieldCheck,
   GraduationCap,
-  Sparkles,
   Info,
   Clock,
   Layers,

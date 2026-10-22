@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createKursusAction } from '@/app/instruktur/actions';
-import { ArrowLeft, Plus, AlertCircle, CheckCircle2, Sparkles, Loader2, BookOpen } from 'lucide-react';
+import { ArrowLeft, Plus, AlertCircle, CheckCircle2, Loader2, BookOpen } from 'lucide-react';
 
 export default function CreateCourseForm() {
   const router = useRouter();
@@ -90,7 +90,7 @@ export default function CreateCourseForm() {
         </Link>
         <div>
           <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-[#843bab]/10 text-[#843bab] text-[11px] font-bold uppercase tracking-wider mb-1">
-            <Sparkles size={12} />
+            <BookOpen size={12} />
             <span>Formulir Kursus Baru</span>
           </div>
           <h2 className="text-xl sm:text-2xl font-black text-slate-900 leading-snug">

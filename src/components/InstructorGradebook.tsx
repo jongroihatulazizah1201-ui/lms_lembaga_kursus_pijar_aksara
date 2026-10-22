@@ -29,7 +29,6 @@ import {
   RotateCcw,
   FileSpreadsheet,
   GraduationCap,
-  Sparkles,
   HelpCircle,
 } from 'lucide-react';
 

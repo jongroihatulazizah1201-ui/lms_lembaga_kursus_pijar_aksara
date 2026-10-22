@@ -17,7 +17,6 @@ import {
   CreditCard,
   User,
   Calendar,
-  Sparkles,
 } from 'lucide-react';
 
 export interface EnrollmentCourseData {
@@ -220,7 +219,7 @@ export default function MyCourseCard({ enrollment, onCancelRequest }: Props) {
                 <span className="font-semibold text-slate-700 flex items-center gap-1">
                   Progres Belajar
                   {status === 'selesai' && (
-                    <Sparkles size={13} className="text-amber-500 inline" />
+                    <Award size={13} className="text-emerald-600 inline" />
                   )}
                 </span>
                 <span

@@ -16,7 +16,7 @@ import {
   ArrowRight,
   AlertTriangle,
   Loader2,
-  Sparkles,
+  GraduationCap,
 } from 'lucide-react';
 
 interface Props {
@@ -107,7 +107,7 @@ export default function MyCoursesClient({ initialCourses, userProfile }: Props) 
             {/* Sapaan Pengguna */}
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#843bab]/10 text-[#843bab] text-xs font-bold border border-[#843bab]/20 mb-3">
-                <Sparkles size={13} />
+                <GraduationCap size={14} />
                 <span>Area Belajar Peserta</span>
               </div>
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight mb-2">

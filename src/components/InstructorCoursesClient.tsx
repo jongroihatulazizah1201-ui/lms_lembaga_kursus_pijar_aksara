@@ -17,7 +17,6 @@ import {
   Lock,
   RotateCcw,
   Search,
-  Sparkles,
   HelpCircle,
   Layers,
 } from 'lucide-react';

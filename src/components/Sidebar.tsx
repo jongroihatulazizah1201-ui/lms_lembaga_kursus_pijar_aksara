@@ -28,7 +28,6 @@ import {
   ChevronRight,
   Shield,
   User,
-  Sparkles,
   Loader2
 } from 'lucide-react';
 
@@ -355,9 +354,8 @@ export default function Sidebar({ user, profile }: SidebarProps) {
          ========================================================================= */}
       <div className="p-3 border-t border-slate-200 bg-slate-50/60">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 flex items-center gap-1">
-            <Sparkles size={11} className="text-[#843bab]" />
-            <span>Simulasi Peran Cepat:</span>
+          <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500">
+            Simulasi Peran Akun:
           </span>
           {isSwitching && (
             <Loader2 size={12} className="animate-spin text-[#843bab]" />

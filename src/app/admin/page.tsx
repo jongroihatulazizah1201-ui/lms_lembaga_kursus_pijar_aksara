@@ -17,7 +17,6 @@ import {
   CheckCircle2,
   AlertCircle,
   GraduationCap,
-  Sparkles,
   ArrowRight,
   ShieldCheck,
 } from 'lucide-react';

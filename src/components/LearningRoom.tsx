@@ -19,7 +19,6 @@ import {
   AlertCircle,
   HelpCircle,
   RotateCcw,
-  Sparkles,
   Loader2,
   Check,
   ChevronRight,
