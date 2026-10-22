@@ -35,35 +35,22 @@ export default function CertificateView({ certificate }: Props) {
     <div style={{ minHeight: '100vh', padding: '32px 16px 80px 16px' }}>
       {/* Top Action Bar (Hidden during printing) */}
       <div className="no-print container" style={{ maxWidth: '960px', marginBottom: '24px' }}>
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '12px',
-          padding: '14px 20px',
-          backgroundColor: 'rgba(18, 26, 43, 0.8)',
-          backdropFilter: 'blur(12px)',
-          borderRadius: 'var(--radius-md)',
-          border: '1px solid rgba(255, 255, 255, 0.1)'
-        }}>
+        <div className="flex items-center justify-between flex-wrap gap-3 p-4 bg-white rounded-2xl border border-slate-200 shadow-xs">
           <Link
             href="/kursus-saya"
-            className="btn btn-outline"
-            style={{ padding: '8px 16px', fontSize: '0.88rem' }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 hover:border-slate-300 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs sm:text-sm font-bold transition-all"
           >
             <ArrowLeft size={16} />
             <span>Kembali ke Kursus Saya</span>
           </Link>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <span style={{ fontSize: '0.82rem', color: 'var(--text-dim)' }}>
-              Nomor: <strong style={{ color: '#ffffff' }}>{certificate.nomor_sertifikat}</strong>
+          <div className="flex items-center gap-4">
+            <span className="text-xs sm:text-sm text-slate-500">
+              Nomor: <strong className="text-slate-900 font-mono">{certificate.nomor_sertifikat}</strong>
             </span>
             <button
               onClick={handlePrint}
-              className="btn btn-primary"
-              style={{ padding: '8px 20px', fontSize: '0.9rem', backgroundColor: '#3b82f6' }}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#843bab] hover:bg-[#722f96] text-white text-xs sm:text-sm font-bold shadow-xs hover:shadow-md transition-all cursor-pointer active:scale-[0.99]"
             >
               <Printer size={16} />
               <span>Cetak / Unduh PDF</span>
