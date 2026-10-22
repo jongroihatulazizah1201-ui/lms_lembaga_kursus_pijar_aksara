@@ -15,7 +15,11 @@ import {
   LayoutDashboard,
   Clock,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  GraduationCap,
+  Sparkles,
+  ArrowRight,
+  ShieldCheck,
 } from 'lucide-react';
 
 export const metadata: Metadata = {
@@ -36,7 +40,9 @@ export default async function AdminPanelPage({ searchParams }: Props) {
   const activeTab = tab || 'kursus';
 
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) {
     redirect('/login?redirect=/admin');
@@ -98,7 +104,7 @@ export default async function AdminPanelPage({ searchParams }: Props) {
   const formattedCourses = (courses || []).map((c: any) => ({
     ...c,
     instruktur: Array.isArray(c.instruktur) ? c.instruktur[0] : c.instruktur,
-    modul: (c.modul || []).sort((a: any, b: any) => a.urutan - b.urutan)
+    modul: (c.modul || []).sort((a: any, b: any) => a.urutan - b.urutan),
   }));
 
   const pendingReviewCount = formattedCourses.filter((c: any) => c.status === 'ditinjau').length;
@@ -134,10 +140,12 @@ export default async function AdminPanelPage({ searchParams }: Props) {
   const formattedRegistrations = (registrations || []).map((r: any) => ({
     ...r,
     kursus: Array.isArray(r.kursus) ? r.kursus[0] : r.kursus,
-    peserta: Array.isArray(r.peserta) ? r.peserta[0] : r.peserta
+    peserta: Array.isArray(r.peserta) ? r.peserta[0] : r.peserta,
   }));
 
-  const pendingPaymentsCount = formattedRegistrations.filter((r: any) => r.status === 'menunggu_bayar').length;
+  const pendingPaymentsCount = formattedRegistrations.filter(
+    (r: any) => r.status === 'menunggu_bayar'
+  ).length;
 
   // 4. Ambil data pengguna & peran akun (US-09, BR-12)
   const { data: users } = await supabase
@@ -168,47 +176,87 @@ export default async function AdminPanelPage({ searchParams }: Props) {
 
   const formattedAuditLogs = (auditLogs || []).map((l: any) => ({
     ...l,
-    pelaku: Array.isArray(l.pelaku) ? l.pelaku[0] : l.pelaku
+    pelaku: Array.isArray(l.pelaku) ? l.pelaku[0] : l.pelaku,
   }));
 
   return (
-    <div className="min-h-screen bg-white text-slate-900 pb-24">
-      {/* Top Admin Header */}
-      <section className="bg-white border-b border-slate-200 py-10">
+    <div className="min-h-screen bg-slate-50/60 text-slate-900 pb-28">
+      {/* =========================================================================
+          1. HEADER BANNER: Profil Admin & Quick Links
+         ========================================================================= */}
+      <section className="bg-gradient-to-b from-purple-50/70 via-white to-slate-50/50 border-b border-slate-200 pt-8 pb-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6">
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <span className="text-[11px] font-bold px-3 py-1 rounded-full bg-[#843bab]/10 text-[#843bab] uppercase tracking-wider">
-                  Administrator
+          {/* Breadcrumb & Role Guard */}
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+            <div className="flex items-center gap-2 text-xs font-medium text-slate-500">
+              <Link href="/" className="hover:text-[#843bab] transition-colors">
+                Beranda
+              </Link>
+              <span>/</span>
+              <span className="text-slate-800 font-semibold">Panel Administrator</span>
+              <span>/</span>
+              <span className="text-[#843bab] font-bold capitalize">
+                {activeTab === 'kursus'
+                  ? 'Tinjauan Kursus'
+                  : activeTab === 'pendaftaran'
+                  ? 'Pendaftaran & Pembayaran'
+                  : activeTab === 'pengguna'
+                  ? 'Pengguna'
+                  : 'Audit Log'}
+              </span>
+            </div>
+
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200 shadow-2xs">
+              <ShieldCheck size={13} className="text-rose-600" />
+              Administrator: {profile.nama_lengkap} ({profile.email})
+            </span>
+          </div>
+
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+            <div className="space-y-2 max-w-2xl">
+              <div>
+                <span className="text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-800 uppercase tracking-wider border border-rose-200">
+                  Pusat Pengelola Lembaga
                 </span>
-                <span className="text-xs text-slate-500">
-                  {profile.email}
-                </span>
+                <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mt-1">
+                  Panel Administrator
+                </h1>
               </div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-                Panel Pengelola Lembaga
-              </h1>
-              <p className="text-sm text-slate-600 max-w-2xl leading-relaxed">
-                Tinjau dan kelola siklus penerbitan kursus (BR-02), konfirmasi pendaftaran, peran pengguna, dan audit log lembaga.
+              <p className="text-sm text-slate-600 leading-relaxed">
+                Pusat kendali siklus penerbitan kursus (BR-02), konfirmasi transaksi pendaftaran (BR-07), tata kelola peran pengguna, dan audit log lembaga (BR-12).
               </p>
             </div>
 
-            <Link
-              href="/admin/dashboard"
-              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors shrink-0 min-h-[44px]"
-            >
-              <LayoutDashboard size={16} className="text-[#843bab]" />
-              <span>Buka Dashboard Statistik</span>
-            </Link>
+            {/* Quick Action Links */}
+            <div className="flex flex-wrap items-center gap-2.5">
+              <Link
+                href="/instruktur/nilai"
+                className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-white border border-slate-300 hover:border-[#843bab] hover:text-[#843bab] text-slate-700 font-bold text-xs shadow-2xs transition-all"
+                title="Lihat Buku Nilai Seluruh Kursus"
+              >
+                <GraduationCap size={15} className="text-[#843bab]" />
+                <span>Peserta & Nilai</span>
+              </Link>
+
+              <Link
+                href="/admin/dashboard"
+                className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-2xs hover:shadow transition-all"
+                title="Buka Dashboard Statistik Lembaga"
+              >
+                <LayoutDashboard size={15} />
+                <span>Dashboard Statistik</span>
+              </Link>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Main Tabs Navigation (PRD Tabel 7) */}
+      {/* =========================================================================
+          2. MAIN TABS NAVIGATION (4 Core Tabs)
+         ========================================================================= */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
         <div className="flex items-center gap-2 border-b border-slate-200 mb-8 overflow-x-auto pb-1 scrollbar-none">
-          {/* Tab 1: Tinjauan Kursus (BR-02) */}
+          {/* TAB 1: Tinjauan Kursus (tombol status) */}
           <Link
             href="/admin?tab=kursus"
             className={`flex items-center gap-2 px-4 py-3 text-xs font-bold border-b-2 whitespace-nowrap transition-all ${
@@ -218,15 +266,19 @@ export default async function AdminPanelPage({ searchParams }: Props) {
             }`}
           >
             <BookOpen size={15} />
-            <span>Tinjauan Kursus (BR-02)</span>
-            {pendingReviewCount > 0 && (
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-[#ffdf0f] text-slate-900 shadow-xs">
+            <span>Tinjauan Kursus (Tombol Status)</span>
+            {pendingReviewCount > 0 ? (
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-[#ffdf0f] text-slate-900 shadow-2xs animate-pulse">
                 {pendingReviewCount} Menunggu
+              </span>
+            ) : (
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600">
+                {formattedCourses.length}
               </span>
             )}
           </Link>
 
-          {/* Tab 2: Pendaftaran & Pembayaran */}
+          {/* TAB 2: Pendaftaran dan Pembayaran (konfirmasi, batal) */}
           <Link
             href="/admin?tab=pendaftaran"
             className={`flex items-center gap-2 px-4 py-3 text-xs font-bold border-b-2 whitespace-nowrap transition-all ${
@@ -236,15 +288,19 @@ export default async function AdminPanelPage({ searchParams }: Props) {
             }`}
           >
             <CreditCard size={15} />
-            <span>Pendaftaran & Pembayaran</span>
-            {pendingPaymentsCount > 0 && (
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-100 text-amber-800">
+            <span>Pendaftaran & Pembayaran (Konfirmasi, Batal)</span>
+            {pendingPaymentsCount > 0 ? (
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-100 text-amber-800 shadow-2xs">
                 {pendingPaymentsCount} Menunggu
+              </span>
+            ) : (
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600">
+                {formattedRegistrations.length}
               </span>
             )}
           </Link>
 
-          {/* Tab 3: Kelola Akun & Peran */}
+          {/* TAB 3: Pengguna (ubah peran, nonaktifkan) */}
           <Link
             href="/admin?tab=pengguna"
             className={`flex items-center gap-2 px-4 py-3 text-xs font-bold border-b-2 whitespace-nowrap transition-all ${
@@ -254,10 +310,13 @@ export default async function AdminPanelPage({ searchParams }: Props) {
             }`}
           >
             <Users size={15} />
-            <span>Kelola Akun & Peran</span>
+            <span>Pengguna (Ubah Peran, Nonaktifkan)</span>
+            <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600">
+              {users?.length || 0}
+            </span>
           </Link>
 
-          {/* Tab 4: Audit Log */}
+          {/* TAB 4: Audit Log */}
           <Link
             href="/admin?tab=audit"
             className={`flex items-center gap-2 px-4 py-3 text-xs font-bold border-b-2 whitespace-nowrap transition-all ${
@@ -268,25 +327,31 @@ export default async function AdminPanelPage({ searchParams }: Props) {
           >
             <FileText size={15} />
             <span>Audit Log (BR-12)</span>
+            <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600">
+              {auditLogs?.length || 0}
+            </span>
           </Link>
         </div>
 
-        {/* TAB 1: TINJAUAN KURSUS (US-08, BR-02) */}
+        {/* =======================================================================
+            3. TAB CONTENT ROUTING
+           ======================================================================= */}
+        {/* Tab 1: Tinjauan Kursus (tombol status) */}
         {activeTab === 'kursus' && (
           <AdminCourseReview courses={formattedCourses} />
         )}
 
-        {/* TAB 2: PENDAFTARAN & PEMBAYARAN (US-09) */}
+        {/* Tab 2: Pendaftaran dan Pembayaran (konfirmasi, batal) */}
         {activeTab === 'pendaftaran' && (
           <AdminRegistrations registrations={formattedRegistrations} />
         )}
 
-        {/* TAB 3: KELOLA AKUN & PERAN (US-09) */}
+        {/* Tab 3: Pengguna (ubah peran, nonaktifkan) */}
         {activeTab === 'pengguna' && (
           <AdminUserManagement users={users || []} currentAdminId={user.id} />
         )}
 
-        {/* TAB 4: AUDIT LOG (BR-12) */}
+        {/* Tab 4: Audit Log */}
         {activeTab === 'audit' && (
           <AdminAuditLog logs={formattedAuditLogs} />
         )}

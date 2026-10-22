@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   CreditCard,
@@ -10,10 +10,19 @@ import {
   Search,
   Filter,
   AlertCircle,
-  HelpCircle,
   Calendar,
   User,
-  BookOpen
+  BookOpen,
+  DollarSign,
+  AlertTriangle,
+  RotateCcw,
+  Check,
+  X,
+  FileText,
+  Mail,
+  Phone,
+  ArrowRight,
+  ShieldCheck,
 } from 'lucide-react';
 import { konfirmasiPembayaranAction, batalkanPendaftaranAction } from '@/app/admin/actions';
 
@@ -52,7 +61,10 @@ export default function AdminRegistrations({ registrations }: Props) {
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [feedbackMsg, setFeedbackMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-  // Modal Pembatalan Pendaftaran Aktif State
+  // Modal Konfirmasi Pembayaran State
+  const [confirmModalReg, setConfirmModalReg] = useState<RegistrationItem | null>(null);
+
+  // Modal Pembatalan Pendaftaran State
   const [cancelModalReg, setCancelModalReg] = useState<RegistrationItem | null>(null);
   const [cancelReason, setCancelReason] = useState('');
   const [cancelError, setCancelError] = useState<string | null>(null);
@@ -76,57 +88,59 @@ export default function AdminRegistrations({ registrations }: Props) {
     });
   };
 
-  const getStatusBadge = (status: RegistrationItem['status']) => {
-    switch (status) {
-      case 'aktif':
-        return <span className="badge badge-success">Aktif</span>;
-      case 'menunggu_bayar':
-        return <span className="badge badge-warning">Menunggu Bayar</span>;
-      case 'selesai':
-        return <span className="badge badge-info">Selesai</span>;
-      case 'dibatalkan':
-        return <span className="badge badge-danger">Dibatalkan</span>;
-      case 'kedaluwarsa':
-        return <span className="badge badge-dim">Kedaluwarsa</span>;
-      default:
-        return <span className="badge badge-dim">{status}</span>;
-    }
-  };
+  // Ringkasan Statistik
+  const totalPendaftaran = registrations.length;
+  const menungguBayarCount = registrations.filter((r) => r.status === 'menunggu_bayar').length;
+  const aktifCount = registrations.filter((r) => r.status === 'aktif').length;
+  const selesaiCount = registrations.filter((r) => r.status === 'selesai').length;
+  const totalNominalAktif = registrations
+    .filter((r) => r.status === 'aktif' || r.status === 'selesai')
+    .reduce((acc, curr) => acc + (curr.nominal || 0), 0);
 
-  const filteredRegistrations = registrations.filter((r) => {
-    const matchesStatus = filterStatus === 'semua' || r.status === filterStatus;
-    const matchesSearch =
-      r.peserta.nama_lengkap.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      r.peserta.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      r.kursus.judul.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesStatus && matchesSearch;
-  });
+  // Filter Data Pendaftaran
+  const filteredRegistrations = useMemo(() => {
+    return registrations.filter((r) => {
+      const q = searchQuery.toLowerCase().trim();
+      const matchesSearch =
+        !q ||
+        r.peserta.nama_lengkap.toLowerCase().includes(q) ||
+        r.peserta.email.toLowerCase().includes(q) ||
+        (r.peserta.no_hp && r.peserta.no_hp.toLowerCase().includes(q)) ||
+        r.kursus.judul.toLowerCase().includes(q);
 
-  // Action: Konfirmasi Pembayaran (menunggu_bayar -> aktif, BR-07)
-  const handleKonfirmasiPembayaran = async (reg: RegistrationItem) => {
-    if (!confirm(`Konfirmasi pembayaran sebesar ${formatRupiah(reg.nominal)} untuk peserta "${reg.peserta.nama_lengkap}" pada kursus "${reg.kursus.judul}"?`)) {
-      return;
-    }
+      const matchesStatus = filterStatus === 'semua' || r.status === filterStatus;
 
-    setLoadingId(reg.id);
+      return matchesSearch && matchesStatus;
+    });
+  }, [registrations, searchQuery, filterStatus]);
+
+  // Action: Eksekusi Konfirmasi Pembayaran (menunggu_bayar -> aktif, BR-07)
+  const handleExecuteKonfirmasi = async () => {
+    if (!confirmModalReg) return;
+
+    setLoadingId(confirmModalReg.id);
     setFeedbackMsg(null);
-    const res = await konfirmasiPembayaranAction(reg.id);
+    const res = await konfirmasiPembayaranAction(confirmModalReg.id);
     setLoadingId(null);
 
     if (res?.error) {
       setFeedbackMsg({ type: 'error', text: res.error });
     } else {
-      setFeedbackMsg({ type: 'success', text: `Pembayaran ${reg.peserta.nama_lengkap} berhasil dikonfirmasi. Status pendaftaran kini Aktif (BR-07).` });
+      setFeedbackMsg({
+        type: 'success',
+        text: `Pembayaran ${confirmModalReg.peserta.nama_lengkap} (${formatRupiah(confirmModalReg.nominal)}) berhasil dikonfirmasi. Status pendaftaran kini Aktif Belajar (BR-07).`,
+      });
+      setConfirmModalReg(null);
       router.refresh();
     }
   };
 
-  // Action: Batalkan Pendaftaran (aktif / menunggu_bayar -> dibatalkan, BR-07)
-  const handleBatalkanPendaftaran = async () => {
+  // Action: Eksekusi Batalkan Pendaftaran (BR-07)
+  const handleExecuteBatal = async () => {
     if (!cancelModalReg) return;
 
-    if (cancelModalReg.status === 'aktif' && cancelReason.trim().length < 10) {
-      setCancelError('Alasan pembatalan pendaftaran aktif minimal 10 karakter (BR-07).');
+    if (cancelReason.trim().length < 10) {
+      setCancelError('Alasan pembatalan pendaftaran wajib diisi minimal 10 karakter sesuai aturan BR-07.');
       return;
     }
 
@@ -138,309 +152,526 @@ export default function AdminRegistrations({ registrations }: Props) {
     if (res?.error) {
       setCancelError(res.error);
     } else {
-      setFeedbackMsg({ type: 'success', text: `Pendaftaran ${cancelModalReg.peserta.nama_lengkap} berhasil dibatalkan.` });
+      setFeedbackMsg({
+        type: 'success',
+        text: `Pendaftaran ${cancelModalReg.peserta.nama_lengkap} pada kursus "${cancelModalReg.kursus.judul}" berhasil dibatalkan (BR-07).`,
+      });
       setCancelModalReg(null);
       setCancelReason('');
       router.refresh();
     }
   };
 
+  // Badge Status Pendaftaran
+  const renderStatusBadge = (status: RegistrationItem['status']) => {
+    switch (status) {
+      case 'aktif':
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            Aktif Belajar
+          </span>
+        );
+      case 'menunggu_bayar':
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200">
+            <Clock size={12} className="text-amber-600" />
+            Menunggu Bayar
+          </span>
+        );
+      case 'selesai':
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-purple-50 text-[#843bab] border border-purple-200">
+            <CheckCircle2 size={12} className="text-[#843bab]" />
+            Selesai
+          </span>
+        );
+      case 'dibatalkan':
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200">
+            <XCircle size={12} className="text-rose-600" />
+            Dibatalkan
+          </span>
+        );
+      case 'kedaluwarsa':
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-600 border border-slate-200">
+            Kedaluwarsa
+          </span>
+        );
+      default:
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+            {status}
+          </span>
+        );
+    }
+  };
+
   return (
-    <div>
+    <div className="space-y-6">
       {/* Alert Banner Feedback */}
       {feedbackMsg && (
-        <div style={{
-          padding: '14px 18px',
-          borderRadius: 'var(--radius-md)',
-          backgroundColor: feedbackMsg.type === 'success' ? 'rgba(16, 185, 129, 0.12)' : 'rgba(239, 68, 68, 0.12)',
-          border: `1px solid ${feedbackMsg.type === 'success' ? '#10b981' : '#ef4444'}`,
-          color: feedbackMsg.type === 'success' ? '#10b981' : '#ef4444',
-          marginBottom: '20px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '10px',
-          fontSize: '0.92rem'
-        }}>
-          {feedbackMsg.type === 'success' ? <CheckCircle2 size={18} /> : <AlertCircle size={18} />}
-          <span>{feedbackMsg.text}</span>
+        <div
+          className={`flex items-center justify-between gap-3 p-4 rounded-2xl text-sm font-medium border shadow-xs animate-fadeIn ${
+            feedbackMsg.type === 'success'
+              ? 'bg-emerald-50 border-emerald-200 text-emerald-900'
+              : 'bg-rose-50 border-rose-200 text-rose-900'
+          }`}
+        >
+          <div className="flex items-center gap-2.5">
+            {feedbackMsg.type === 'success' ? (
+              <CheckCircle2 size={18} className="text-emerald-600 shrink-0" />
+            ) : (
+              <AlertCircle size={18} className="text-rose-600 shrink-0" />
+            )}
+            <span>{feedbackMsg.text}</span>
+          </div>
+          <button
+            onClick={() => setFeedbackMsg(null)}
+            className="p-1 text-slate-400 hover:text-slate-600"
+          >
+            <X size={16} />
+          </button>
         </div>
       )}
 
-      {/* Filter and Search Bar */}
-      <div className="glass-panel" style={{ padding: '20px', marginBottom: '24px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
-          {/* Status Filter Badges */}
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-            {[
-              { id: 'semua', label: 'Semua Status' },
-              { id: 'menunggu_bayar', label: 'Menunggu Bayar' },
-              { id: 'aktif', label: 'Aktif' },
-              { id: 'selesai', label: 'Selesai' },
-              { id: 'dibatalkan', label: 'Dibatalkan' },
-              { id: 'kedaluwarsa', label: 'Kedaluwarsa' },
-            ].map((st) => (
-              <button
-                key={st.id}
-                onClick={() => setFilterStatus(st.id)}
-                className={`btn ${filterStatus === st.id ? 'btn-primary' : 'btn-outline'}`}
-                style={{ padding: '6px 14px', fontSize: '0.82rem' }}
-              >
-                {st.label}
-              </button>
-            ))}
+      {/* 1. KPI Cards Ringkasan Pendaftaran */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+              Total Pendaftaran
+            </span>
+            <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+              <CreditCard size={16} />
+            </div>
           </div>
+          <div className="text-3xl font-black text-slate-900">{totalPendaftaran}</div>
+          <div className="text-xs text-slate-500 mt-1">Semua riwayat pendaftaran</div>
+        </div>
 
-          {/* Search Box */}
-          <div style={{ position: 'relative', width: '100%', maxWidth: '320px' }}>
-            <Search
-              size={16}
-              style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-dim)' }}
-            />
-            <input
-              type="text"
-              placeholder="Cari peserta, email, kursus..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="input-field"
-              style={{ paddingLeft: '36px', fontSize: '0.86rem', height: '38px' }}
-            />
+        <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+              Perlu Konfirmasi
+            </span>
+            <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+              <Clock size={16} />
+            </div>
           </div>
+          <div className="text-3xl font-black text-amber-600">{menungguBayarCount}</div>
+          <div className="text-xs text-slate-500 mt-1">Status menunggu bayar</div>
+        </div>
+
+        <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+              Peserta Aktif
+            </span>
+            <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+              <CheckCircle2 size={16} />
+            </div>
+          </div>
+          <div className="text-3xl font-black text-emerald-600">{aktifCount}</div>
+          <div className="text-xs text-slate-500 mt-1">Belajar di ruang kursus</div>
+        </div>
+
+        <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+              Nominal Terverifikasi
+            </span>
+            <div className="w-8 h-8 rounded-xl bg-purple-50 text-[#843bab] flex items-center justify-center">
+              <DollarSign size={16} />
+            </div>
+          </div>
+          <div className="text-xl sm:text-2xl font-black text-slate-900 truncate">
+            {formatRupiah(totalNominalAktif)}
+          </div>
+          <div className="text-xs text-slate-500 mt-1">{aktifCount + selesaiCount} transaksi berhasil</div>
         </div>
       </div>
 
-      {/* Table of Registrations */}
-      {filteredRegistrations.length === 0 ? (
-        <div className="glass-panel" style={{ padding: '48px 24px', textAlign: 'center' }}>
-          <CreditCard size={40} color="var(--text-dim)" style={{ marginBottom: '12px' }} />
-          <h4 style={{ color: '#ffffff', marginBottom: '6px' }}>Tidak Ada Data Pendaftaran</h4>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem' }}>
-            Tidak ditemukan pendaftaran yang cocok dengan filter atau kata kunci pencarian.
-          </p>
+      {/* 2. Filter & Search Toolbar */}
+      <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+        {/* Search Box */}
+        <div className="relative flex-1 min-w-[280px]">
+          <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Cari nama peserta, email, no HP, atau kursus..."
+            className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-slate-50/70 border border-slate-200 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#843bab]/20 focus:border-[#843bab] transition-all"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600"
+            >
+              <X size={14} />
+            </button>
+          )}
         </div>
-      ) : (
-        <div className="glass-panel" style={{ overflowX: 'auto', padding: '0' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.88rem' }}>
+
+        {/* Status Filter Buttons */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
+          {[
+            { id: 'semua', label: 'Semua' },
+            { id: 'menunggu_bayar', label: 'Menunggu Bayar', count: menungguBayarCount },
+            { id: 'aktif', label: 'Aktif Belajar' },
+            { id: 'selesai', label: 'Selesai' },
+            { id: 'dibatalkan', label: 'Dibatalkan' },
+            { id: 'kedaluwarsa', label: 'Kedaluwarsa' },
+          ].map((st) => {
+            const isActive = filterStatus === st.id;
+            return (
+              <button
+                key={st.id}
+                type="button"
+                onClick={() => setFilterStatus(st.id)}
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-colors cursor-pointer ${
+                  isActive
+                    ? 'bg-[#843bab] text-white shadow-xs'
+                    : 'bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-900 border border-slate-200'
+                }`}
+              >
+                <span>{st.label}</span>
+                {st.count !== undefined && st.count > 0 && (
+                  <span
+                    className={`px-1.5 py-0.2 rounded-full text-[10px] font-extrabold ${
+                      isActive ? 'bg-[#ffdf0f] text-slate-900' : 'bg-amber-100 text-amber-800'
+                    }`}
+                  >
+                    {st.count}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* 3. Tabel Pendaftaran & Pembayaran */}
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+        <div className="px-6 py-4 border-b border-slate-200 bg-slate-50/60 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="font-extrabold text-sm text-slate-900">
+              Daftar Transaksi Pendaftaran
+            </span>
+            <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-[#843bab]/10 text-[#843bab]">
+              {filteredRegistrations.length} Data
+            </span>
+          </div>
+
+          <span className="text-xs text-slate-500">
+            Aksi admin: konfirmasi manual atau batalkan pendaftaran (BR-07)
+          </span>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm border-collapse">
             <thead>
-              <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.08)', backgroundColor: 'rgba(255, 255, 255, 0.02)' }}>
-                <th style={{ padding: '16px 20px', color: 'var(--text-dim)', fontWeight: 600 }}>Peserta</th>
-                <th style={{ padding: '16px 20px', color: 'var(--text-dim)', fontWeight: 600 }}>Kursus</th>
-                <th style={{ padding: '16px 20px', color: 'var(--text-dim)', fontWeight: 600 }}>Nominal & Metode</th>
-                <th style={{ padding: '16px 20px', color: 'var(--text-dim)', fontWeight: 600 }}>Status</th>
-                <th style={{ padding: '16px 20px', color: 'var(--text-dim)', fontWeight: 600 }}>Waktu / Batas</th>
-                <th style={{ padding: '16px 20px', color: 'var(--text-dim)', fontWeight: 600, textAlign: 'right' }}>Aksi Admin</th>
+              <tr className="bg-slate-100/70 border-b border-slate-200 text-xs font-extrabold text-slate-700 uppercase tracking-wider">
+                <th className="py-3.5 px-4 w-12 text-center">No</th>
+                <th className="py-3.5 px-4 min-w-[220px]">Peserta</th>
+                <th className="py-3.5 px-4 min-w-[220px]">Kursus Vokasi</th>
+                <th className="py-3.5 px-4 min-w-[150px]">Nominal & Metode</th>
+                <th className="py-3.5 px-4 text-center min-w-[140px]">Status</th>
+                <th className="py-3.5 px-4 min-w-[170px]">Waktu & Batas</th>
+                <th className="py-3.5 px-4 text-right min-w-[180px]">Aksi Admin</th>
               </tr>
             </thead>
-            <tbody>
-              {filteredRegistrations.map((reg) => (
-                <tr
-                  key={reg.id}
-                  style={{
-                    borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
-                    transition: 'background-color 0.15s ease'
-                  }}
-                >
-                  {/* Peserta */}
-                  <td style={{ padding: '16px 20px' }}>
-                    <div style={{ fontWeight: 600, color: '#ffffff', marginBottom: '2px' }}>
-                      {reg.peserta.nama_lengkap}
-                    </div>
-                    <div style={{ fontSize: '0.8rem', color: 'var(--text-dim)' }}>
-                      {reg.peserta.email}
-                    </div>
-                    {reg.peserta.no_hp && (
-                      <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-                        HP: {reg.peserta.no_hp}
+
+            <tbody className="divide-y divide-slate-200/80">
+              {filteredRegistrations.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="py-16 text-center text-slate-500">
+                    <div className="max-w-sm mx-auto space-y-3">
+                      <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto">
+                        <CreditCard size={24} />
                       </div>
-                    )}
-                  </td>
-
-                  {/* Kursus */}
-                  <td style={{ padding: '16px 20px' }}>
-                    <div style={{ color: '#ffffff', fontWeight: 500 }}>
-                      {reg.kursus.judul}
-                    </div>
-                  </td>
-
-                  {/* Nominal & Metode */}
-                  <td style={{ padding: '16px 20px' }}>
-                    <div style={{ color: '#ffffff', fontWeight: 600 }}>
-                      {reg.nominal === 0 ? 'Gratis' : formatRupiah(reg.nominal)}
-                    </div>
-                    <div style={{ fontSize: '0.76rem', color: 'var(--text-dim)', textTransform: 'capitalize' }}>
-                      {reg.metode_bayar.replace('_', ' ')}
-                    </div>
-                  </td>
-
-                  {/* Status */}
-                  <td style={{ padding: '16px 20px' }}>
-                    {getStatusBadge(reg.status)}
-                    {reg.alasan_batal && (
-                      <div style={{ fontSize: '0.76rem', color: '#f87171', marginTop: '4px', maxWidth: '200px' }}>
-                        Alasan: &ldquo;{reg.alasan_batal}&rdquo;
+                      <div className="font-bold text-slate-800 text-base">
+                        Tidak Ada Data Pendaftaran
                       </div>
-                    )}
-                  </td>
-
-                  {/* Waktu / Batas */}
-                  <td style={{ padding: '16px 20px', fontSize: '0.8rem', color: 'var(--text-dim)' }}>
-                    <div>Daftar: {formatDate(reg.didaftarkan_pada)}</div>
-                    {reg.status === 'menunggu_bayar' && reg.batas_bayar && (
-                      <div style={{ color: '#fbbf24', marginTop: '2px' }}>
-                        Batas: {formatDate(reg.batas_bayar)}
-                      </div>
-                    )}
-                    {reg.dibayar_pada && (
-                      <div style={{ color: '#10b981', marginTop: '2px' }}>
-                        Dibayar: {formatDate(reg.dibayar_pada)}
-                      </div>
-                    )}
-                  </td>
-
-                  {/* Aksi Admin */}
-                  <td style={{ padding: '16px 20px', textAlign: 'right' }}>
-                    <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
-                      {/* Konfirmasi Pembayaran untuk status menunggu_bayar */}
-                      {reg.status === 'menunggu_bayar' && (
-                        <button
-                          onClick={() => handleKonfirmasiPembayaran(reg)}
-                          disabled={loadingId === reg.id}
-                          className="btn btn-primary"
-                          style={{ padding: '6px 12px', fontSize: '0.8rem', backgroundColor: '#10b981' }}
-                        >
-                          <CheckCircle2 size={13} />
-                          <span>Konfirmasi</span>
-                        </button>
-                      )}
-
-                      {/* Batalkan Pendaftaran untuk status aktif atau menunggu_bayar */}
-                      {(reg.status === 'aktif' || reg.status === 'menunggu_bayar') && (
-                        <button
-                          onClick={() => {
-                            setCancelModalReg(reg);
-                            setCancelReason('');
-                            setCancelError(null);
-                          }}
-                          disabled={loadingId === reg.id}
-                          className="btn"
-                          style={{
-                            padding: '6px 12px',
-                            fontSize: '0.8rem',
-                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                            color: '#f87171',
-                            border: '1px solid rgba(239, 68, 68, 0.25)'
-                          }}
-                        >
-                          <XCircle size={13} />
-                          <span>Batalkan</span>
-                        </button>
-                      )}
-
-                      {/* Status terminal info */}
-                      {['selesai', 'dibatalkan', 'kedaluwarsa'].includes(reg.status) && (
-                        <span style={{ fontSize: '0.78rem', color: 'var(--text-dim)', fontStyle: 'italic' }}>
-                          Status Final
-                        </span>
-                      )}
+                      <p className="text-xs text-slate-500">
+                        {searchQuery || filterStatus !== 'semua'
+                          ? 'Tidak ada pendaftaran yang sesuai dengan filter atau kata kunci pencarian saat ini.'
+                          : 'Belum ada pendaftaran kursus yang masuk ke dalam sistem.'}
+                      </p>
                     </div>
                   </td>
                 </tr>
-              ))}
+              ) : (
+                filteredRegistrations.map((reg, idx) => {
+                  const isMenungguBayar = reg.status === 'menunggu_bayar';
+                  const isAktif = reg.status === 'aktif';
+                  const canCancel = isMenungguBayar || isAktif;
+
+                  return (
+                    <tr
+                      key={reg.id}
+                      className="hover:bg-purple-50/20 transition-colors group"
+                    >
+                      {/* No */}
+                      <td className="py-4 px-4 text-center text-xs text-slate-400 font-semibold">
+                        {idx + 1}
+                      </td>
+
+                      {/* Peserta */}
+                      <td className="py-4 px-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#843bab] to-purple-600 text-white flex items-center justify-center font-black text-xs shadow-2xs shrink-0">
+                            {reg.peserta.nama_lengkap.charAt(0).toUpperCase()}
+                          </div>
+                          <div>
+                            <div className="font-bold text-slate-900 group-hover:text-[#843bab] transition-colors">
+                              {reg.peserta.nama_lengkap}
+                            </div>
+                            <div className="text-xs text-slate-500 flex items-center gap-1.5 mt-0.5">
+                              <Mail size={11} className="text-slate-400" />
+                              <span>{reg.peserta.email}</span>
+                            </div>
+                            {reg.peserta.no_hp && (
+                              <div className="text-[11px] text-slate-400 flex items-center gap-1.5 mt-0.5">
+                                <Phone size={10} className="text-slate-400" />
+                                <span>{reg.peserta.no_hp}</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </td>
+
+                      {/* Kursus */}
+                      <td className="py-4 px-4">
+                        <div className="font-bold text-slate-900 line-clamp-1">
+                          {reg.kursus.judul}
+                        </div>
+                        <div className="text-xs text-slate-400 mt-0.5">
+                          Harga Katalog: {reg.kursus.harga === 0 ? 'Gratis' : formatRupiah(reg.kursus.harga)}
+                        </div>
+                      </td>
+
+                      {/* Nominal & Metode */}
+                      <td className="py-4 px-4">
+                        <div className="font-black text-slate-900">
+                          {reg.nominal === 0 ? 'Gratis' : formatRupiah(reg.nominal)}
+                        </div>
+                        <div className="inline-block px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-100 text-slate-600 uppercase tracking-wider mt-1">
+                          {reg.metode_bayar.replace('_', ' ')}
+                        </div>
+                      </td>
+
+                      {/* Status Pendaftaran */}
+                      <td className="py-4 px-4 text-center">
+                        <div>{renderStatusBadge(reg.status)}</div>
+                        {reg.alasan_batal && (
+                          <div
+                            className="text-[11px] text-rose-600 mt-1 max-w-[160px] truncate mx-auto"
+                            title={`Alasan Batal: "${reg.alasan_batal}"`}
+                          >
+                            Alasan: &ldquo;{reg.alasan_batal}&rdquo;
+                          </div>
+                        )}
+                      </td>
+
+                      {/* Waktu & Batas */}
+                      <td className="py-4 px-4 text-xs text-slate-600 space-y-1">
+                        <div>
+                          <span className="text-slate-400">Daftar:</span> {formatDate(reg.didaftarkan_pada)}
+                        </div>
+                        {isMenungguBayar && reg.batas_bayar && (
+                          <div className="text-amber-700 font-semibold flex items-center gap-1">
+                            <Clock size={11} className="text-amber-600" />
+                            <span>Batas: {formatDate(reg.batas_bayar)}</span>
+                          </div>
+                        )}
+                        {reg.dibayar_pada && (
+                          <div className="text-emerald-700 font-medium">
+                            <span className="text-slate-400">Lunas:</span> {formatDate(reg.dibayar_pada)}
+                          </div>
+                        )}
+                      </td>
+
+                      {/* Aksi Admin (Konfirmasi / Batal) */}
+                      <td className="py-4 px-4 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          {/* Tombol Konfirmasi Pembayaran */}
+                          {isMenungguBayar && (
+                            <button
+                              onClick={() => setConfirmModalReg(reg)}
+                              disabled={loadingId === reg.id}
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-2xs hover:shadow-xs transition-all cursor-pointer disabled:opacity-50"
+                              title="Konfirmasi Pembayaran Manual"
+                            >
+                              <CheckCircle2 size={13} />
+                              <span>Konfirmasi</span>
+                            </button>
+                          )}
+
+                          {/* Tombol Batalkan Pendaftaran */}
+                          {canCancel && (
+                            <button
+                              onClick={() => {
+                                setCancelModalReg(reg);
+                                setCancelReason('');
+                                setCancelError(null);
+                              }}
+                              disabled={loadingId === reg.id}
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-rose-200 text-rose-700 hover:bg-rose-50 font-bold text-xs shadow-2xs transition-all cursor-pointer disabled:opacity-50"
+                              title="Batalkan Pendaftaran"
+                            >
+                              <XCircle size={13} />
+                              <span>Batal</span>
+                            </button>
+                          )}
+
+                          {!canCancel && (
+                            <span className="text-xs text-slate-400 italic">
+                              Tidak ada aksi
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
             </tbody>
           </table>
         </div>
-      )}
+      </div>
 
-      {/* Modal Pembatalan Pendaftaran (BR-07) */}
-      {cancelModalReg && (
-        <div style={{
-          position: 'fixed',
-          inset: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.75)',
-          backdropFilter: 'blur(4px)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000,
-          padding: '20px'
-        }}>
-          <div className="glass-panel" style={{ width: '100%', maxWidth: '520px', padding: '28px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
-              <div style={{
-                width: '36px',
-                height: '36px',
-                borderRadius: '50%',
-                backgroundColor: 'rgba(239, 68, 68, 0.15)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#ef4444'
-              }}>
-                <XCircle size={20} />
+      {/* =========================================================================
+          4. MODAL KONFIRMASI PEMBAYARAN (menunggu_bayar -> aktif, BR-07)
+         ========================================================================= */}
+      {confirmModalReg && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-fadeIn">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-5">
+            <div className="flex items-start gap-3.5">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                <CheckCircle2 size={24} />
               </div>
-              <h3 style={{ fontSize: '1.25rem', color: '#ffffff', margin: 0 }}>
-                Batalkan Pendaftaran
-              </h3>
+              <div>
+                <h3 className="text-lg font-black text-slate-900">
+                  Konfirmasi Pembayaran
+                </h3>
+                <p className="text-xs text-slate-600 mt-1">
+                  Verifikasi pembayaran masuk dan aktifkan akses ruang belajar peserta (BR-07).
+                </p>
+              </div>
             </div>
 
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '16px' }}>
-              Anda akan membatalkan pendaftaran <strong style={{ color: '#ffffff' }}>{cancelModalReg.peserta.nama_lengkap}</strong> pada kursus <strong style={{ color: '#ffffff' }}>{cancelModalReg.kursus.judul}</strong>.
+            <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200 text-xs space-y-2">
+              <div className="flex justify-between">
+                <span className="text-slate-500">Nama Peserta:</span>
+                <strong className="text-slate-900">{confirmModalReg.peserta.nama_lengkap}</strong>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Kursus:</span>
+                <strong className="text-slate-900 line-clamp-1">{confirmModalReg.kursus.judul}</strong>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Nominal:</span>
+                <strong className="text-emerald-700 text-sm">
+                  {confirmModalReg.nominal === 0 ? 'Gratis' : formatRupiah(confirmModalReg.nominal)}
+                </strong>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Metode:</span>
+                <span className="font-semibold text-slate-700 uppercase">
+                  {confirmModalReg.metode_bayar.replace('_', ' ')}
+                </span>
+              </div>
+            </div>
+
+            <p className="text-xs text-slate-500 leading-relaxed">
+              Setelah dikonfirmasi, status pendaftaran berubah menjadi <strong>Aktif Belajar</strong> dan peserta dapat segera mengakses modul, video, dan kuis.
             </p>
 
-            {cancelModalReg.status === 'aktif' && (
-              <div style={{
-                padding: '10px 14px',
-                borderRadius: 'var(--radius-md)',
-                backgroundColor: 'rgba(239, 68, 68, 0.08)',
-                border: '1px solid rgba(239, 68, 68, 0.2)',
-                fontSize: '0.82rem',
-                color: '#f87171',
-                marginBottom: '16px'
-              }}>
-                <strong>Aturan Bisnis BR-07:</strong> Pembatalan pendaftaran yang sudah <em>aktif</em> wajib menyertakan alasan minimal 10 karakter.
-              </div>
-            )}
+            <div className="flex items-center justify-end gap-2.5 pt-2">
+              <button
+                type="button"
+                onClick={() => setConfirmModalReg(null)}
+                className="px-4 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold text-xs transition-colors cursor-pointer"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={handleExecuteKonfirmasi}
+                disabled={loadingId === confirmModalReg.id}
+                className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs hover:shadow transition-all cursor-pointer disabled:opacity-50"
+              >
+                {loadingId === confirmModalReg.id ? 'Memproses...' : 'Ya, Konfirmasi Lunas'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
-            <div style={{ marginBottom: '16px' }}>
-              <label style={{ display: 'block', fontSize: '0.86rem', color: 'var(--text-dim)', marginBottom: '6px' }}>
-                Alasan Pembatalan:
+      {/* =========================================================================
+          5. MODAL BATALKAN PENDAFTARAN (alasan wajib >= 10 karakter, BR-07)
+         ========================================================================= */}
+      {cancelModalReg && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-fadeIn">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-5">
+            <div className="flex items-start gap-3.5">
+              <div className="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
+                <AlertTriangle size={24} />
+              </div>
+              <div>
+                <h3 className="text-lg font-black text-slate-900">
+                  Batalkan Pendaftaran
+                </h3>
+                <p className="text-xs text-slate-600 mt-1">
+                  Pembatalan pendaftaran peserta pada kursus &ldquo;{cancelModalReg.kursus.judul}&rdquo;.
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-rose-50/60 rounded-2xl p-3.5 border border-rose-200 text-xs text-rose-800 leading-relaxed">
+              <strong>Aturan Sistem (BR-07):</strong> Pembatalan pendaftaran akan mengembalikan 1 kuota kursi kursus dan mencatat riwayat pembatalan ke Audit Log. Alasan pembatalan wajib diisi minimal 10 karakter.
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                Alasan Pembatalan <span className="text-rose-600">*</span>
               </label>
               <textarea
                 rows={3}
-                className="input-field"
-                placeholder="Contoh: Permintaan pembatalan dari peserta karena jadwal bentrok dengan tugas kantor."
                 value={cancelReason}
                 onChange={(e) => {
                   setCancelReason(e.target.value);
                   if (cancelError) setCancelError(null);
                 }}
-                style={{ width: '100%', resize: 'vertical', fontSize: '0.88rem' }}
+                placeholder="Contoh: Bukti transfer tidak valid dan peserta tidak merespons konfirmasi dalam 24 jam..."
+                className="w-full p-3 rounded-xl bg-slate-50 border border-slate-300 text-xs text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all"
               />
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', color: 'var(--text-dim)', marginTop: '4px' }}>
-                <span>{cancelReason.trim().length} karakter (minimal 10)</span>
-                {cancelReason.trim().length >= 10 && <span style={{ color: '#10b981' }}>&check; Memenuhi syarat BR-07</span>}
+              <div className="flex justify-between items-center mt-1 text-[11px]">
+                <span className={cancelReason.trim().length < 10 ? 'text-amber-600' : 'text-emerald-600'}>
+                  {cancelReason.trim().length}/10 karakter minimal
+                </span>
+                {cancelError && <span className="text-rose-600 font-semibold">{cancelError}</span>}
               </div>
-              {cancelError && (
-                <div style={{ color: '#ef4444', fontSize: '0.82rem', marginTop: '6px' }}>
-                  {cancelError}
-                </div>
-              )}
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+            <div className="flex items-center justify-end gap-2.5 pt-2">
               <button
+                type="button"
                 onClick={() => setCancelModalReg(null)}
-                className="btn btn-outline"
-                style={{ padding: '8px 18px', fontSize: '0.88rem' }}
+                className="px-4 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold text-xs transition-colors cursor-pointer"
               >
-                Kembali
+                Tutup
               </button>
               <button
-                onClick={handleBatalkanPendaftaran}
-                disabled={loadingId === cancelModalReg.id || (cancelModalReg.status === 'aktif' && cancelReason.trim().length < 10)}
-                className="btn btn-danger"
-                style={{ padding: '8px 20px', fontSize: '0.88rem' }}
+                type="button"
+                onClick={handleExecuteBatal}
+                disabled={loadingId === cancelModalReg.id || cancelReason.trim().length < 10}
+                className="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-xs hover:shadow transition-all cursor-pointer disabled:opacity-50"
               >
-                {loadingId === cancelModalReg.id ? 'Memproses...' : 'Konfirmasi Batalkan'}
+                {loadingId === cancelModalReg.id ? 'Membatalkan...' : 'Batalkan Pendaftaran'}
               </button>
             </div>
           </div>

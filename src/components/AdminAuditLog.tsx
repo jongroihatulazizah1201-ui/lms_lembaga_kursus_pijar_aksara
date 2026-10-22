@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   FileText,
   Search,
@@ -10,11 +10,20 @@ import {
   ArrowRight,
   ChevronDown,
   ChevronUp,
-  Tag
+  Tag,
+  Shield,
+  CreditCard,
+  BookOpen,
+  Filter,
+  RotateCcw,
+  X,
+  Code,
+  Layers,
+  Activity,
 } from 'lucide-react';
 
 export interface AuditLogItem {
-  id: string;
+  id: string | number;
   pelaku_id: string | null;
   aksi: string;
   nama_tabel: string;
@@ -35,8 +44,8 @@ interface Props {
 
 export default function AdminAuditLog({ logs }: Props) {
   const [searchQuery, setSearchQuery] = useState('');
-  const [filterAction, setFilterAction] = useState<string>('semua');
-  const [expandedLogId, setExpandedLogId] = useState<string | null>(null);
+  const [filterCategory, setFilterCategory] = useState<string>('semua');
+  const [expandedLogId, setExpandedLogId] = useState<string | number | null>(null);
 
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleDateString('id-ID', {
@@ -45,214 +54,457 @@ export default function AdminAuditLog({ logs }: Props) {
       year: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
-      second: '2-digit'
+      second: '2-digit',
     });
   };
 
-  const getActionBadge = (action: string) => {
+  // Kategori Aksi
+  const getActionCategory = (action: string) => {
+    if (
+      action.includes('kursus') ||
+      action.includes('modul') ||
+      action.includes('soal')
+    ) {
+      return 'kursus';
+    }
+    if (
+      action.includes('pembayaran') ||
+      action.includes('pendaftaran') ||
+      action.includes('bayar')
+    ) {
+      return 'pendaftaran';
+    }
+    if (
+      action.includes('peran') ||
+      action.includes('status_pengguna') ||
+      action.includes('user') ||
+      action.includes('pengguna')
+    ) {
+      return 'pengguna';
+    }
+    return 'lainnya';
+  };
+
+  // Ringkasan Statistik
+  const totalLogs = logs.length;
+  const kursusLogsCount = logs.filter((l) => getActionCategory(l.aksi) === 'kursus').length;
+  const pendaftaranLogsCount = logs.filter((l) => getActionCategory(l.aksi) === 'pendaftaran').length;
+  const penggunaLogsCount = logs.filter((l) => getActionCategory(l.aksi) === 'pengguna').length;
+
+  // Filter Data Log
+  const filteredLogs = useMemo(() => {
+    return logs.filter((log) => {
+      const q = searchQuery.toLowerCase().trim();
+      const actorName = log.pelaku?.nama_lengkap || '';
+      const actorEmail = log.pelaku?.email || '';
+
+      const matchesSearch =
+        !q ||
+        log.aksi.toLowerCase().includes(q) ||
+        log.nama_tabel.toLowerCase().includes(q) ||
+        (log.id_data && log.id_data.toLowerCase().includes(q)) ||
+        actorName.toLowerCase().includes(q) ||
+        actorEmail.toLowerCase().includes(q);
+
+      const category = getActionCategory(log.aksi);
+      const matchesCategory =
+        filterCategory === 'semua' || category === filterCategory;
+
+      return matchesSearch && matchesCategory;
+    });
+  }, [logs, searchQuery, filterCategory]);
+
+  const toggleExpand = (logId: string) => {
+    setExpandedLogId((prev) => (prev === logId ? null : logId));
+  };
+
+  // Badge Aksi
+  const renderActionBadge = (action: string) => {
     switch (action) {
       case 'terbitkan_kursus':
-        return <span className="badge badge-success">Terbitkan Kursus</span>;
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+            Terbitkan Kursus
+          </span>
+        );
       case 'kembalikan_kursus':
-        return <span className="badge badge-warning">Kembalikan ke Draf</span>;
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200">
+            Kembalikan ke Draf
+          </span>
+        );
       case 'tutup_kursus':
-        return <span className="badge badge-danger">Tutup Kursus</span>;
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200">
+            Tutup Kursus
+          </span>
+        );
       case 'buka_kursus':
-        return <span className="badge badge-info">Buka Kursus</span>;
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">
+            Buka Kursus
+          </span>
+        );
       case 'ajukan_kursus':
-        return <span className="badge badge-info">Ajukan Kursus</span>;
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-purple-50 text-[#843bab] border border-purple-200">
+            Ajukan Kursus
+          </span>
+        );
       case 'ubah_kuota_kursus':
-        return <span className="badge badge-primary">Ubah Kuota</span>;
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+            Ubah Kuota
+          </span>
+        );
       case 'konfirmasi_pembayaran':
-        return <span className="badge badge-success">Konfirmasi Bayar</span>;
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+            Konfirmasi Bayar
+          </span>
+        );
       case 'batalkan_pendaftaran':
-        return <span className="badge badge-danger">Batal Pendaftaran</span>;
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200">
+            Batal Pendaftaran
+          </span>
+        );
       case 'ubah_peran_pengguna':
-        return <span className="badge badge-warning">Ubah Peran</span>;
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200">
+            Ubah Peran
+          </span>
+        );
       case 'ubah_status_pengguna':
-        return <span className="badge badge-danger">Ubah Status Akun</span>;
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200">
+            Ubah Status Akun
+          </span>
+        );
       default:
-        return <span className="badge badge-dim">{action}</span>;
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+            {action.replace(/_/g, ' ')}
+          </span>
+        );
     }
   };
 
-  const filteredLogs = logs.filter((log) => {
-    const matchesAction = filterAction === 'semua' || log.aksi === filterAction;
-    const actorName = log.pelaku?.nama_lengkap || '';
-    const actorEmail = log.pelaku?.email || '';
-    const matchesSearch =
-      log.aksi.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      log.nama_tabel.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      actorName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      actorEmail.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesAction && matchesSearch;
-  });
-
   return (
-    <div>
-      {/* Search and Action Filter */}
-      <div className="glass-panel" style={{ padding: '20px', marginBottom: '24px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-            {[
-              { id: 'semua', label: 'Semua Aksi' },
-              { id: 'terbitkan_kursus', label: 'Terbitkan' },
-              { id: 'kembalikan_kursus', label: 'Kembalikan' },
-              { id: 'ubah_kuota_kursus', label: 'Kuota' },
-              { id: 'konfirmasi_pembayaran', label: 'Konfirmasi Bayar' },
-              { id: 'batalkan_pendaftaran', label: 'Batal Daftar' },
-              { id: 'ubah_peran_pengguna', label: 'Peran Akun' },
-            ].map((act) => (
-              <button
-                key={act.id}
-                onClick={() => setFilterAction(act.id)}
-                className={`btn ${filterAction === act.id ? 'btn-primary' : 'btn-outline'}`}
-                style={{ padding: '6px 14px', fontSize: '0.82rem' }}
-              >
-                {act.label}
-              </button>
-            ))}
+    <div className="space-y-6">
+      {/* 1. KPI Cards Ringkasan Audit Log */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+              Total Log Aktivitas
+            </span>
+            <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+              <Activity size={16} />
+            </div>
           </div>
+          <div className="text-3xl font-black text-slate-900">{totalLogs}</div>
+          <div className="text-xs text-slate-500 mt-1">Audit trail sistem (BR-12)</div>
+        </div>
 
-          <div style={{ position: 'relative', width: '100%', maxWidth: '320px' }}>
-            <Search
-              size={16}
-              style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-dim)' }}
-            />
-            <input
-              type="text"
-              placeholder="Cari aksi, tabel, atau pelaku..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="input-field"
-              style={{ paddingLeft: '36px', fontSize: '0.86rem', height: '38px' }}
-            />
+        <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+              Aktivitas Kursus
+            </span>
+            <div className="w-8 h-8 rounded-xl bg-purple-50 text-[#843bab] flex items-center justify-center">
+              <BookOpen size={16} />
+            </div>
           </div>
+          <div className="text-3xl font-black text-[#843bab]">{kursusLogsCount}</div>
+          <div className="text-xs text-slate-500 mt-1">Siklus terbit & revisi</div>
+        </div>
+
+        <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+              Transaksi & Bayar
+            </span>
+            <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+              <CreditCard size={16} />
+            </div>
+          </div>
+          <div className="text-3xl font-black text-emerald-600">{pendaftaranLogsCount}</div>
+          <div className="text-xs text-slate-500 mt-1">Konfirmasi & pembatalan</div>
+        </div>
+
+        <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+              Manajemen Akun
+            </span>
+            <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+              <Shield size={16} />
+            </div>
+          </div>
+          <div className="text-3xl font-black text-amber-600">{penggunaLogsCount}</div>
+          <div className="text-xs text-slate-500 mt-1">Peran & status pengguna</div>
         </div>
       </div>
 
-      {/* Logs Table */}
-      {filteredLogs.length === 0 ? (
-        <div className="glass-panel" style={{ padding: '48px 24px', textAlign: 'center' }}>
-          <FileText size={40} color="var(--text-dim)" style={{ marginBottom: '12px' }} />
-          <h4 style={{ color: '#ffffff', marginBottom: '6px' }}>Tidak Ada Rekaman Audit Log</h4>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem' }}>
-            Belum ada aktivitas mutasi sensitif yang tercatat atau sesuai dengan filter pencarian.
-          </p>
+      {/* 2. Filter & Search Toolbar */}
+      <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+        {/* Search Input */}
+        <div className="relative flex-1 min-w-[280px]">
+          <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Cari aksi, nama pelaku, email, atau tabel..."
+            className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-slate-50/70 border border-slate-200 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#843bab]/20 focus:border-[#843bab] transition-all"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600"
+            >
+              <X size={14} />
+            </button>
+          )}
         </div>
-      ) : (
-        <div className="glass-panel" style={{ overflowX: 'auto', padding: '0' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.88rem' }}>
+
+        {/* Category Filter Buttons */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
+          {[
+            { id: 'semua', label: 'Semua Kategori' },
+            { id: 'kursus', label: 'Kursus', count: kursusLogsCount },
+            { id: 'pendaftaran', label: 'Pendaftaran', count: pendaftaranLogsCount },
+            { id: 'pengguna', label: 'Pengguna', count: penggunaLogsCount },
+          ].map((cat) => {
+            const isActive = filterCategory === cat.id;
+            return (
+              <button
+                key={cat.id}
+                type="button"
+                onClick={() => setFilterCategory(cat.id)}
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-colors cursor-pointer ${
+                  isActive
+                    ? 'bg-[#843bab] text-white shadow-xs'
+                    : 'bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-900 border border-slate-200'
+                }`}
+              >
+                <span>{cat.label}</span>
+                {cat.count !== undefined && cat.count > 0 && (
+                  <span
+                    className={`px-1.5 py-0.2 rounded-full text-[10px] font-extrabold ${
+                      isActive ? 'bg-[#ffdf0f] text-slate-900' : 'bg-slate-200 text-slate-700'
+                    }`}
+                  >
+                    {cat.count}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+
+          {(searchQuery || filterCategory !== 'semua') && (
+            <button
+              onClick={() => {
+                setSearchQuery('');
+                setFilterCategory('semua');
+              }}
+              className="p-2 rounded-xl text-slate-500 hover:text-rose-600 hover:bg-rose-50 border border-slate-200 transition-colors"
+              title="Reset Filter"
+            >
+              <RotateCcw size={14} />
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* 3. Tabel Riwayat Audit Log */}
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+        <div className="px-6 py-4 border-b border-slate-200 bg-slate-50/60 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="font-extrabold text-sm text-slate-900">
+              Riwayat Aktivitas & Perubahan Data
+            </span>
+            <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-[#843bab]/10 text-[#843bab]">
+              {filteredLogs.length} Catatan
+            </span>
+          </div>
+
+          <span className="text-xs text-slate-500">
+            Immutable Audit Trail sesuai ketentuan BR-12
+          </span>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm border-collapse">
             <thead>
-              <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.08)', backgroundColor: 'rgba(255, 255, 255, 0.02)' }}>
-                <th style={{ padding: '16px 20px', color: 'var(--text-dim)', fontWeight: 600 }}>Waktu</th>
-                <th style={{ padding: '16px 20px', color: 'var(--text-dim)', fontWeight: 600 }}>Pelaku</th>
-                <th style={{ padding: '16px 20px', color: 'var(--text-dim)', fontWeight: 600 }}>Aksi (BR-12)</th>
-                <th style={{ padding: '16px 20px', color: 'var(--text-dim)', fontWeight: 600 }}>Tabel & Data</th>
-                <th style={{ padding: '16px 20px', color: 'var(--text-dim)', fontWeight: 600, textAlign: 'right' }}>Rincian Perubahan</th>
+              <tr className="bg-slate-100/70 border-b border-slate-200 text-xs font-extrabold text-slate-700 uppercase tracking-wider">
+                <th className="py-3.5 px-4 w-12 text-center">No</th>
+                <th className="py-3.5 px-4 min-w-[170px]">Waktu Kejadian</th>
+                <th className="py-3.5 px-4 min-w-[200px]">Pelaku Aksi</th>
+                <th className="py-3.5 px-4 min-w-[170px]">Jenis Aksi</th>
+                <th className="py-3.5 px-4 min-w-[150px]">Target Data</th>
+                <th className="py-3.5 px-4 text-right min-w-[100px]">Rincian</th>
               </tr>
             </thead>
-            <tbody>
-              {filteredLogs.map((log) => {
-                const isExpanded = expandedLogId === log.id;
 
-                return (
-                  <tr
-                    key={log.id}
-                    style={{
-                      borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
-                      transition: 'background-color 0.15s ease'
-                    }}
-                  >
-                    {/* Waktu */}
-                    <td style={{ padding: '16px 20px', color: 'var(--text-dim)', whiteSpace: 'nowrap', fontSize: '0.82rem' }}>
-                      <div style={{ color: '#ffffff', fontWeight: 500 }}>
-                        {formatDate(log.dibuat_pada)}
+            <tbody className="divide-y divide-slate-200/80">
+              {filteredLogs.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="py-16 text-center text-slate-500">
+                    <div className="max-w-sm mx-auto space-y-3">
+                      <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto">
+                        <FileText size={24} />
                       </div>
-                    </td>
-
-                    {/* Pelaku */}
-                    <td style={{ padding: '16px 20px' }}>
-                      {log.pelaku ? (
-                        <div>
-                          <div style={{ color: '#ffffff', fontWeight: 600 }}>
-                            {log.pelaku.nama_lengkap}
-                          </div>
-                          <div style={{ fontSize: '0.78rem', color: 'var(--text-dim)' }}>
-                            {log.pelaku.email}
-                          </div>
-                        </div>
-                      ) : (
-                        <span style={{ fontSize: '0.8rem', color: 'var(--text-dim)', fontStyle: 'italic' }}>
-                          Sistem / Otomatis
-                        </span>
-                      )}
-                    </td>
-
-                    {/* Aksi */}
-                    <td style={{ padding: '16px 20px' }}>
-                      {getActionBadge(log.aksi)}
-                    </td>
-
-                    {/* Tabel & ID Data */}
-                    <td style={{ padding: '16px 20px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.82rem' }}>
-                        <Database size={13} color="var(--primary)" />
-                        <span style={{ color: '#ffffff', textTransform: 'capitalize' }}>
-                          {log.nama_tabel}
-                        </span>
+                      <div className="font-bold text-slate-800 text-base">
+                        Tidak Ada Catatan Log Ditemukan
                       </div>
-                      {log.id_data && (
-                        <div style={{ fontSize: '0.74rem', color: 'var(--text-dim)', fontFamily: 'monospace' }}>
-                          {log.id_data.substring(0, 18)}...
-                        </div>
-                      )}
-                    </td>
+                      <p className="text-xs text-slate-500">
+                        {searchQuery || filterCategory !== 'semua'
+                          ? 'Tidak ada log aktivitas yang cocok dengan kriteria pencarian saat ini.'
+                          : 'Belum ada rekaman audit log di sistem.'}
+                      </p>
+                    </div>
+                  </td>
+                </tr>
+              ) : (
+                filteredLogs.map((log, idx) => {
+                  const isExpanded = expandedLogId === log.id;
+                  const hasChanges = log.data_sebelum || log.data_sesudah;
 
-                    {/* Rincian Perubahan */}
-                    <td style={{ padding: '16px 20px', textAlign: 'right' }}>
-                      <button
-                        onClick={() => setExpandedLogId(isExpanded ? null : log.id)}
-                        className="btn btn-outline"
-                        style={{ padding: '5px 12px', fontSize: '0.78rem' }}
+                  return (
+                    <React.Fragment key={log.id}>
+                      <tr
+                        className={`hover:bg-purple-50/20 transition-colors ${
+                          isExpanded ? 'bg-purple-50/30' : ''
+                        }`}
                       >
-                        <span>{isExpanded ? 'Tutup' : 'Lihat Data'}</span>
-                        {isExpanded ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
-                      </button>
+                        {/* No */}
+                        <td className="py-4 px-4 text-center text-xs text-slate-400 font-semibold">
+                          {idx + 1}
+                        </td>
 
+                        {/* Waktu */}
+                        <td className="py-4 px-4">
+                          <div className="font-bold text-slate-900 text-xs">
+                            {formatDate(log.dibuat_pada)}
+                          </div>
+                          <div className="text-[11px] text-slate-400 font-mono mt-0.5">
+                            #{log.id}
+                          </div>
+                        </td>
+
+                        {/* Pelaku */}
+                        <td className="py-4 px-4">
+                          {log.pelaku ? (
+                            <div>
+                              <div className="font-bold text-slate-900 text-xs flex items-center gap-1.5">
+                                <span>{log.pelaku.nama_lengkap}</span>
+                                <span className="text-[10px] font-extrabold px-1.5 py-0.2 rounded bg-purple-50 text-[#843bab] uppercase">
+                                  {log.pelaku.peran}
+                                </span>
+                              </div>
+                              <div className="text-[11px] text-slate-400 mt-0.5">
+                                {log.pelaku.email}
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="text-xs text-slate-500 italic">
+                              Sistem Otomatis
+                            </div>
+                          )}
+                        </td>
+
+                        {/* Jenis Aksi */}
+                        <td className="py-4 px-4">
+                          {renderActionBadge(log.aksi)}
+                        </td>
+
+                        {/* Target Data */}
+                        <td className="py-4 px-4">
+                          <div className="flex items-center gap-1 text-xs font-mono font-bold text-slate-800">
+                            <Database size={12} className="text-slate-400" />
+                            <span>{log.nama_tabel}</span>
+                          </div>
+                          {log.id_data && (
+                            <div className="text-[10px] text-slate-400 font-mono mt-0.5">
+                              ID: {String(log.id_data).substring(0, 8)}...
+                            </div>
+                          )}
+                        </td>
+
+                        {/* Tombol Rincian / Expand */}
+                        <td className="py-4 px-4 text-right">
+                          {hasChanges ? (
+                            <button
+                              onClick={() => toggleExpand(log.id)}
+                              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-bold transition-colors cursor-pointer"
+                            >
+                              <span>{isExpanded ? 'Tutup' : 'Lihat Diff'}</span>
+                              {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                            </button>
+                          ) : (
+                            <span className="text-xs text-slate-400 italic">
+                              -
+                            </span>
+                          )}
+                        </td>
+                      </tr>
+
+                      {/* Expandable Diff Row */}
                       {isExpanded && (
-                        <div style={{
-                          marginTop: '12px',
-                          padding: '12px',
-                          borderRadius: 'var(--radius-sm)',
-                          backgroundColor: 'rgba(0, 0, 0, 0.4)',
-                          border: '1px solid rgba(255, 255, 255, 0.08)',
-                          textAlign: 'left',
-                          fontSize: '0.78rem',
-                          fontFamily: 'monospace'
-                        }}>
-                          <div style={{ marginBottom: '8px' }}>
-                            <strong style={{ color: '#f87171' }}>[Data Sebelum]:</strong>
-                            <pre style={{ margin: '4px 0 0 0', color: 'var(--text-muted)', overflowX: 'auto' }}>
-                              {JSON.stringify(log.data_sebelum, null, 2)}
-                            </pre>
-                          </div>
-                          <div>
-                            <strong style={{ color: '#10b981' }}>[Data Sesudah]:</strong>
-                            <pre style={{ margin: '4px 0 0 0', color: '#ffffff', overflowX: 'auto' }}>
-                              {JSON.stringify(log.data_sesudah, null, 2)}
-                            </pre>
-                          </div>
-                        </div>
+                        <tr className="bg-slate-50/80 border-b border-slate-200">
+                          <td colSpan={6} className="p-5">
+                            <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs space-y-3">
+                              <div className="flex items-center justify-between text-xs border-b border-slate-100 pb-2">
+                                <div className="flex items-center gap-2 font-bold text-slate-800">
+                                  <Code size={14} className="text-[#843bab]" />
+                                  <span>Rincian Perubahan Data (Snapshot Audit)</span>
+                                </div>
+                                <span className="text-[11px] text-slate-400 font-mono">
+                                  Log ID: {log.id}
+                                </span>
+                              </div>
+
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono">
+                                {/* Data Sebelum */}
+                                <div className="space-y-1.5">
+                                  <div className="font-sans font-bold text-rose-700 text-[11px] flex items-center gap-1">
+                                    <span className="w-2 h-2 rounded-full bg-rose-500" />
+                                    Data Sebelum (Old State)
+                                  </div>
+                                  <pre className="p-3 bg-slate-900 text-slate-100 rounded-xl overflow-x-auto text-[11px] leading-relaxed max-h-60">
+                                    {log.data_sebelum
+                                      ? JSON.stringify(log.data_sebelum, null, 2)
+                                      : '// Data null / rekaman baru dibuat'}
+                                  </pre>
+                                </div>
+
+                                {/* Data Sesudah */}
+                                <div className="space-y-1.5">
+                                  <div className="font-sans font-bold text-emerald-700 text-[11px] flex items-center gap-1">
+                                    <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                                    Data Sesudah (New State)
+                                  </div>
+                                  <pre className="p-3 bg-slate-900 text-emerald-400 rounded-xl overflow-x-auto text-[11px] leading-relaxed max-h-60">
+                                    {log.data_sesudah
+                                      ? JSON.stringify(log.data_sesudah, null, 2)
+                                      : '// Data null / rekaman dihapus'}
+                                  </pre>
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
                       )}
-                    </td>
-                  </tr>
-                );
-              })}
+                    </React.Fragment>
+                  );
+                })
+              )}
             </tbody>
           </table>
         </div>
-      )}
+      </div>
     </div>
   );
 }
