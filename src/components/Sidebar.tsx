@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import Logo from './Logo';
 import { logoutAction } from '@/app/auth/actions';
 import { createClient } from '@/lib/supabase/client';
@@ -12,7 +12,6 @@ import {
   ShieldCheck,
   GraduationCap,
   CreditCard,
-  Award,
   FileEdit,
   PlusCircle,
   ClipboardCheck,
@@ -25,7 +24,6 @@ import {
   UserPlus,
   Menu,
   X,
-  ChevronRight,
   Shield,
   User,
   Loader2
@@ -58,6 +56,9 @@ interface NavSection {
 
 export default function Sidebar({ user, profile }: SidebarProps) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const currentTab = searchParams.get('tab');
+
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isSwitching, setIsSwitching] = useState<string | null>(null);
 
@@ -89,7 +90,7 @@ export default function Sidebar({ user, profile }: SidebarProps) {
   };
 
   // =========================================================================
-  // STRUKTUR MENU DITATA SPESIFIK & RAPI BERDASARKAN PERAN PENGGUNA
+  // STRUKTUR MENU DITATA SPESIFIK & RAPI BERDASARKAN FITUR RIIL SETIAP PERAN
   // =========================================================================
   let navSections: NavSection[] = [];
 
@@ -97,7 +98,7 @@ export default function Sidebar({ user, profile }: SidebarProps) {
     // 1. MENU KHUSUS ADMINISTRATOR
     navSections = [
       {
-        title: 'Panel Administrator',
+        title: 'Manajemen Administrator',
         items: [
           {
             label: 'Dashboard Statistik',
@@ -107,43 +108,43 @@ export default function Sidebar({ user, profile }: SidebarProps) {
             badgeColor: 'bg-purple-50 text-[#843bab] border-purple-200'
           },
           {
-            label: 'Tinjauan Kursus (BR-02)',
+            label: 'Tinjauan Kursus',
             href: '/admin?tab=kursus',
             icon: CheckSquare
           },
           {
-            label: 'Pendaftaran & Bayar',
+            label: 'Pendaftaran & Pembayaran',
             href: '/admin?tab=pendaftaran',
             icon: CreditCard
           },
           {
-            label: 'Kelola Akun & Peran',
+            label: 'Kelola Pengguna & Peran',
             href: '/admin?tab=pengguna',
             icon: Users
           },
           {
-            label: 'Audit Log Sistem (BR-12)',
+            label: 'Audit Log Sistem',
             href: '/admin?tab=audit',
             icon: FileText
           },
           {
-            label: 'Buku Nilai Seluruh Kursus',
+            label: 'Buku Nilai (Semua Kursus)',
             href: '/instruktur/nilai',
             icon: ClipboardCheck
           },
         ],
       },
       {
-        title: 'Akses Publik & Referensi',
+        title: 'Katalog & Informasi',
         items: [
           { label: 'Katalog Kursus', href: '/kursus', icon: BookOpen },
-          { label: 'Beranda Utama', href: '/', icon: Home },
           { label: 'Verifikasi Sertifikat', href: '/sertifikat/cek', icon: ShieldCheck },
+          { label: 'Beranda Utama', href: '/', icon: Home },
         ],
       },
     ];
   } else if (isInstruktur) {
-    // 2. MENU KHUSUS INSTRUKTUR (Pendidik)
+    // 2. MENU KHUSUS INSTRUKTUR
     navSections = [
       {
         title: 'Studio Instruktur',
@@ -170,19 +171,19 @@ export default function Sidebar({ user, profile }: SidebarProps) {
         ],
       },
       {
-        title: 'Referensi Publik',
+        title: 'Katalog & Informasi',
         items: [
           { label: 'Katalog Kursus', href: '/kursus', icon: BookOpen },
-          { label: 'Beranda Utama', href: '/', icon: Home },
           { label: 'Verifikasi Sertifikat', href: '/sertifikat/cek', icon: ShieldCheck },
+          { label: 'Beranda Utama', href: '/', icon: Home },
         ],
       },
     ];
   } else if (isPeserta) {
-    // 3. MENU KHUSUS PESERTA (Siswa Pembelajar)
+    // 3. MENU KHUSUS PESERTA
     navSections = [
       {
-        title: 'Ruang Belajar Saya',
+        title: 'Pembelajaran Saya',
         items: [
           {
             label: 'Kursus Saya',
@@ -191,24 +192,14 @@ export default function Sidebar({ user, profile }: SidebarProps) {
             badge: 'Aktif',
             badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-200'
           },
-          {
-            label: 'Status Pendaftaran',
-            href: '/kursus-saya#pendaftaran',
-            icon: CreditCard
-          },
-          {
-            label: 'Sertifikat Kelulusan',
-            href: '/kursus-saya#sertifikat',
-            icon: Award
-          },
         ],
       },
       {
-        title: 'Eksplorasi Kursus',
+        title: 'Katalog & Informasi',
         items: [
           { label: 'Katalog Kursus', href: '/kursus', icon: BookOpen },
-          { label: 'Beranda Utama', href: '/', icon: Home },
           { label: 'Verifikasi Sertifikat', href: '/sertifikat/cek', icon: ShieldCheck },
+          { label: 'Beranda Utama', href: '/', icon: Home },
         ],
       },
     ];
@@ -216,26 +207,74 @@ export default function Sidebar({ user, profile }: SidebarProps) {
     // 4. PENGUNJUNG TAMU (Belum Login)
     navSections = [
       {
-        title: 'Fitur Utama Publik',
+        title: 'Menu Utama Publik',
         items: [
-          { label: 'Beranda Utama', href: '/', icon: Home },
           { label: 'Katalog Kursus', href: '/kursus', icon: BookOpen },
           { label: 'Verifikasi Sertifikat', href: '/sertifikat/cek', icon: ShieldCheck },
+          { label: 'Beranda Utama', href: '/', icon: Home },
         ],
       },
     ];
   }
 
+  // =========================================================================
+  // LOGIKA AKTIF TUNGGAL (STRICT SINGLE ACTIVE STATE - TANPA OVERLAP)
+  // Memastikan HANYA 1 tombol menu yang berwarna ungu / aktif pada satu waktu
+  // =========================================================================
   const isLinkActive = (href: string) => {
-    if (href === '/') return pathname === '/';
-    const baseHref = href.split('?')[0].split('#')[0];
-    if (baseHref === '/admin') {
-      if (pathname.startsWith('/admin/dashboard')) {
-        return false;
-      }
-      return pathname === '/admin';
+    // 1. Beranda Utama (tepat '/')
+    if (href === '/') {
+      return pathname === '/';
     }
-    return pathname.startsWith(baseHref);
+
+    // 2. Sub-tab Admin di halaman /admin (kursus, pendaftaran, pengguna, audit)
+    if (href.startsWith('/admin?tab=')) {
+      if (pathname !== '/admin') return false;
+      const targetTab = href.split('?tab=')[1];
+      if (targetTab === 'kursus') {
+        return !currentTab || currentTab === 'kursus';
+      }
+      return currentTab === targetTab;
+    }
+
+    // 3. Dashboard Statistik Admin (/admin/dashboard)
+    if (href === '/admin/dashboard') {
+      return pathname === '/admin/dashboard';
+    }
+
+    // 4. Instruktur - Kelola Kursus & Silabus (/instruktur dan editor /instruktur/kursus/[id])
+    if (href === '/instruktur') {
+      if (pathname === '/instruktur') return true;
+      // Aktif saat di halaman edit modul/kursus, tapi BUKAN saat di form /instruktur/kursus/baru
+      return pathname.startsWith('/instruktur/kursus/') && pathname !== '/instruktur/kursus/baru';
+    }
+
+    // 5. Instruktur - Form Buat Kursus Baru (/instruktur/kursus/baru)
+    if (href === '/instruktur/kursus/baru') {
+      return pathname === '/instruktur/kursus/baru';
+    }
+
+    // 6. Peserta & Buku Nilai (/instruktur/nilai)
+    if (href === '/instruktur/nilai') {
+      return pathname === '/instruktur/nilai' || pathname.startsWith('/instruktur/nilai/');
+    }
+
+    // 7. Kursus Saya & Ruang Belajar (/kursus-saya dan /belajar/[id])
+    if (href === '/kursus-saya') {
+      return pathname === '/kursus-saya' || pathname.startsWith('/belajar');
+    }
+
+    // 8. Katalog Kursus (/kursus) - Ketat: TIDAK BOLEH mencocokkan /kursus-saya!
+    if (href === '/kursus') {
+      return pathname === '/kursus' || pathname.startsWith('/kursus/');
+    }
+
+    // 9. Verifikasi Sertifikat (/sertifikat/cek)
+    if (href === '/sertifikat/cek') {
+      return pathname.startsWith('/sertifikat');
+    }
+
+    return pathname === href;
   };
 
   const closeMobile = () => setMobileOpen(false);

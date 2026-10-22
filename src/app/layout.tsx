@@ -1,3 +1,4 @@
+import React, { Suspense } from 'react';
 import type { Metadata } from 'next';
 import './globals.css';
 import { createClient } from '@/lib/supabase/server';
@@ -55,8 +56,10 @@ export default async function RootLayout({
   return (
     <html lang="id">
       <body className="bg-white text-slate-900 min-h-screen flex flex-col lg:flex-row antialiased selection:bg-[#ffdf0f] selection:text-slate-900">
-        {/* Left Sidebar untuk pengguna terautentikasi */}
-        <Sidebar user={user} profile={profile} />
+        {/* Left Sidebar untuk pengguna terautentikasi (Dibalut Suspense untuk useSearchParams) */}
+        <Suspense fallback={<aside className="w-72 shrink-0 border-r border-slate-200 bg-white h-screen sticky top-0 hidden lg:block z-30" />}>
+          <Sidebar user={user} profile={profile} />
+        </Suspense>
 
         {/* Workspace konten aplikasi (Tanpa Footer publik saat login) */}
         <div className="flex-1 min-w-0 flex flex-col min-h-screen bg-white">
