@@ -24,6 +24,7 @@ import {
   ChevronRight,
   Printer,
   XCircle,
+  GraduationCap,
 } from 'lucide-react';
 
 export interface ModulItem {
@@ -263,55 +264,66 @@ export default function LearningRoom({
       {/* =========================================================
           1. TOP STICKY APP BAR: Navigasi, Judul Kursus & Progres
          ========================================================= */}
-      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-2xs">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-18 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3 min-w-0">
-            <Link
-              href="/kursus-saya"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 hover:border-slate-300 text-slate-700 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 text-xs font-bold transition-all shrink-0"
-              title="Kembali ke Kursus Saya"
-            >
-              <ArrowLeft size={15} />
-              <span className="hidden sm:inline">Kursus Saya</span>
-            </Link>
-
-            <div className="min-w-0">
-              <div className="text-[10px] sm:text-xs font-bold text-[#843bab] uppercase tracking-wider truncate">
-                Ruang Belajar Vokasi
-              </div>
-              <h1 className="text-sm sm:text-base font-extrabold text-slate-900 truncate">
-                {kursusJudul}
-              </h1>
-            </div>
-          </div>
-
-          {/* Progres Belajar Header Capsule */}
-          <div className="flex items-center gap-3 shrink-0">
-            <div className="hidden md:flex flex-col items-end text-xs">
-              <span className="font-bold text-slate-800">
-                {totalLulus} dari {modules.length} Modul Lulus
-              </span>
-              <span className="text-[11px] text-slate-500">{progressPercent}% Selesai</span>
-            </div>
-
-            <div className="w-16 sm:w-24 h-2 bg-slate-200 rounded-full overflow-hidden hidden sm:block">
-              <div
-                className="h-full bg-gradient-to-r from-[#843bab] to-purple-500 rounded-full transition-all duration-500"
-                style={{ width: `${progressPercent}%` }}
-              />
-            </div>
-
-            {certificate?.id && (
+      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs py-3.5 sm:py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            {/* Bagian Kiri: Tombol Navigasi Kembali & Identitas Kursus */}
+            <div className="flex items-center gap-3.5 min-w-0">
               <Link
-                href={`/sertifikat/${pendaftaranId}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-2xs transition-all"
+                href="/kursus-saya"
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl border border-slate-200 hover:border-slate-300 text-slate-700 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 text-xs font-bold transition-all shrink-0 shadow-2xs"
+                title="Kembali ke Kursus Saya"
               >
-                <Award size={14} />
-                <span className="hidden sm:inline">Lihat Sertifikat</span>
+                <ArrowLeft size={16} />
+                <span>Kursus Saya</span>
               </Link>
-            )}
+
+              <div className="hidden sm:block h-8 w-px bg-slate-200 shrink-0" />
+
+              <div className="min-w-0">
+                <div className="flex items-center gap-1.5 mb-0.5">
+                  <span className="inline-flex items-center gap-1 text-[11px] font-bold text-[#843bab] uppercase tracking-wider">
+                    <GraduationCap size={13} />
+                    Ruang Belajar Vokasi
+                  </span>
+                </div>
+                <h1 className="text-sm sm:text-base font-extrabold text-slate-900 truncate">
+                  {kursusJudul}
+                </h1>
+              </div>
+            </div>
+
+            {/* Bagian Kanan: Kapsul Ringkasan Progres yang Proporsional & Rapi */}
+            <div className="flex items-center gap-3.5 sm:gap-4 shrink-0 self-end md:self-auto bg-slate-50 border border-slate-200/90 rounded-2xl px-4 py-2.5 shadow-2xs">
+              <div className="text-right">
+                <div className="text-xs font-bold text-slate-800">
+                  {totalLulus} dari {modules.length} Modul Lulus
+                </div>
+                <div className="text-[11px] font-semibold text-slate-500 mt-0.5">
+                  Progres: <span className="text-[#843bab] font-bold">{progressPercent}%</span> Selesai
+                </div>
+              </div>
+
+              {/* Progress Bar dengan lebar nyaman */}
+              <div className="w-24 sm:w-36 h-2.5 bg-slate-200 rounded-full overflow-hidden shrink-0">
+                <div
+                  className="h-full bg-gradient-to-r from-[#843bab] to-purple-600 rounded-full transition-all duration-500"
+                  style={{ width: `${progressPercent}%` }}
+                />
+              </div>
+
+              {certificate?.id && (
+                <Link
+                  href={`/sertifikat/${pendaftaranId}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs hover:shadow-sm transition-all shrink-0 ml-1"
+                >
+                  <Award size={14} />
+                  <span className="hidden sm:inline">Sertifikat</span>
+                </Link>
+              )}
+            </div>
           </div>
         </div>
       </header>
@@ -319,7 +331,7 @@ export default function LearningRoom({
       {/* =========================================================
           2. MAIN WORKSPACE: Sidebar (Daftar Modul) + Main Reader
          ========================================================= */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-6 sm:pt-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-8 sm:pt-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* =========================================================
               KOLOM KIRI (SIDEBAR): DAFTAR MODUL (TERKUNCI / TERBUKA)
@@ -382,7 +394,7 @@ export default function LearningRoom({
 
                         <div className="min-w-0">
                           <div
-                            className={`text-xs font-bold truncate leading-snug ${
+                            className={`text-xs font-bold line-clamp-2 leading-snug ${
                               isActive ? 'text-slate-900 font-extrabold' : 'text-slate-700'
                             }`}
                           >
