@@ -18,7 +18,6 @@ import {
   AlertCircle,
   GraduationCap,
   ArrowRight,
-  ShieldCheck,
 } from 'lucide-react';
 
 export const metadata: Metadata = {
@@ -181,71 +180,51 @@ export default async function AdminPanelPage({ searchParams }: Props) {
   return (
     <div className="min-h-screen bg-slate-50/60 text-slate-900 pb-28">
       {/* =========================================================================
-          1. HEADER BANNER: Profil Admin & Quick Links
+          STICKY TOP ACTION BAR (Tetap Stay di Atas Saat Di-scroll & Jejer Lurus)
          ========================================================================= */}
-      <section className="bg-gradient-to-b from-purple-50/70 via-white to-slate-50/50 border-b border-slate-200 pt-8 pb-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Breadcrumb & Role Guard */}
-          <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-            <div className="flex items-center gap-2 text-xs font-medium text-slate-500">
-              <Link href="/" className="hover:text-[#843bab] transition-colors">
-                Beranda
-              </Link>
-              <span>/</span>
-              <span className="text-slate-800 font-semibold">Panel Administrator</span>
-              <span>/</span>
-              <span className="text-[#843bab] font-bold capitalize">
-                {activeTab === 'kursus'
-                  ? 'Tinjauan Kursus'
-                  : activeTab === 'pendaftaran'
-                  ? 'Pendaftaran & Pembayaran'
-                  : activeTab === 'pengguna'
-                  ? 'Pengguna'
-                  : 'Audit Log'}
-              </span>
-            </div>
-
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-purple-50 text-[#843bab] border border-purple-200 shadow-2xs">
-              <ShieldCheck size={13} className="text-[#843bab]" />
-              Administrator: {profile.nama_lengkap} ({profile.email})
+      <header className="sticky top-[57px] lg:top-0 z-20 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs transition-all print:hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] font-extrabold px-3 py-1 rounded-full bg-[#843bab]/10 text-[#843bab] uppercase tracking-wider border border-[#843bab]/20">
+              Pusat Pengelola Lembaga
             </span>
           </div>
 
-          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
-            <div className="space-y-2 max-w-2xl">
-              <div>
-                <span className="text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-purple-100 text-[#843bab] uppercase tracking-wider border border-purple-200">
-                  Pusat Pengelola Lembaga
-                </span>
-                <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mt-1">
-                  Panel Administrator
-                </h1>
-              </div>
-              <p className="text-sm text-slate-600 leading-relaxed">
-                Pusat kendali siklus penerbitan kursus, konfirmasi transaksi pendaftaran, tata kelola peran pengguna, dan audit log lembaga.
-              </p>
-            </div>
+          {/* Tombol Aksi Jejer Lurus */}
+          <div className="flex items-center gap-2.5 flex-nowrap shrink-0 overflow-x-auto no-scrollbar">
+            <Link
+              href="/instruktur/nilai"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-slate-300 hover:border-[#843bab] hover:text-[#843bab] text-slate-700 font-bold text-xs shadow-2xs hover:shadow transition-all shrink-0 whitespace-nowrap cursor-pointer"
+              title="Lihat Buku Nilai Seluruh Kursus"
+            >
+              <GraduationCap size={15} className="text-[#843bab]" />
+              <span>Peserta &amp; Nilai</span>
+            </Link>
 
-            {/* Quick Action Links */}
-            <div className="flex flex-wrap items-center gap-2.5">
-              <Link
-                href="/instruktur/nilai"
-                className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-white border border-slate-300 hover:border-[#843bab] hover:text-[#843bab] text-slate-700 font-bold text-xs shadow-2xs transition-all"
-                title="Lihat Buku Nilai Seluruh Kursus"
-              >
-                <GraduationCap size={15} className="text-[#843bab]" />
-                <span>Peserta & Nilai</span>
-              </Link>
+            <Link
+              href="/admin/dashboard"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-2xs hover:shadow transition-all shrink-0 whitespace-nowrap cursor-pointer"
+              title="Buka Dashboard Statistik Lembaga"
+            >
+              <LayoutDashboard size={15} />
+              <span>Dashboard Statistik</span>
+            </Link>
+          </div>
+        </div>
+      </header>
 
-              <Link
-                href="/admin/dashboard"
-                className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-2xs hover:shadow transition-all"
-                title="Buka Dashboard Statistik Lembaga"
-              >
-                <LayoutDashboard size={15} />
-                <span>Dashboard Statistik</span>
-              </Link>
-            </div>
+      {/* =========================================================================
+          1. HEADER BANNER SECTION
+         ========================================================================= */}
+      <section className="bg-gradient-to-b from-purple-50/70 via-white to-slate-50/50 border-b border-slate-200 pt-8 pb-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+              Panel Administrator
+            </h1>
+            <p className="text-sm text-slate-600 leading-relaxed mt-2 max-w-3xl">
+              Pusat kendali siklus penerbitan kursus, konfirmasi transaksi pendaftaran, tata kelola peran pengguna, dan audit log lembaga.
+            </p>
           </div>
         </div>
       </section>
