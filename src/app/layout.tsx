@@ -7,6 +7,8 @@ import Sidebar from '@/components/Sidebar';
 import Footer from '@/components/Footer';
 import MobileBottomNav from '@/components/MobileBottomNav';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Lembaga Kursus Pijar Aksara | Kursus Vokasi & Pelatihan Kompetensi',
   description: 'Platform pembelajaran kursus vokasi dan keterampilan praktis berstandar industri di Depok. Tingkatkan keahlian administrasi perkantoran, desain grafis, pembukuan, dan bahasa.',

@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
+import { revalidatePath } from 'next/cache';
 
 export async function loginAction(formData: FormData) {
   const email = formData.get('email') as string;
@@ -35,19 +36,21 @@ export async function loginAction(formData: FormData) {
     return { error: 'Akun Anda dinonaktifkan. Silakan hubungi admin.' };
   }
 
-  // Jika ada query redirect spesifik (misal dari halaman kursus tertentu)
+  // Bersihkan cache layout agar nama/peran user langsung sinkron
+  revalidatePath('/', 'layout');
+
+  let targetUrl = '/kursus-saya';
   if (redirectTo && redirectTo.startsWith('/')) {
-    redirect(redirectTo);
+    targetUrl = redirectTo;
+  } else if (profile.peran === 'admin') {
+    targetUrl = '/admin';
+  } else if (profile.peran === 'instruktur') {
+    targetUrl = '/instruktur/kursus';
+  } else {
+    targetUrl = '/kursus-saya';
   }
 
-  // Arahkan ke dashboard sesuai peran
-  if (profile.peran === 'admin') {
-    redirect('/admin');
-  } else if (profile.peran === 'instruktur') {
-    redirect('/instruktur/kursus');
-  } else {
-    redirect('/kursus-saya');
-  }
+  return { success: true, redirectTo: targetUrl };
 }
 
 export async function registerAction(formData: FormData) {
@@ -127,15 +130,24 @@ export async function registerAction(formData: FormData) {
     aktif: true,
   });
 
-  if (redirectTo && redirectTo.startsWith('/')) {
-    redirect(redirectTo);
+  // Login otomatis agar session langsung aktif di cookie browser
+  if (!data.session) {
+    await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
   }
 
-  redirect('/kursus-saya');
+  // Bersihkan cache layout agar data user baru langsung aktif
+  revalidatePath('/', 'layout');
+
+  const targetUrl = redirectTo && redirectTo.startsWith('/') ? redirectTo : '/kursus-saya';
+  return { success: true, redirectTo: targetUrl };
 }
 
 export async function logoutAction() {
   const supabase = await createClient();
   await supabase.auth.signOut();
+  revalidatePath('/', 'layout');
   redirect('/login');
 }
