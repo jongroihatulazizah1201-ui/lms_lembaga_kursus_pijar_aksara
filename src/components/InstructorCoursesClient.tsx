@@ -192,6 +192,15 @@ export default function InstructorCoursesClient({ initialCourses, profile }: Pro
                   Reset
                 </button>
               )}
+
+              {/* Tombol Buat Kursus Baru (Ditaruh di Atas Samping Reset & Tetap Stay Ketika Di-scroll) */}
+              <Link
+                href="/instruktur/kursus/baru"
+                className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-[#ffdf0f] hover:bg-[#eacb0d] text-slate-950 font-bold text-xs shadow-xs hover:shadow transition-all shrink-0 cursor-pointer min-h-[38px] active:scale-[0.99]"
+              >
+                <Plus size={16} />
+                <span>Buat Kursus Baru</span>
+              </Link>
             </div>
           </div>
         </div>
@@ -202,33 +211,22 @@ export default function InstructorCoursesClient({ initialCourses, profile }: Pro
          ========================================================= */}
       <section className="bg-gradient-to-b from-purple-50/70 via-white to-slate-50/50 border-b border-slate-200 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6">
-            <div className="space-y-2">
-              <div className="flex flex-wrap items-center gap-2.5">
-                <span className="inline-flex items-center gap-1.5 text-[11px] font-extrabold px-3 py-1 rounded-full bg-[#843bab]/10 text-[#843bab] uppercase tracking-wider border border-[#843bab]/20">
-                  <BookOpen size={13} />
-                  <span>Panel Instruktur</span>
-                </span>
-                <span className="text-xs text-slate-600 font-medium">
-                  Selamat Datang, <strong className="font-bold text-slate-900">{profile.nama_lengkap || 'Instruktur'}</strong>
-                </span>
-              </div>
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 tracking-tight">
-                Kelola Kursus &amp; Silabus
-              </h1>
-              <p className="text-sm text-slate-600 max-w-2xl leading-relaxed">
-                Kelola kursus milik sendiri, susun kurikulum modul bertahap, materi bacaan &amp; video, bank soal kuis, serta pantau catatan tinjauan dari admin lembaga.
-              </p>
+          <div className="space-y-2">
+            <div className="flex flex-wrap items-center gap-2.5">
+              <span className="inline-flex items-center gap-1.5 text-[11px] font-extrabold px-3 py-1 rounded-full bg-[#843bab]/10 text-[#843bab] uppercase tracking-wider border border-[#843bab]/20">
+                <BookOpen size={13} />
+                <span>Panel Instruktur</span>
+              </span>
+              <span className="text-xs text-slate-600 font-medium">
+                Selamat Datang, <strong className="font-bold text-slate-900">{profile.nama_lengkap || 'Instruktur'}</strong>
+              </span>
             </div>
-
-            {/* Tombol Buat Kursus Baru */}
-            <Link
-              href="/instruktur/kursus/baru"
-              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#ffdf0f] hover:bg-[#eacb0d] text-slate-950 font-bold text-sm shadow-xs hover:shadow-md transition-all shrink-0 min-h-[48px] active:scale-[0.99]"
-            >
-              <Plus size={18} />
-              <span>Buat Kursus Baru</span>
-            </Link>
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 tracking-tight">
+              Kelola Kursus &amp; Silabus
+            </h1>
+            <p className="text-sm text-slate-600 max-w-2xl leading-relaxed">
+              Kelola kursus milik sendiri, susun kurikulum modul bertahap, materi bacaan &amp; video, bank soal kuis, serta pantau catatan tinjauan dari admin lembaga.
+            </p>
           </div>
 
           {/* Quick Stats Grid (Clickable to switch tab) */}
