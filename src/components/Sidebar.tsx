@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
 import Logo from './Logo';
 import { logoutAction } from '@/app/auth/actions';
-import { createClient } from '@/lib/supabase/client';
 import {
   Home,
   BookOpen,
@@ -23,10 +22,7 @@ import {
   LogIn,
   UserPlus,
   Menu,
-  X,
-  Shield,
-  User,
-  Loader2
+  X
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -60,35 +56,11 @@ export default function Sidebar({ user, profile }: SidebarProps) {
   const currentTab = searchParams.get('tab');
 
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [isSwitching, setIsSwitching] = useState<string | null>(null);
 
   const isPeserta = profile?.peran === 'peserta';
   const isInstruktur = profile?.peran === 'instruktur';
   const isAdmin = profile?.peran === 'admin';
   const portalHome = isAdmin ? '/admin/dashboard' : isInstruktur ? '/instruktur' : isPeserta ? '/kursus-saya' : '/';
-
-  // Quick switch role simulation handler (Latihan#2026)
-  const handleQuickSwitch = async (email: string, targetPath: string) => {
-    if (isSwitching) return;
-    setIsSwitching(email);
-    try {
-      const supabase = createClient();
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password: 'Latihan#2026',
-      });
-      if (error) {
-        console.error('Quick switch error:', error);
-        alert('Gagal berganti akun: ' + error.message);
-        setIsSwitching(null);
-        return;
-      }
-      window.location.href = targetPath;
-    } catch (err) {
-      console.error(err);
-      setIsSwitching(null);
-    }
-  };
 
   // =========================================================================
   // STRUKTUR MENU DITATA SPESIFIK & RAPI BERDASARKAN FITUR RIIL SETIAP PERAN
@@ -386,69 +358,6 @@ export default function Sidebar({ user, profile }: SidebarProps) {
         ))}
       </div>
 
-      {/* =========================================================================
-          QUICK ROLE SWITCHER (Demo & Evaluasi Akun)
-         ========================================================================= */}
-      <div className="p-3 border-t border-slate-200 bg-slate-50/60">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500">
-            Simulasi Peran Akun:
-          </span>
-          {isSwitching && (
-            <Loader2 size={12} className="animate-spin text-[#843bab]" />
-          )}
-        </div>
-
-        <div className="grid grid-cols-3 gap-1.5">
-          {/* 1. Siti Aminah (Peserta) */}
-          <button
-            type="button"
-            disabled={!!isSwitching}
-            onClick={() => handleQuickSwitch('siti.aminah@pijaraksara.test', '/kursus-saya')}
-            className={`py-1.5 px-2 rounded-lg text-[10px] font-bold text-center transition-all flex items-center justify-center gap-1 border ${
-              isPeserta
-                ? 'bg-emerald-100 text-emerald-800 border-emerald-300 shadow-2xs'
-                : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-200'
-            }`}
-            title="Masuk sebagai Peserta: Siti Aminah"
-          >
-            <User size={11} />
-            <span>Peserta</span>
-          </button>
-
-          {/* 2. Yudha Pratama (Instruktur) */}
-          <button
-            type="button"
-            disabled={!!isSwitching}
-            onClick={() => handleQuickSwitch('yudha@pijaraksara.test', '/instruktur')}
-            className={`py-1.5 px-2 rounded-lg text-[10px] font-bold text-center transition-all flex items-center justify-center gap-1 border ${
-              isInstruktur
-                ? 'bg-purple-100 text-[#843bab] border-purple-300 shadow-2xs'
-                : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-200'
-            }`}
-            title="Masuk sebagai Instruktur: Yudha Pratama"
-          >
-            <GraduationCap size={11} />
-            <span>Instruktur</span>
-          </button>
-
-          {/* 3. Ratna Kusumawati (Admin) */}
-          <button
-            type="button"
-            disabled={!!isSwitching}
-            onClick={() => handleQuickSwitch('ratna@pijaraksara.test', '/admin/dashboard')}
-            className={`py-1.5 px-2 rounded-lg text-[10px] font-bold text-center transition-all flex items-center justify-center gap-1 border ${
-              isAdmin
-                ? 'bg-purple-100 text-[#843bab] border-purple-300 shadow-2xs'
-                : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-200'
-            }`}
-            title="Masuk sebagai Admin: Ratna Kusumawati"
-          >
-            <Shield size={11} />
-            <span>Admin</span>
-          </button>
-        </div>
-      </div>
 
       {/* User Session Footer (Profile Capsule & Logout) */}
       <div className="p-3 border-t border-slate-200 bg-white">
