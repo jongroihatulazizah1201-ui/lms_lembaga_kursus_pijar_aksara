@@ -26,7 +26,7 @@ export default async function LoginPage({ searchParams }: PageProps) {
       .single();
 
     if (profile?.peran === 'admin') {
-      redirect('/admin');
+      redirect('/admin/dashboard');
     } else if (profile?.peran === 'instruktur') {
       redirect('/instruktur');
     } else {

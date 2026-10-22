@@ -44,7 +44,7 @@ export async function loginAction(formData: FormData) {
   // Arahkan langsung ke halaman utama sesuai peran pengguna tanpa singgah ke /profil
   let targetUrl = '/kursus-saya';
   if (profile.peran === 'admin') {
-    targetUrl = '/admin';
+    targetUrl = '/admin/dashboard';
   } else if (profile.peran === 'instruktur') {
     targetUrl = '/instruktur';
   } else {

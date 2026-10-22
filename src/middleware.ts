@@ -66,7 +66,7 @@ export async function middleware(request: NextRequest) {
         .single();
 
       if (profile?.peran === 'admin') {
-        return createRedirect('/admin');
+        return createRedirect('/admin/dashboard');
       } else if (profile?.peran === 'instruktur') {
         return createRedirect('/instruktur');
       } else {

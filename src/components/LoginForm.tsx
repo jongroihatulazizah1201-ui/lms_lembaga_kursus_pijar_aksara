@@ -33,7 +33,7 @@ export default function LoginForm({ redirectParam = '', errorParam = '' }: Props
   useEffect(() => {
     router.prefetch('/kursus-saya');
     router.prefetch('/instruktur');
-    router.prefetch('/admin');
+    router.prefetch('/admin/dashboard');
   }, [router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
