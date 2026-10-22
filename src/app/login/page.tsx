@@ -6,16 +6,12 @@ import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
 import { loginAction } from '@/app/auth/actions';
 import { 
-  BookOpen, 
   Lock, 
   Mail, 
   ArrowRight, 
   AlertCircle, 
   Eye, 
-  EyeOff, 
-  User, 
-  GraduationCap, 
-  Shield 
+  EyeOff 
 } from 'lucide-react';
 
 export default function LoginPage() {
@@ -51,12 +47,6 @@ export default function LoginPage() {
       setError('Terjadi kendala saat masuk akun. Silakan coba lagi.');
       setLoading(false);
     }
-  };
-
-  const fillQuickAccount = (quickEmail: string, quickPass: string = 'Latihan#2026') => {
-    setEmail(quickEmail);
-    setPassword(quickPass);
-    setError('');
   };
 
   return (
@@ -130,88 +120,11 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 transition-colors p-1"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 transition-colors p-1 cursor-pointer"
                   title={showPassword ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi'}
                   tabIndex={-1}
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-            </div>
-
-            {/* Quick Account Switcher (Berada Tepat di Atas Tombol Masuk Sekarang) */}
-            <div className="pt-2">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[11px] font-semibold text-slate-500">
-                  Pilih Cepat Akun Uji Latihan:
-                </span>
-                <span className="text-[10px] text-slate-500 font-mono bg-slate-100 px-1.5 py-0.5 rounded">
-                  Sandi: Latihan#2026
-                </span>
-              </div>
-
-              {/* 3 Tombol Utama: Peserta, Instruktur, Admin */}
-              <div className="grid grid-cols-3 gap-2">
-                <button
-                  type="button"
-                  onClick={() => fillQuickAccount('siti.aminah@pijaraksara.test')}
-                  className={`flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
-                    email === 'siti.aminah@pijaraksara.test' || email === 'bagus.santoso@pijaraksara.test' || email === 'nadia.putri@pijaraksara.test'
-                      ? 'bg-purple-50 text-[#843bab] border-purple-300 shadow-2xs'
-                      : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200'
-                  }`}
-                  title="Masuk sebagai Peserta (Siti Aminah)"
-                >
-                  <User size={14} className="text-[#843bab]" />
-                  <span>Peserta</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => fillQuickAccount('yudha@pijaraksara.test')}
-                  className={`flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
-                    email === 'yudha@pijaraksara.test'
-                      ? 'bg-purple-50 text-[#843bab] border-purple-300 shadow-2xs'
-                      : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200'
-                  }`}
-                  title="Masuk sebagai Instruktur (Yudha Pratama)"
-                >
-                  <GraduationCap size={14} className="text-[#843bab]" />
-                  <span>Instruktur</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => fillQuickAccount('ratna@pijaraksara.test')}
-                  className={`flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
-                    email === 'ratna@pijaraksara.test'
-                      ? 'bg-purple-50 text-[#843bab] border-purple-300 shadow-2xs'
-                      : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200'
-                  }`}
-                  title="Masuk sebagai Admin (Ratna Kusumawati)"
-                >
-                  <Shield size={14} className="text-[#843bab]" />
-                  <span>Admin</span>
-                </button>
-              </div>
-
-              {/* Opsi Cepat Peserta Lain */}
-              <div className="flex items-center justify-center gap-2 mt-2 text-[10px] text-slate-400">
-                <span>Peserta lain:</span>
-                <button
-                  type="button"
-                  onClick={() => fillQuickAccount('bagus.santoso@pijaraksara.test')}
-                  className="font-medium text-slate-600 hover:text-[#843bab] underline underline-offset-2 cursor-pointer"
-                >
-                  Bagus S.
-                </button>
-                <span>•</span>
-                <button
-                  type="button"
-                  onClick={() => fillQuickAccount('nadia.putri@pijaraksara.test')}
-                  className="font-medium text-slate-600 hover:text-[#843bab] underline underline-offset-2 cursor-pointer"
-                >
-                  Nadia Putri
                 </button>
               </div>
             </div>
