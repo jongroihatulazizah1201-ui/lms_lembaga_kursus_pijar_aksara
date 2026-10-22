@@ -112,9 +112,121 @@ export default function MyCoursesClient({ initialCourses, userProfile }: Props) 
   return (
     <div className="min-h-screen bg-slate-50/50 pb-20">
       {/* =========================================================
+          STICKY SEARCH & FAST FILTER TOOLBAR (Berada di Atas & Stay Saat Di-scroll)
+         ========================================================= */}
+      <section
+        aria-label="Pencarian dan Filter Kursus Saya"
+        className="sticky top-[57px] lg:top-0 z-20 bg-white/95 backdrop-blur-md pt-3.5 pb-3 border-b border-slate-200/80 shadow-xs transition-all"
+      >
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+            {/* Search Box: Cari kursus atau instruktur... */}
+            <div className="relative flex-1 w-full max-w-md">
+              <Search
+                size={18}
+                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
+              />
+              <input
+                type="text"
+                placeholder="Cari kursus atau instruktur..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-9 py-2.5 rounded-xl text-xs sm:text-sm bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#843bab]/30 focus:border-[#843bab] focus:bg-white transition-all shadow-2xs"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 text-xs font-bold p-1 cursor-pointer"
+                  title="Hapus pencarian"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+
+            {/* Tab Filter Buttons */}
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 scrollbar-none shrink-0">
+              <button
+                type="button"
+                onClick={() => setActiveTab('semua')}
+                className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+                  activeTab === 'semua'
+                    ? 'bg-[#843bab] text-white shadow-xs'
+                    : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-200 hover:bg-slate-50'
+                }`}
+              >
+                Semua ({totalCount})
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('aktif')}
+                className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+                  activeTab === 'aktif'
+                    ? 'bg-emerald-600 text-white shadow-xs'
+                    : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-200 hover:bg-slate-50'
+                }`}
+              >
+                Aktif Belajar ({aktifCount})
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('menunggu_bayar')}
+                className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+                  activeTab === 'menunggu_bayar'
+                    ? 'bg-amber-500 text-slate-950 shadow-xs'
+                    : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-200 hover:bg-slate-50'
+                }`}
+              >
+                Menunggu Bayar ({menungguCount})
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('selesai')}
+                className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+                  activeTab === 'selesai'
+                    ? 'bg-[#843bab] text-white shadow-xs'
+                    : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-200 hover:bg-slate-50'
+                }`}
+              >
+                Selesai & Lulus ({selesaiCount})
+              </button>
+              {batalCount > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('dibatalkan')}
+                  className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+                    activeTab === 'dibatalkan'
+                      ? 'bg-slate-700 text-white shadow-xs'
+                      : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-200 hover:bg-slate-50'
+                  }`}
+                >
+                  Dibatalkan ({batalCount})
+                </button>
+              )}
+
+              {(searchQuery || activeTab !== 'semua') && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveTab('semua');
+                    setSearchQuery('');
+                  }}
+                  className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-500 hover:text-slate-900 bg-white border border-slate-200 hover:bg-slate-100 transition-colors shrink-0 cursor-pointer"
+                  title="Reset Filter & Pencarian"
+                >
+                  Reset
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================
           1. HEADER BANNER: Profil & Ringkasan Statistik
          ========================================================= */}
-      <section className="bg-gradient-to-b from-purple-50/80 via-white to-slate-50/50 border-b border-slate-200/80 pt-10 pb-12">
+      <section className="bg-gradient-to-b from-purple-50/80 via-white to-slate-50/50 border-b border-slate-200/80 pt-8 pb-10">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
             {/* Sapaan Pengguna */}
@@ -221,9 +333,9 @@ export default function MyCoursesClient({ initialCourses, userProfile }: Props) 
       </section>
 
       {/* =========================================================
-          2. FILTER & DAFTAR KURSUS
+          2. DAFTAR KURSUS PESERTA
          ========================================================= */}
-      <section className="max-w-7xl mx-auto px-6 pt-8">
+      <section className="max-w-7xl mx-auto px-6 pt-6">
         {/* Success Alert */}
         {cancelSuccess && (
           <div className="mb-6 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm flex items-center justify-between shadow-xs">
@@ -240,76 +352,30 @@ export default function MyCoursesClient({ initialCourses, userProfile }: Props) 
           </div>
         )}
 
-        {/* Tab Filter & Search Bar */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-          {/* Tab Buttons */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-none">
+        {/* Info Pencarian / Filter Aktif */}
+        {(searchQuery || activeTab !== 'semua') && (
+          <div className="flex items-center justify-between text-xs text-slate-500 mb-6 pb-2.5 border-b border-slate-200/60">
+            <div>
+              Menampilkan <span className="font-bold text-slate-800">{filteredCourses.length}</span> kursus
+              {searchQuery && (
+                <> untuk pencarian "<span className="font-semibold text-slate-800">{searchQuery}</span>"</>
+              )}
+              {activeTab !== 'semua' && (
+                <> pada filter <span className="font-semibold text-[#843bab] capitalize">{activeTab.replace('_', ' ')}</span></>
+              )}
+            </div>
             <button
-              onClick={() => setActiveTab('semua')}
-              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all cursor-pointer ${
-                activeTab === 'semua'
-                  ? 'bg-[#843bab] text-white shadow-xs'
-                  : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-200'
-              }`}
+              type="button"
+              onClick={() => {
+                setActiveTab('semua');
+                setSearchQuery('');
+              }}
+              className="text-[#843bab] hover:underline font-bold cursor-pointer"
             >
-              Semua ({totalCount})
+              Hapus Filter
             </button>
-            <button
-              onClick={() => setActiveTab('aktif')}
-              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all cursor-pointer ${
-                activeTab === 'aktif'
-                  ? 'bg-emerald-600 text-white shadow-xs'
-                  : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-200'
-              }`}
-            >
-              Aktif Belajar ({aktifCount})
-            </button>
-            <button
-              onClick={() => setActiveTab('menunggu_bayar')}
-              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all cursor-pointer ${
-                activeTab === 'menunggu_bayar'
-                  ? 'bg-amber-500 text-slate-950 shadow-xs'
-                  : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-200'
-              }`}
-            >
-              Menunggu Bayar ({menungguCount})
-            </button>
-            <button
-              onClick={() => setActiveTab('selesai')}
-              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all cursor-pointer ${
-                activeTab === 'selesai'
-                  ? 'bg-[#843bab] text-white shadow-xs'
-                  : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-200'
-              }`}
-            >
-              Selesai & Lulus ({selesaiCount})
-            </button>
-            {batalCount > 0 && (
-              <button
-                onClick={() => setActiveTab('dibatalkan')}
-                className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all cursor-pointer ${
-                  activeTab === 'dibatalkan'
-                    ? 'bg-slate-700 text-white shadow-xs'
-                    : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-200'
-                }`}
-              >
-                Dibatalkan ({batalCount})
-              </button>
-            )}
           </div>
-
-          {/* Search Box */}
-          <div className="relative min-w-[240px] sm:w-72">
-            <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input
-              type="text"
-              placeholder="Cari kursus atau instruktur..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-[#843bab] focus:ring-1 focus:ring-[#843bab] shadow-2xs"
-            />
-          </div>
-        </div>
+        )}
 
         {/* =========================================================
             3. GRID KURSUS / EMPTY STATE
