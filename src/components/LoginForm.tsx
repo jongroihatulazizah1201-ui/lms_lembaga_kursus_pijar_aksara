@@ -103,15 +103,14 @@ export default function LoginForm({ redirectParam = '', errorParam = '' }: Props
             </p>
           </div>
 
-          {/* Ilustrasi Vokasi 3D Pilihan Pengguna */}
-          <div className="relative z-10 mt-2 flex justify-center items-center">
-            <div className="relative w-full max-w-[320px] flex items-center justify-center py-2">
+          {/* Ilustrasi Karakter Pembelajaran Pijar Aksara */}
+          <div className="relative z-10 mt-auto pt-4 flex justify-center items-end">
+            <div className="relative w-full max-w-[280px] h-[300px] sm:h-[340px] lg:h-[360px]">
               <Image
-                src="/login-illustration.png"
-                alt="Ilustrasi Pembelajaran Vokasi Pijar Aksara"
-                width={360}
-                height={360}
-                className="w-full h-auto object-contain drop-shadow-[0_20px_30px_rgba(0,0,0,0.35)] hover:scale-105 transition-transform duration-500"
+                src="/login-character.png"
+                alt="Karakter Pembelajaran Pijar Aksara"
+                fill
+                className="object-contain object-bottom hover:scale-105 transition-transform duration-300 drop-shadow-2xl"
                 priority
               />
             </div>
