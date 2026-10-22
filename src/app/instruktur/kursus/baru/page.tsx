@@ -31,7 +31,7 @@ export default async function NewCoursePage() {
   }
 
   return (
-    <div style={{ padding: '40px 16px 96px 16px' }}>
+    <div className="min-h-screen bg-slate-50/50 py-10 px-4 sm:px-6">
       <CreateCourseForm />
     </div>
   );

@@ -84,32 +84,33 @@ export default async function CourseDetailPage({ params }: Props) {
   // Validasi Kepemilikan (BR-12): Instruktur tidak bisa membuka kursus instruktur lain
   if (profile.peran !== 'admin' && course.instruktur_id !== user.id) {
     return (
-      <div style={{
-        minHeight: '75vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '32px 16px'
-      }}>
-        <div className="glass-panel" style={{ padding: '48px 32px', textAlign: 'center', maxWidth: '520px' }}>
-          <ShieldAlert size={36} color="#f87171" style={{ marginBottom: '16px' }} />
-          <h2 style={{ fontSize: '1.4rem', color: '#ffffff', marginBottom: '10px' }}>
+      <div className="min-h-[75vh] flex items-center justify-center p-6 bg-slate-50/50">
+        <div className="bg-white rounded-3xl border border-slate-200 p-8 sm:p-12 text-center max-w-lg shadow-sm space-y-4">
+          <div className="w-16 h-16 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center mx-auto">
+            <ShieldAlert size={32} />
+          </div>
+          <h2 className="text-xl font-bold text-slate-900">
             Akses Ditolak (BR-12)
           </h2>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem', marginBottom: '24px' }}>
+          <p className="text-slate-600 text-sm leading-relaxed">
             Sesuai aturan bisnis, instruktur hanya dapat mengelola kursus miliknya sendiri. Anda tidak memiliki akses ke kursus ini.
           </p>
-          <Link href="/instruktur" className="btn btn-outline" style={{ padding: '10px 20px' }}>
-            <ArrowLeft size={16} />
-            <span>Kembali ke Dashboard Instruktur</span>
-          </Link>
+          <div className="pt-2">
+            <Link
+              href="/instruktur"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#843bab] hover:bg-[#722f96] text-white text-xs font-bold shadow-xs transition-all"
+            >
+              <ArrowLeft size={15} />
+              <span>Kembali ke Dashboard Instruktur</span>
+            </Link>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div style={{ padding: '36px 16px 96px 16px' }}>
+    <div className="min-h-screen bg-slate-50/50 py-8 px-4 sm:px-6">
       <CourseEditor course={course as any} />
     </div>
   );

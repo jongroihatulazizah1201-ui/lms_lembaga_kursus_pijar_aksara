@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createKursusAction } from '@/app/instruktur/actions';
-import { ArrowLeft, Plus, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, Plus, AlertCircle, CheckCircle2, Sparkles, Loader2, BookOpen } from 'lucide-react';
 
 export default function CreateCourseForm() {
   const router = useRouter();
@@ -13,7 +13,7 @@ export default function CreateCourseForm() {
 
   const [judul, setJudul] = useState('');
   const [slug, setSlug] = useState('');
-  const [kategori, setKategori] = useState('Perkantoran');
+  const [kategori, setKategori] = useState('Teknologi & Komputer');
   const [ringkasan, setRingkasan] = useState('');
   const [deskripsi, setDeskripsi] = useState('');
   const [harga, setHarga] = useState<number>(0);
@@ -23,7 +23,10 @@ export default function CreateCourseForm() {
   const handleJudulChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
     setJudul(val);
-    const autoSlug = val.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    const autoSlug = val
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '');
     setSlug(autoSlug);
   };
 
@@ -32,7 +35,7 @@ export default function CreateCourseForm() {
     setErrorMsg(null);
 
     if (!judul.trim() || !slug.trim() || !ringkasan.trim() || !deskripsi.trim()) {
-      setErrorMsg('Semua kolom wajib diisi.');
+      setErrorMsg('Semua kolom bertanda bintang (*) wajib diisi.');
       return;
     }
 
@@ -72,42 +75,45 @@ export default function CreateCourseForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="glass-panel" style={{ padding: '36px', maxWidth: '780px', margin: '0 auto' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
-        <Link href="/instruktur" className="btn btn-outline" style={{ padding: '8px 12px' }}>
-          <ArrowLeft size={16} />
+    <form
+      onSubmit={handleSubmit}
+      className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-10 shadow-xs max-w-3xl mx-auto space-y-6"
+    >
+      {/* Header Form */}
+      <div className="flex items-center gap-3.5 pb-6 border-b border-slate-100">
+        <Link
+          href="/instruktur"
+          className="p-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 transition-colors shrink-0"
+          title="Kembali ke Panel Instruktur"
+        >
+          <ArrowLeft size={18} />
         </Link>
         <div>
-          <h2 style={{ fontSize: '1.4rem', color: '#ffffff', margin: 0 }}>
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-[#843bab]/10 text-[#843bab] text-[11px] font-bold uppercase tracking-wider mb-1">
+            <Sparkles size={12} />
+            <span>Formulir Kursus Baru</span>
+          </div>
+          <h2 className="text-xl sm:text-2xl font-black text-slate-900 leading-snug">
             Buat Kursus Baru (Status: Draf)
           </h2>
-          <p style={{ fontSize: '0.84rem', color: 'var(--text-dim)', margin: '2px 0 0 0' }}>
-            Kursus baru otomatis berstatus draf (BR-02). Anda dapat menyusun modul dan kuis setelah informasi dasar disimpan.
+          <p className="text-xs text-slate-500 mt-0.5">
+            Kursus baru otomatis berstatus draf (BR-02). Anda dapat menyusun modul dan butir soal setelah informasi dasar ini disimpan.
           </p>
         </div>
       </div>
 
+      {/* Error Alert */}
       {errorMsg && (
-        <div style={{
-          padding: '12px 16px',
-          borderRadius: 'var(--radius-md)',
-          backgroundColor: 'rgba(239, 68, 68, 0.12)',
-          border: '1px solid rgba(239, 68, 68, 0.3)',
-          color: '#f87171',
-          fontSize: '0.88rem',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          marginBottom: '24px'
-        }}>
-          <AlertCircle size={18} />
+        <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs sm:text-sm flex items-center gap-2.5 shadow-2xs">
+          <AlertCircle size={18} className="text-rose-600 shrink-0" />
           <span>{errorMsg}</span>
         </div>
       )}
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-        <div>
-          <label style={{ display: 'block', fontSize: '0.86rem', fontWeight: 600, color: '#ffffff', marginBottom: '6px' }}>
+      <div className="space-y-5">
+        {/* Judul Kursus */}
+        <div className="space-y-1.5">
+          <label className="block text-xs font-bold text-slate-800">
             Judul Kursus *
           </label>
           <input
@@ -115,75 +121,51 @@ export default function CreateCourseForm() {
             required
             value={judul}
             onChange={handleJudulChange}
-            placeholder="Contoh: Belajar Fotografi Produk dengan Smartphone"
-            style={{
-              width: '100%',
-              padding: '12px 14px',
-              borderRadius: 'var(--radius-md)',
-              backgroundColor: 'rgba(255, 255, 255, 0.04)',
-              border: '1px solid rgba(255, 255, 255, 0.12)',
-              color: '#ffffff',
-              fontSize: '0.94rem'
-            }}
+            placeholder="Contoh: Administrasi Perkantoran & Otomasi Dokumen"
+            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#843bab]/30 focus:border-[#843bab] transition-all"
           />
         </div>
 
-        <div>
-          <label style={{ display: 'block', fontSize: '0.86rem', fontWeight: 600, color: '#ffffff', marginBottom: '6px' }}>
-            Slug URL (Alamat Web) *
-          </label>
-          <input
-            type="text"
-            required
-            value={slug}
-            onChange={(e) => setSlug(e.target.value)}
-            placeholder="belajar-fotografi-produk-smartphone"
-            style={{
-              width: '100%',
-              padding: '12px 14px',
-              borderRadius: 'var(--radius-md)',
-              backgroundColor: 'rgba(255, 255, 255, 0.04)',
-              border: '1px solid rgba(255, 255, 255, 0.12)',
-              color: '#ffffff',
-              fontSize: '0.94rem',
-              fontFamily: 'monospace'
-            }}
-          />
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>
-            Format URL: /kursus/{slug || 'contoh-slug'}
+        {/* Slug URL & Kategori */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="space-y-1.5">
+            <label className="block text-xs font-bold text-slate-800">
+              Slug URL (Otomatis) *
+            </label>
+            <input
+              type="text"
+              required
+              value={slug}
+              onChange={(e) => setSlug(e.target.value)}
+              placeholder="administrasi-perkantoran-otomasi"
+              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 font-mono focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#843bab]/30 focus:border-[#843bab] transition-all"
+            />
           </div>
-        </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
-          <div>
-            <label style={{ display: 'block', fontSize: '0.86rem', fontWeight: 600, color: '#ffffff', marginBottom: '6px' }}>
-              Kategori *
+          <div className="space-y-1.5">
+            <label className="block text-xs font-bold text-slate-800">
+              Kategori Kursus *
             </label>
             <select
               value={kategori}
               onChange={(e) => setKategori(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '12px 14px',
-                borderRadius: 'var(--radius-md)',
-                backgroundColor: '#162032',
-                border: '1px solid rgba(255, 255, 255, 0.12)',
-                color: '#ffffff',
-                fontSize: '0.94rem'
-              }}
+              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#843bab]/30 focus:border-[#843bab] transition-all"
             >
-              <option value="Perkantoran">Perkantoran</option>
-              <option value="Desain">Desain</option>
-              <option value="Bahasa">Bahasa</option>
-              <option value="Bisnis">Bisnis</option>
-              <option value="Teknologi">Teknologi</option>
-              <option value="Komunikasi">Komunikasi</option>
+              <option value="Teknologi & Komputer">Teknologi &amp; Komputer</option>
+              <option value="Desain Media Sosial">Desain Media Sosial</option>
+              <option value="Pembukuan & Bisnis UMKM">Pembukuan &amp; Bisnis UMKM</option>
+              <option value="Bahasa Asing Percakapan">Bahasa Asing Percakapan</option>
+              <option value="Komunikasi & Public Speaking">Komunikasi &amp; Public Speaking</option>
+              <option value="Umum & Vokasi">Umum &amp; Vokasi</option>
             </select>
           </div>
+        </div>
 
-          <div>
-            <label style={{ display: 'block', fontSize: '0.86rem', fontWeight: 600, color: '#ffffff', marginBottom: '6px' }}>
-              Harga (Rp) * (BR-03)
+        {/* Harga & Kuota */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="space-y-1.5">
+            <label className="block text-xs font-bold text-slate-800">
+              Harga (IDR) *
             </label>
             <input
               type="number"
@@ -191,49 +173,29 @@ export default function CreateCourseForm() {
               step={10000}
               value={harga}
               onChange={(e) => setHarga(parseInt(e.target.value || '0', 10))}
-              style={{
-                width: '100%',
-                padding: '12px 14px',
-                borderRadius: 'var(--radius-md)',
-                backgroundColor: 'rgba(255, 255, 255, 0.04)',
-                border: '1px solid rgba(255, 255, 255, 0.12)',
-                color: '#ffffff',
-                fontSize: '0.94rem'
-              }}
+              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#843bab]/30 focus:border-[#843bab] transition-all"
             />
-            <div style={{ fontSize: '0.74rem', color: 'var(--text-dim)', marginTop: '4px' }}>
-              Isi 0 untuk kursus Gratis, atau Rp50.000 - Rp5.000.000
-            </div>
+            <span className="text-[11px] text-slate-500">Rp0 untuk gratis, atau Rp50.000 s/d Rp5.000.000 (BR-03)</span>
           </div>
 
-          <div>
-            <label style={{ display: 'block', fontSize: '0.86rem', fontWeight: 600, color: '#ffffff', marginBottom: '6px' }}>
-              Kuota Peserta * (BR-03)
+          <div className="space-y-1.5">
+            <label className="block text-xs font-bold text-slate-800">
+              Kuota Kursi *
             </label>
             <input
               type="number"
               min={1}
               max={100}
               value={kuota}
-              onChange={(e) => setKuota(parseInt(e.target.value || '1', 10))}
-              style={{
-                width: '100%',
-                padding: '12px 14px',
-                borderRadius: 'var(--radius-md)',
-                backgroundColor: 'rgba(255, 255, 255, 0.04)',
-                border: '1px solid rgba(255, 255, 255, 0.12)',
-                color: '#ffffff',
-                fontSize: '0.94rem'
-              }}
+              onChange={(e) => setKuota(parseInt(e.target.value || '20', 10))}
+              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#843bab]/30 focus:border-[#843bab] transition-all"
             />
-            <div style={{ fontSize: '0.74rem', color: 'var(--text-dim)', marginTop: '4px' }}>
-              1 sampai 100 kursi peserta
-            </div>
+            <span className="text-[11px] text-slate-500">Antara 1 - 100 peserta (BR-03)</span>
           </div>
 
-          <div>
-            <label style={{ display: 'block', fontSize: '0.86rem', fontWeight: 600, color: '#ffffff', marginBottom: '6px' }}>
-              Nilai Lulus Kuis * (BR-03)
+          <div className="space-y-1.5">
+            <label className="block text-xs font-bold text-slate-800">
+              Nilai Kelulusan Kuis *
             </label>
             <input
               type="number"
@@ -241,81 +203,70 @@ export default function CreateCourseForm() {
               max={100}
               value={nilaiLulus}
               onChange={(e) => setNilaiLulus(parseInt(e.target.value || '70', 10))}
-              style={{
-                width: '100%',
-                padding: '12px 14px',
-                borderRadius: 'var(--radius-md)',
-                backgroundColor: 'rgba(255, 255, 255, 0.04)',
-                border: '1px solid rgba(255, 255, 255, 0.12)',
-                color: '#ffffff',
-                fontSize: '0.94rem'
-              }}
+              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#843bab]/30 focus:border-[#843bab] transition-all"
             />
-            <div style={{ fontSize: '0.74rem', color: 'var(--text-dim)', marginTop: '4px' }}>
-              Bawaan 70 (Rentang: 50 - 100)
-            </div>
+            <span className="text-[11px] text-slate-500">Standar kelulusan: 70 poin (BR-03)</span>
           </div>
         </div>
 
-        <div>
-          <label style={{ display: 'block', fontSize: '0.86rem', fontWeight: 600, color: '#ffffff', marginBottom: '6px' }}>
-            Ringkasan Singkat (1-2 kalimat untuk katalog) *
+        {/* Ringkasan Singkat */}
+        <div className="space-y-1.5">
+          <label className="block text-xs font-bold text-slate-800">
+            Ringkasan Singkat (Highlight Kursus) *
           </label>
           <input
             type="text"
             required
+            maxLength={150}
             value={ringkasan}
             onChange={(e) => setRingkasan(e.target.value)}
-            placeholder="Pelajari teknik fotografi produk praktis menggunakan kamera ponsel untuk jualan online."
-            style={{
-              width: '100%',
-              padding: '12px 14px',
-              borderRadius: 'var(--radius-md)',
-              backgroundColor: 'rgba(255, 255, 255, 0.04)',
-              border: '1px solid rgba(255, 255, 255, 0.12)',
-              color: '#ffffff',
-              fontSize: '0.94rem'
-            }}
+            placeholder="Kuasai pembuatan surat dinas, pengelolaan arsip digital, dan korespondensi bisnis."
+            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#843bab]/30 focus:border-[#843bab] transition-all"
           />
+          <span className="text-[11px] text-slate-500">Maksimal 150 karakter untuk ditampilkan pada kartu katalog.</span>
         </div>
 
-        <div>
-          <label style={{ display: 'block', fontSize: '0.86rem', fontWeight: 600, color: '#ffffff', marginBottom: '6px' }}>
-            Deskripsi Lengkap Kursus *
+        {/* Deskripsi Lengkap */}
+        <div className="space-y-1.5">
+          <label className="block text-xs font-bold text-slate-800">
+            Deskripsi Lengkap Kurikulum *
           </label>
           <textarea
             required
             rows={5}
             value={deskripsi}
             onChange={(e) => setDeskripsi(e.target.value)}
-            placeholder="Tuliskan latar belakang, manfaat kursus, sasaran peserta, dan kompetensi yang akan dicapai..."
-            style={{
-              width: '100%',
-              padding: '12px 14px',
-              borderRadius: 'var(--radius-md)',
-              backgroundColor: 'rgba(255, 255, 255, 0.04)',
-              border: '1px solid rgba(255, 255, 255, 0.12)',
-              color: '#ffffff',
-              fontSize: '0.94rem',
-              lineHeight: 1.6
-            }}
+            placeholder="Jelaskan tujuan pembelajaran, kurikulum bertahap, dan kompetensi vokasi yang akan didapat peserta..."
+            className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#843bab]/30 focus:border-[#843bab] transition-all resize-y"
           />
         </div>
+      </div>
 
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '16px' }}>
-          <Link href="/instruktur" className="btn btn-outline" style={{ padding: '12px 20px' }}>
-            Batal
-          </Link>
-          <button
-            type="submit"
-            disabled={loading}
-            className="btn btn-primary"
-            style={{ padding: '12px 24px', backgroundColor: '#3b82f6' }}
-          >
-            <Plus size={18} />
-            <span>{loading ? 'Menyimpan...' : 'Simpan & Lanjut ke Modul'}</span>
-          </button>
-        </div>
+      {/* Action Footer */}
+      <div className="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
+        <Link
+          href="/instruktur"
+          className="px-5 py-2.5 rounded-xl border border-slate-200 hover:border-slate-300 text-slate-700 text-xs font-bold transition-all"
+        >
+          Batal
+        </Link>
+        <button
+          type="submit"
+          disabled={loading}
+          className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-[#843bab] hover:bg-[#722f96] text-white text-xs sm:text-sm font-bold shadow-xs hover:shadow-md transition-all disabled:opacity-50 cursor-pointer active:scale-[0.99]"
+        >
+          {loading ? (
+            <>
+              <Loader2 size={16} className="animate-spin" />
+              <span>Menyimpan Kursus...</span>
+            </>
+          ) : (
+            <>
+              <Plus size={16} />
+              <span>Simpan &amp; Lanjut Susun Modul</span>
+            </>
+          )}
+        </button>
       </div>
     </form>
   );
