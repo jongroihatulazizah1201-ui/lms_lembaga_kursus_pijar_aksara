@@ -139,11 +139,88 @@ export default function LoginPage() {
               </div>
             </div>
 
+            {/* Quick Account Switcher (Berada Tepat di Atas Tombol Masuk Sekarang) */}
+            <div className="pt-2">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[11px] font-semibold text-slate-500">
+                  Pilih Cepat Akun Uji Latihan:
+                </span>
+                <span className="text-[10px] text-slate-500 font-mono bg-slate-100 px-1.5 py-0.5 rounded">
+                  Sandi: Latihan#2026
+                </span>
+              </div>
+
+              {/* 3 Tombol Utama: Peserta, Instruktur, Admin */}
+              <div className="grid grid-cols-3 gap-2">
+                <button
+                  type="button"
+                  onClick={() => fillQuickAccount('siti.aminah@pijaraksara.test')}
+                  className={`flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
+                    email === 'siti.aminah@pijaraksara.test' || email === 'bagus.santoso@pijaraksara.test' || email === 'nadia.putri@pijaraksara.test'
+                      ? 'bg-purple-50 text-[#843bab] border-purple-300 shadow-2xs'
+                      : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200'
+                  }`}
+                  title="Masuk sebagai Peserta (Siti Aminah)"
+                >
+                  <User size={14} className="text-[#843bab]" />
+                  <span>Peserta</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => fillQuickAccount('yudha@pijaraksara.test')}
+                  className={`flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
+                    email === 'yudha@pijaraksara.test'
+                      ? 'bg-purple-50 text-[#843bab] border-purple-300 shadow-2xs'
+                      : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200'
+                  }`}
+                  title="Masuk sebagai Instruktur (Yudha Pratama)"
+                >
+                  <GraduationCap size={14} className="text-[#843bab]" />
+                  <span>Instruktur</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => fillQuickAccount('ratna@pijaraksara.test')}
+                  className={`flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
+                    email === 'ratna@pijaraksara.test'
+                      ? 'bg-purple-50 text-[#843bab] border-purple-300 shadow-2xs'
+                      : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200'
+                  }`}
+                  title="Masuk sebagai Admin (Ratna Kusumawati)"
+                >
+                  <Shield size={14} className="text-[#843bab]" />
+                  <span>Admin</span>
+                </button>
+              </div>
+
+              {/* Opsi Cepat Peserta Lain */}
+              <div className="flex items-center justify-center gap-2 mt-2 text-[10px] text-slate-400">
+                <span>Peserta lain:</span>
+                <button
+                  type="button"
+                  onClick={() => fillQuickAccount('bagus.santoso@pijaraksara.test')}
+                  className="font-medium text-slate-600 hover:text-[#843bab] underline underline-offset-2 cursor-pointer"
+                >
+                  Bagus S.
+                </button>
+                <span>•</span>
+                <button
+                  type="button"
+                  onClick={() => fillQuickAccount('nadia.putri@pijaraksara.test')}
+                  className="font-medium text-slate-600 hover:text-[#843bab] underline underline-offset-2 cursor-pointer"
+                >
+                  Nadia Putri
+                </button>
+              </div>
+            </div>
+
             {/* Submit Button */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl text-sm font-bold text-slate-900 bg-[#ffdf0f] hover:bg-[#eacb0d] shadow-sm hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl text-sm font-bold text-slate-900 bg-[#ffdf0f] hover:bg-[#eacb0d] shadow-sm hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 mt-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               {loading ? (
                 <span>Memproses...</span>
@@ -155,76 +232,6 @@ export default function LoginPage() {
               )}
             </button>
           </form>
-
-          {/* Quick Account Switcher (Bebas Emoji, Menggunakan Simbol Profesional) */}
-          <div className="mt-8 pt-6 border-t border-slate-100">
-            <div className="text-[11px] font-semibold text-slate-500 mb-2.5 text-center">
-              Pilih Cepat Akun Uji Coba (Sandi: <code className="font-mono text-slate-700 bg-slate-100 px-1 py-0.5 rounded">Latihan#2026</code>):
-            </div>
-
-            {/* Opsi Cepat Peserta */}
-            <div className="mb-2.5">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
-                Pilih Akun Peserta:
-              </span>
-              <div className="grid grid-cols-3 gap-1.5">
-                <button
-                  type="button"
-                  onClick={() => fillQuickAccount('siti.aminah@pijaraksara.test')}
-                  className="flex items-center justify-center gap-1 py-1.5 px-2 rounded-xl text-[11px] font-semibold bg-slate-50 hover:bg-purple-50 text-slate-700 hover:text-[#843bab] border border-slate-200 hover:border-purple-200 transition-all cursor-pointer"
-                  title="Masuk sebagai Siti Aminah (Peserta)"
-                >
-                  <User size={12} className="text-[#843bab] shrink-0" />
-                  <span className="truncate">Siti Aminah</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => fillQuickAccount('bagus.santoso@pijaraksara.test')}
-                  className="flex items-center justify-center gap-1 py-1.5 px-2 rounded-xl text-[11px] font-semibold bg-slate-50 hover:bg-purple-50 text-slate-700 hover:text-[#843bab] border border-slate-200 hover:border-purple-200 transition-all cursor-pointer"
-                  title="Masuk sebagai Bagus Santoso (Peserta)"
-                >
-                  <User size={12} className="text-[#843bab] shrink-0" />
-                  <span className="truncate">Bagus S.</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => fillQuickAccount('nadia.putri@pijaraksara.test')}
-                  className="flex items-center justify-center gap-1 py-1.5 px-2 rounded-xl text-[11px] font-semibold bg-slate-50 hover:bg-purple-50 text-slate-700 hover:text-[#843bab] border border-slate-200 hover:border-purple-200 transition-all cursor-pointer"
-                  title="Masuk sebagai Nadia Putri (Peserta)"
-                >
-                  <User size={12} className="text-[#843bab] shrink-0" />
-                  <span className="truncate">Nadia Putri</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Opsi Instruktur & Admin */}
-            <div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
-                Pilih Staf & Pengajar:
-              </span>
-              <div className="grid grid-cols-2 gap-1.5">
-                <button
-                  type="button"
-                  onClick={() => fillQuickAccount('yudha@pijaraksara.test')}
-                  className="flex items-center justify-center gap-1 py-1.5 px-2 rounded-xl text-[11px] font-semibold bg-slate-50 hover:bg-purple-50 text-slate-700 hover:text-[#843bab] border border-slate-200 hover:border-purple-200 transition-all cursor-pointer"
-                  title="Masuk sebagai Yudha Pratama (Instruktur)"
-                >
-                  <GraduationCap size={13} className="text-[#843bab] shrink-0" />
-                  <span className="truncate">Instruktur (Yudha)</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => fillQuickAccount('ratna@pijaraksara.test')}
-                  className="flex items-center justify-center gap-1 py-1.5 px-2 rounded-xl text-[11px] font-semibold bg-slate-50 hover:bg-purple-50 text-slate-700 hover:text-[#843bab] border border-slate-200 hover:border-purple-200 transition-all cursor-pointer"
-                  title="Masuk sebagai Ratna Kusumawati (Admin)"
-                >
-                  <Shield size={13} className="text-[#843bab] shrink-0" />
-                  <span className="truncate">Admin (Ratna)</span>
-                </button>
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Register Link */}
