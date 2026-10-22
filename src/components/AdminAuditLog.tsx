@@ -114,7 +114,7 @@ export default function AdminAuditLog({ logs }: Props) {
     });
   }, [logs, searchQuery, filterCategory]);
 
-  const toggleExpand = (logId: string) => {
+  const toggleExpand = (logId: string | number) => {
     setExpandedLogId((prev) => (prev === logId ? null : logId));
   };
 

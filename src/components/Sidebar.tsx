@@ -105,7 +105,10 @@ export default function Sidebar({ user, profile }: SidebarProps) {
     // Remove query params or hashes for matching
     const baseHref = href.split('?')[0].split('#')[0];
     if (baseHref === '/admin') {
-      return pathname.startsWith('/admin') && (href === '/admin?tab=kursus' ? !pathname.includes('/dashboard') : true);
+      if (pathname.startsWith('/admin/dashboard')) {
+        return false;
+      }
+      return pathname === '/admin';
     }
     return pathname.startsWith(baseHref);
   };
