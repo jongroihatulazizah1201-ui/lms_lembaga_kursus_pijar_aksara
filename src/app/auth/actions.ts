@@ -41,9 +41,6 @@ export async function loginAction(formData: FormData) {
     return { error: 'Akun Anda dinonaktifkan. Silakan hubungi admin.' };
   }
 
-  // Bersihkan cache layout agar nama/peran user langsung sinkron
-  revalidatePath('/', 'layout');
-
   // Arahkan langsung ke halaman utama sesuai peran pengguna tanpa singgah ke /profil
   let targetUrl = '/kursus-saya';
   if (profile.peran === 'admin') {
