@@ -1,5 +1,6 @@
 'use client';
 
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { BookOpen, GraduationCap, LayoutDashboard, UserCircle, LogIn, Award, Home } from 'lucide-react';
@@ -17,10 +18,40 @@ interface Props {
 
 export default function MobileBottomNav({ user, profile }: Props) {
   const pathname = usePathname();
+  const [activeProfile, setActiveProfile] = useState(profile);
 
-  const isPeserta = profile?.peran === 'peserta';
-  const isInstruktur = profile?.peran === 'instruktur';
-  const isAdmin = profile?.peran === 'admin';
+  useEffect(() => {
+    setActiveProfile(profile);
+  }, [profile]);
+
+  useEffect(() => {
+    const handleProfileUpdated = (
+      e: CustomEvent<{
+        nama_lengkap?: string;
+        no_hp?: string;
+        avatar_url?: string | null;
+      }>
+    ) => {
+      if (e.detail) {
+        setActiveProfile((prev) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            ...(e.detail.nama_lengkap ? { nama_lengkap: e.detail.nama_lengkap } : {}),
+          };
+        });
+      }
+    };
+
+    window.addEventListener('lms:profile-updated', handleProfileUpdated as EventListener);
+    return () => {
+      window.removeEventListener('lms:profile-updated', handleProfileUpdated as EventListener);
+    };
+  }, []);
+
+  const isPeserta = activeProfile?.peran === 'peserta';
+  const isInstruktur = activeProfile?.peran === 'instruktur';
+  const isAdmin = activeProfile?.peran === 'admin';
 
   const isActive = (path: string) => {
     if (path === '/') return pathname === '/';
@@ -128,7 +159,7 @@ export default function MobileBottomNav({ user, profile }: Props) {
           >
             <UserCircle size={20} className={pathname === '/profil' ? 'stroke-[2.5]' : ''} />
             <span className="text-[11px] mt-1 truncate max-w-[64px]">
-              {profile?.nama_lengkap?.split(' ')[0] || 'Profil'}
+              {activeProfile?.nama_lengkap?.split(' ')[0] || 'Profil'}
             </span>
           </Link>
         ) : (

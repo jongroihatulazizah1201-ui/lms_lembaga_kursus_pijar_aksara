@@ -20,9 +20,38 @@ interface Props {
 
 export default function UserNav({ user, profile }: Props) {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
-  const isPeserta = profile.peran === 'peserta';
-  const isInstruktur = profile.peran === 'instruktur';
-  const isAdmin = profile.peran === 'admin';
+  const [activeProfile, setActiveProfile] = useState(profile);
+
+  React.useEffect(() => {
+    setActiveProfile(profile);
+  }, [profile]);
+
+  React.useEffect(() => {
+    const handleProfileUpdated = (
+      e: CustomEvent<{
+        nama_lengkap?: string;
+        no_hp?: string;
+        avatar_url?: string | null;
+      }>
+    ) => {
+      if (e.detail) {
+        setActiveProfile((prev) => ({
+          ...prev,
+          ...(e.detail.nama_lengkap ? { nama_lengkap: e.detail.nama_lengkap } : {}),
+          ...(e.detail.avatar_url !== undefined ? { avatar_url: e.detail.avatar_url } : {}),
+        }));
+      }
+    };
+
+    window.addEventListener('lms:profile-updated', handleProfileUpdated as EventListener);
+    return () => {
+      window.removeEventListener('lms:profile-updated', handleProfileUpdated as EventListener);
+    };
+  }, []);
+
+  const isPeserta = activeProfile.peran === 'peserta';
+  const isInstruktur = activeProfile.peran === 'instruktur';
+  const isAdmin = activeProfile.peran === 'admin';
 
   const roleBadgeClass = isAdmin
     ? 'bg-purple-50 text-[#843bab] border-purple-200'
@@ -95,22 +124,22 @@ export default function UserNav({ user, profile }: Props) {
         className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-50 hover:bg-slate-100 border border-slate-200 shadow-sm transition-colors cursor-pointer"
         title="Lihat & Kelola Profil Saya"
       >
-        {profile.avatar_url ? (
+        {activeProfile.avatar_url ? (
           <img
-            src={profile.avatar_url}
-            alt={profile.nama_lengkap}
+            src={activeProfile.avatar_url}
+            alt={activeProfile.nama_lengkap}
             className="w-7 h-7 rounded-full object-cover shrink-0 border border-slate-200 shadow-2xs"
           />
         ) : (
           <div className="w-7 h-7 rounded-full bg-[#843bab] text-white flex items-center justify-center text-xs font-bold shadow-sm shrink-0">
-            {profile.nama_lengkap.charAt(0).toUpperCase()}
+            {activeProfile.nama_lengkap.charAt(0).toUpperCase()}
           </div>
         )}
         <span className="text-xs font-semibold text-slate-800 max-w-[120px] truncate">
-          {profile.nama_lengkap}
+          {activeProfile.nama_lengkap}
         </span>
         <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase border ${roleBadgeClass}`}>
-          {profile.peran}
+          {activeProfile.peran}
         </span>
       </Link>
 
@@ -129,7 +158,7 @@ export default function UserNav({ user, profile }: Props) {
       <LogoutConfirmModal
         isOpen={showLogoutModal}
         onClose={() => setShowLogoutModal(false)}
-        userName={profile.nama_lengkap}
+        userName={activeProfile.nama_lengkap}
       />
     </div>
   );

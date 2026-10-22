@@ -60,10 +60,42 @@ export default function Sidebar({ user, profile }: SidebarProps) {
 
   const [mobileOpen, setMobileOpen] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [activeProfile, setActiveProfile] = useState(profile);
 
-  const isPeserta = profile?.peran === 'peserta';
-  const isInstruktur = profile?.peran === 'instruktur';
-  const isAdmin = profile?.peran === 'admin';
+  React.useEffect(() => {
+    setActiveProfile(profile);
+  }, [profile]);
+
+  React.useEffect(() => {
+    const handleProfileUpdated = (
+      e: CustomEvent<{
+        nama_lengkap?: string;
+        no_hp?: string;
+        avatar_url?: string | null;
+      }>
+    ) => {
+      if (e.detail) {
+        setActiveProfile((prev) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            ...(e.detail.nama_lengkap ? { nama_lengkap: e.detail.nama_lengkap } : {}),
+            ...(e.detail.no_hp !== undefined ? { no_hp: e.detail.no_hp } : {}),
+            ...(e.detail.avatar_url !== undefined ? { avatar_url: e.detail.avatar_url } : {}),
+          };
+        });
+      }
+    };
+
+    window.addEventListener('lms:profile-updated', handleProfileUpdated as EventListener);
+    return () => {
+      window.removeEventListener('lms:profile-updated', handleProfileUpdated as EventListener);
+    };
+  }, []);
+
+  const isPeserta = activeProfile?.peran === 'peserta';
+  const isInstruktur = activeProfile?.peran === 'instruktur';
+  const isAdmin = activeProfile?.peran === 'admin';
   const portalHome = isAdmin ? '/admin/dashboard' : isInstruktur ? '/instruktur' : isPeserta ? '/kursus-saya' : '/';
 
   // =========================================================================
@@ -109,11 +141,6 @@ export default function Sidebar({ user, profile }: SidebarProps) {
             href: '/instruktur/nilai',
             icon: ClipboardCheck
           },
-          {
-            label: 'Profil Admin',
-            href: '/profil',
-            icon: User
-          },
         ],
       },
       {
@@ -148,11 +175,6 @@ export default function Sidebar({ user, profile }: SidebarProps) {
             badge: 'Nilai',
             badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-200'
           },
-          {
-            label: 'Profil Instruktur',
-            href: '/profil',
-            icon: User
-          },
         ],
       },
       {
@@ -174,11 +196,6 @@ export default function Sidebar({ user, profile }: SidebarProps) {
             icon: GraduationCap,
             badge: 'Aktif',
             badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-200'
-          },
-          {
-            label: 'Profil Saya',
-            href: '/profil',
-            icon: User
           },
         ],
       },
@@ -371,18 +388,22 @@ export default function Sidebar({ user, profile }: SidebarProps) {
 
       {/* User Session Footer (Profile Capsule & Logout) */}
       <div className="p-3 border-t border-slate-200 bg-white">
-        {user && profile ? (
+        {user && activeProfile ? (
           <div className="space-y-2">
             <Link
               href="/profil"
               onClick={closeMobile}
-              className="flex items-center gap-2.5 p-2 rounded-xl bg-slate-50 hover:bg-purple-50/70 border border-slate-200/80 hover:border-purple-200 transition-all group"
+              className={`flex items-center gap-2.5 p-2 rounded-xl transition-all group ${
+                pathname === '/profil'
+                  ? 'bg-purple-100/70 border border-[#843bab]/30 shadow-xs ring-1 ring-[#843bab]/20'
+                  : 'bg-slate-50 hover:bg-purple-50/70 border border-slate-200/80 hover:border-purple-200'
+              }`}
               title="Kelola Profil Saya"
             >
-              {profile.avatar_url ? (
+              {activeProfile.avatar_url ? (
                 <img
-                  src={profile.avatar_url}
-                  alt={profile.nama_lengkap}
+                  src={activeProfile.avatar_url}
+                  alt={activeProfile.nama_lengkap}
                   className="w-8 h-8 rounded-full object-cover shrink-0 border border-slate-200 shadow-2xs"
                 />
               ) : (
@@ -395,20 +416,26 @@ export default function Sidebar({ user, profile }: SidebarProps) {
                       : 'bg-emerald-600'
                   }`}
                 >
-                  {profile.nama_lengkap.charAt(0).toUpperCase()}
+                  {activeProfile.nama_lengkap?.charAt(0).toUpperCase() || 'U'}
                 </div>
               )}
 
               <div className="min-w-0 flex-1">
-                <div className="text-xs font-bold text-slate-900 group-hover:text-[#843bab] transition-colors truncate">
-                  {profile.nama_lengkap}
+                <div className={`text-xs font-bold transition-colors truncate ${
+                  pathname === '/profil' ? 'text-[#843bab]' : 'text-slate-900 group-hover:text-[#843bab]'
+                }`}>
+                  {activeProfile.nama_lengkap}
                 </div>
                 <div className="text-[10px] text-slate-400 truncate">
                   {user.email}
                 </div>
               </div>
 
-              <span className="text-[10px] font-bold text-[#843bab] bg-purple-50 px-1.5 py-0.5 rounded border border-purple-100 shrink-0">
+              <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded border shrink-0 transition-colors ${
+                pathname === '/profil'
+                  ? 'bg-[#843bab] text-white border-[#843bab]'
+                  : 'text-[#843bab] bg-purple-50 border-purple-100'
+              }`}>
                 Ubah
               </span>
             </Link>
@@ -468,7 +495,7 @@ export default function Sidebar({ user, profile }: SidebarProps) {
           <Logo size="sm" href={portalHome} showText={true} />
         </div>
 
-        {user && profile ? (
+        {user && activeProfile ? (
           <span
             className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase border ${
               isAdmin
@@ -478,7 +505,7 @@ export default function Sidebar({ user, profile }: SidebarProps) {
                 : 'bg-emerald-50 text-emerald-700 border-emerald-200'
             }`}
           >
-            {profile.peran}
+            {activeProfile.peran}
           </span>
         ) : (
           <Link
@@ -510,7 +537,7 @@ export default function Sidebar({ user, profile }: SidebarProps) {
       <LogoutConfirmModal
         isOpen={showLogoutModal}
         onClose={() => setShowLogoutModal(false)}
-        userName={profile?.nama_lengkap}
+        userName={activeProfile?.nama_lengkap}
       />
     </>
   );

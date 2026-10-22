@@ -3,6 +3,7 @@
 import React, { useState, useRef, useTransition } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { updateProfileAction } from '@/app/profil/actions';
 import {
   User,
@@ -36,6 +37,7 @@ interface Props {
 }
 
 export default function ProfileClient({ profile }: Props) {
+  const router = useRouter();
   const [namaLengkap, setNamaLengkap] = useState(profile.nama_lengkap || '');
   const [nomorHp, setNomorHp] = useState(profile.no_hp || '');
   const [currentAvatarUrl, setCurrentAvatarUrl] = useState<string | null>(profile.avatar_url);
@@ -109,12 +111,29 @@ export default function ProfileClient({ profile }: Props) {
           setMessage({ type: 'error', text: res.error });
         } else if (res?.success) {
           setMessage({ type: 'success', text: res.message || 'Profil berhasil diperbarui.' });
+          const newAvatar = res.avatarUrl !== undefined ? res.avatarUrl : currentAvatarUrl;
           if (res.avatarUrl !== undefined) {
             setCurrentAvatarUrl(res.avatarUrl);
             setPreviewAvatarUrl(null);
             setSelectedFile(null);
             setIsRemoveAvatar(false);
           }
+
+          // Sinkronkan ke seluruh UI (Sidebar capsule, badge, dsb.) secara seketika tanpa jeda
+          if (typeof window !== 'undefined') {
+            window.dispatchEvent(
+              new CustomEvent('lms:profile-updated', {
+                detail: {
+                  nama_lengkap: namaLengkap,
+                  no_hp: nomorHp,
+                  avatar_url: newAvatar,
+                },
+              })
+            );
+          }
+
+          // Segarkan data server components layout
+          router.refresh();
         }
       } catch (err: any) {
         setMessage({
