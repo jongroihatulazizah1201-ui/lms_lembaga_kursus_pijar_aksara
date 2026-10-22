@@ -192,62 +192,7 @@ export default function AdminAuditLog({ logs }: Props) {
 
   return (
     <div className="space-y-6">
-      {/* 1. KPI Cards Ringkasan Audit Log */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-              Total Log Aktivitas
-            </span>
-            <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
-              <Activity size={16} />
-            </div>
-          </div>
-          <div className="text-3xl font-black text-slate-900">{totalLogs}</div>
-          <div className="text-xs text-slate-500 mt-1">Audit trail aktivitas sistem</div>
-        </div>
-
-        <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-              Aktivitas Kursus
-            </span>
-            <div className="w-8 h-8 rounded-xl bg-purple-50 text-[#843bab] flex items-center justify-center">
-              <BookOpen size={16} />
-            </div>
-          </div>
-          <div className="text-3xl font-black text-[#843bab]">{kursusLogsCount}</div>
-          <div className="text-xs text-slate-500 mt-1">Siklus terbit & revisi</div>
-        </div>
-
-        <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-              Transaksi & Bayar
-            </span>
-            <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-              <CreditCard size={16} />
-            </div>
-          </div>
-          <div className="text-3xl font-black text-emerald-600">{pendaftaranLogsCount}</div>
-          <div className="text-xs text-slate-500 mt-1">Konfirmasi & pembatalan</div>
-        </div>
-
-        <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-              Manajemen Akun
-            </span>
-            <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
-              <Shield size={16} />
-            </div>
-          </div>
-          <div className="text-3xl font-black text-amber-600">{penggunaLogsCount}</div>
-          <div className="text-xs text-slate-500 mt-1">Peran & status pengguna</div>
-        </div>
-      </div>
-
-      {/* 2. Filter & Search Toolbar (Sticky saat di-scroll) */}
+      {/* 1. Filter & Search Toolbar (Ditaruh di Atas & Sticky saat di-scroll) */}
       <div className="sticky top-[60px] lg:top-3 z-20 bg-white/95 backdrop-blur-md rounded-2xl border border-slate-200/90 p-4 shadow-sm hover:shadow-md flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 transition-all">
         {/* Search Input */}
         <div className="relative flex-1 min-w-[280px]">
@@ -315,6 +260,61 @@ export default function AdminAuditLog({ logs }: Props) {
               <RotateCcw size={14} />
             </button>
           )}
+        </div>
+      </div>
+
+      {/* 2. KPI Cards Ringkasan Audit Log */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+              Total Log Aktivitas
+            </span>
+            <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+              <Activity size={16} />
+            </div>
+          </div>
+          <div className="text-3xl font-black text-slate-900">{totalLogs}</div>
+          <div className="text-xs text-slate-500 mt-1">Audit trail aktivitas sistem</div>
+        </div>
+
+        <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+              Aktivitas Kursus
+            </span>
+            <div className="w-8 h-8 rounded-xl bg-purple-50 text-[#843bab] flex items-center justify-center">
+              <BookOpen size={16} />
+            </div>
+          </div>
+          <div className="text-3xl font-black text-[#843bab]">{kursusLogsCount}</div>
+          <div className="text-xs text-slate-500 mt-1">Siklus terbit & revisi</div>
+        </div>
+
+        <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+              Transaksi & Bayar
+            </span>
+            <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+              <CreditCard size={16} />
+            </div>
+          </div>
+          <div className="text-3xl font-black text-emerald-600">{pendaftaranLogsCount}</div>
+          <div className="text-xs text-slate-500 mt-1">Konfirmasi & pembatalan</div>
+        </div>
+
+        <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+              Manajemen Akun
+            </span>
+            <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+              <Shield size={16} />
+            </div>
+          </div>
+          <div className="text-3xl font-black text-amber-600">{penggunaLogsCount}</div>
+          <div className="text-xs text-slate-500 mt-1">Peran & status pengguna</div>
         </div>
       </div>
 

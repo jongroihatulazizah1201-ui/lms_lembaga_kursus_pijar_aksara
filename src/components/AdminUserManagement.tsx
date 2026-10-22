@@ -206,64 +206,7 @@ export default function AdminUserManagement({ users, currentAdminId }: Props) {
         </div>
       )}
 
-      {/* 1. KPI Cards Ringkasan Pengguna */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-              Total Pengguna
-            </span>
-            <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
-              <Users size={16} />
-            </div>
-          </div>
-          <div className="text-3xl font-black text-slate-900">{totalUsers}</div>
-          <div className="text-xs text-slate-500 mt-1">
-            {totalNonaktif > 0 ? `${totalNonaktif} dinonaktifkan` : 'Semua akun aktif'}
-          </div>
-        </div>
-
-        <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-              Peserta Terdaftar
-            </span>
-            <div className="w-8 h-8 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center">
-              <GraduationCap size={16} />
-            </div>
-          </div>
-          <div className="text-3xl font-black text-sky-600">{totalPeserta}</div>
-          <div className="text-xs text-slate-500 mt-1">Siswa vokasi aktif</div>
-        </div>
-
-        <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-              Instruktur Kursus
-            </span>
-            <div className="w-8 h-8 rounded-xl bg-purple-50 text-[#843bab] flex items-center justify-center">
-              <PenTool size={16} />
-            </div>
-          </div>
-          <div className="text-3xl font-black text-[#843bab]">{totalInstruktur}</div>
-          <div className="text-xs text-slate-500 mt-1">Pengajar & pembuat kursus</div>
-        </div>
-
-        <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-              Administrator
-            </span>
-            <div className="w-8 h-8 rounded-xl bg-purple-50 text-[#843bab] flex items-center justify-center">
-              <Shield size={16} />
-            </div>
-          </div>
-          <div className="text-3xl font-black text-[#843bab]">{totalAdmin}</div>
-          <div className="text-xs text-slate-500 mt-1">Pengelola sistem LMS</div>
-        </div>
-      </div>
-
-      {/* 2. Filter & Search Toolbar (Sticky saat di-scroll) */}
+      {/* 1. Filter & Search Toolbar (Ditaruh di Atas & Sticky saat di-scroll) */}
       <div className="sticky top-[60px] lg:top-3 z-20 bg-white/95 backdrop-blur-md rounded-2xl border border-slate-200/90 p-4 shadow-sm hover:shadow-md flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 transition-all">
         {/* Search Input */}
         <div className="relative flex-1 min-w-[280px]">
@@ -337,6 +280,63 @@ export default function AdminUserManagement({ users, currentAdminId }: Props) {
               <RotateCcw size={14} />
             </button>
           )}
+        </div>
+      </div>
+
+      {/* 2. KPI Cards Ringkasan Pengguna */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+              Total Pengguna
+            </span>
+            <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+              <Users size={16} />
+            </div>
+          </div>
+          <div className="text-3xl font-black text-slate-900">{totalUsers}</div>
+          <div className="text-xs text-slate-500 mt-1">
+            {totalNonaktif > 0 ? `${totalNonaktif} dinonaktifkan` : 'Semua akun aktif'}
+          </div>
+        </div>
+
+        <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+              Peserta Terdaftar
+            </span>
+            <div className="w-8 h-8 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center">
+              <GraduationCap size={16} />
+            </div>
+          </div>
+          <div className="text-3xl font-black text-sky-600">{totalPeserta}</div>
+          <div className="text-xs text-slate-500 mt-1">Siswa vokasi aktif</div>
+        </div>
+
+        <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+              Instruktur Kursus
+            </span>
+            <div className="w-8 h-8 rounded-xl bg-purple-50 text-[#843bab] flex items-center justify-center">
+              <PenTool size={16} />
+            </div>
+          </div>
+          <div className="text-3xl font-black text-[#843bab]">{totalInstruktur}</div>
+          <div className="text-xs text-slate-500 mt-1">Pengajar & pembuat kursus</div>
+        </div>
+
+        <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+              Administrator
+            </span>
+            <div className="w-8 h-8 rounded-xl bg-purple-50 text-[#843bab] flex items-center justify-center">
+              <Shield size={16} />
+            </div>
+          </div>
+          <div className="text-3xl font-black text-[#843bab]">{totalAdmin}</div>
+          <div className="text-xs text-slate-500 mt-1">Pengelola sistem LMS</div>
         </div>
       </div>
 
