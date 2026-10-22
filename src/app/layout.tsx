@@ -1,5 +1,6 @@
 import React, { Suspense } from 'react';
 import type { Metadata } from 'next';
+import { headers } from 'next/headers';
 import './globals.css';
 import { createClient } from '@/lib/supabase/server';
 import Navbar from '@/components/Navbar';
@@ -24,6 +25,10 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const headersList = await headers();
+  const currentPath = headersList.get('x-pathname') || '';
+  const isAuthPage = currentPath.startsWith('/login') || currentPath.startsWith('/register');
+
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -37,9 +42,9 @@ export default async function RootLayout({
     profile = data;
   }
 
-  // 1. JIKA SEBAGAI TAMU / BELUM LOGIN:
+  // 1. JIKA SEBAGAI TAMU, BELUM LOGIN, ATAU DI HALAMAN AUTH (/login, /register):
   // Tampilkan bentuk web awal standar (Horizontal Top Navbar, tanpa sidebar kiri)
-  if (!user || !profile) {
+  if (!user || !profile || isAuthPage) {
     return (
       <html lang="id">
         <body className="bg-white text-slate-900 min-h-screen flex flex-col antialiased selection:bg-[#ffdf0f] selection:text-slate-900">

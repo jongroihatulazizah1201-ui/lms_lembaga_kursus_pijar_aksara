@@ -2,9 +2,13 @@ import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
 export async function middleware(request: NextRequest) {
+  const path = request.nextUrl.pathname;
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set('x-pathname', path);
+
   let response = NextResponse.next({
     request: {
-      headers: request.headers,
+      headers: requestHeaders,
     },
   });
 
@@ -21,7 +25,9 @@ export async function middleware(request: NextRequest) {
             request.cookies.set(name, value)
           );
           response = NextResponse.next({
-            request,
+            request: {
+              headers: requestHeaders,
+            },
           });
           cookiesToSet.forEach(({ name, value, options }) =>
             response.cookies.set(name, value, options)
@@ -31,8 +37,17 @@ export async function middleware(request: NextRequest) {
     }
   );
 
+  // Helper untuk redirect dengan mempertahankan seluruh cookie sesi terbaru
+  const createRedirect = (url: URL | string) => {
+    const redirectUrl = typeof url === 'string' ? new URL(url, request.url) : url;
+    const redirectRes = NextResponse.redirect(redirectUrl);
+    response.cookies.getAll().forEach((cookie) => {
+      redirectRes.cookies.set(cookie.name, cookie.value, cookie);
+    });
+    return redirectRes;
+  };
+
   const { data: { user } } = await supabase.auth.getUser();
-  const path = request.nextUrl.pathname;
 
   // Rute yang diproteksi berdasarkan peran
   const isAdminRoute = path.startsWith('/admin');
@@ -40,50 +55,59 @@ export async function middleware(request: NextRequest) {
   const isPesertaRoute = path.startsWith('/kursus-saya') || path.startsWith('/belajar');
   const isAuthRoute = path.startsWith('/login') || path.startsWith('/register');
 
+  // 1. Jika pengguna sudah login mencoba membuka halaman auth (/login atau /register):
+  // Segera alihkan ke halaman utama sesuai peran tanpa menampilkan halaman login
+  if (isAuthRoute && user) {
+    try {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('peran')
+        .eq('id', user.id)
+        .single();
+
+      if (profile?.peran === 'admin') {
+        return createRedirect('/admin');
+      } else if (profile?.peran === 'instruktur') {
+        return createRedirect('/instruktur');
+      } else {
+        return createRedirect('/kursus-saya');
+      }
+    } catch {
+      return createRedirect('/kursus-saya');
+    }
+  }
+
+  // 2. Proteksi rute terlindungi
   if (isAdminRoute || isInstrukturRoute || isPesertaRoute) {
     if (!user) {
       const redirectUrl = new URL('/login', request.url);
       redirectUrl.searchParams.set('redirect', path);
-      return NextResponse.redirect(redirectUrl);
+      return createRedirect(redirectUrl);
     }
 
-    // Ambil peran pengguna dari profiles
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('peran, aktif')
-      .eq('id', user.id)
-      .single();
+    try {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('peran, aktif')
+        .eq('id', user.id)
+        .single();
 
-    if (!profile || !profile.aktif) {
-      // Akun tidak aktif / tidak ditemukan
-      return NextResponse.redirect(new URL('/login?error=inactive', request.url));
-    }
+      if (profile && profile.aktif === false) {
+        return createRedirect('/login?error=inactive');
+      }
 
-    const peran = profile.peran;
+      if (profile) {
+        if (isAdminRoute && profile.peran !== 'admin') {
+          return new NextResponse('403 Forbidden - Anda tidak memiliki hak akses Admin.', { status: 403 });
+        }
 
-    if (isAdminRoute && peran !== 'admin') {
-      return new NextResponse('403 Forbidden - Anda tidak memiliki hak akses Admin.', { status: 403 });
-    }
-
-    if (isInstrukturRoute && peran !== 'instruktur' && peran !== 'admin') {
-      return new NextResponse('403 Forbidden - Anda tidak memiliki hak akses Instruktur.', { status: 403 });
-    }
-  }
-
-  // Jika sudah login dan membuka /login atau /register, redirect ke halaman utama masing-masing peran
-  if (isAuthRoute && user) {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('peran')
-      .eq('id', user.id)
-      .single();
-
-    if (profile?.peran === 'admin') {
-      return NextResponse.redirect(new URL('/admin', request.url));
-    } else if (profile?.peran === 'instruktur') {
-      return NextResponse.redirect(new URL('/instruktur', request.url));
-    } else {
-      return NextResponse.redirect(new URL('/kursus-saya', request.url));
+        if (isInstrukturRoute && profile.peran !== 'instruktur' && profile.peran !== 'admin') {
+          return new NextResponse('403 Forbidden - Anda tidak memiliki hak akses Instruktur.', { status: 403 });
+        }
+      }
+    } catch {
+      // Jika terjadi kendala jaringan sementara di middleware, izinkan request lolos
+      // ke Server Component untuk diverifikasi ulang tanpa membuang sesi user secara keliru
     }
   }
 
