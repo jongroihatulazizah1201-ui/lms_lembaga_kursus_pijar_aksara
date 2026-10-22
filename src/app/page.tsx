@@ -43,26 +43,26 @@ export default async function HomePage() {
         <div className="max-w-7xl mx-auto px-6 w-full relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
             {/* ================= KOLOM KIRI: Jargon & Tipografi Terstruktur Rapi ================= */}
-            <div className="lg:col-span-7 text-center lg:text-left max-w-xl mx-auto lg:mx-0">
-              {/* Sub-heading Institusional Bersih (Lavender Elegan, Ringan di Mata) */}
-              <p className="text-xs sm:text-[13px] font-bold tracking-widest uppercase text-purple-200/90 mb-2.5">
+            <div className="lg:col-span-7 text-center lg:text-left max-w-2xl mx-auto lg:mx-0">
+              {/* Sub-heading Institusional Bersih (Ukuran Selaras: 13px, Bernapas & Elegan) */}
+              <p className="text-xs sm:text-[13px] font-semibold tracking-wider uppercase text-purple-200/90 mb-4 sm:mb-4.5">
                 Lembaga Kursus &amp; Pelatihan Vokasi Resmi di Kota Depok
               </p>
 
-              {/* Headline Jargon Utama (Titik Fokus Utama, Proporsional & Tidak Berat di Mata) */}
-              <h1 className="text-3xl sm:text-4xl lg:text-[42px] xl:text-[46px] font-black text-white tracking-tight leading-[1.12] mb-3.5">
+              {/* Headline Jargon Utama (Titik Fokus Utama, Proporsional & Presisi 2 Baris) */}
+              <h1 className="text-3xl sm:text-[38px] lg:text-[40px] xl:text-[44px] font-black text-white tracking-tight leading-[1.16] mb-4.5 sm:mb-5">
                 Kurang Skill?<br />
                 <span>Pijar Aksara, </span>
-                <span className="text-[#ffdf0f]">Bikin Auto Nyala.</span>
+                <span className="text-[#ffdf0f] inline-block sm:inline sm:whitespace-nowrap">Bikin Auto Nyala.</span>
               </h1>
 
-              {/* Deskripsi Singkat, Rapi, & Nyaman Dibaca */}
-              <p className="text-sm sm:text-[15px] font-normal text-purple-100/85 leading-relaxed max-w-lg mx-auto lg:mx-0 mb-5">
+              {/* Deskripsi Singkat (Ukuran Disamakan: 13px, Ringan, Tidak Berat di Mata, Jarak Sewajarnya) */}
+              <p className="text-xs sm:text-[13px] font-normal text-purple-100/85 leading-relaxed max-w-xl mx-auto lg:mx-0 mb-6 sm:mb-6.5">
                 Kuasai keahlian administrasi perkantoran, desain konten media sosial, pembukuan UMKM, dan komunikasi kerja dengan kurikulum vokasi teruji serta sertifikasi resmi berstandar industri.
               </p>
 
               {/* Call to Action Tombol Pill ala Cakap (Kontras Tinggi & Menarik Fokus) */}
-              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3.5 mb-5">
+              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3.5 mb-5.5">
                 <a
                   href="#katalog"
                   className="inline-flex items-center justify-center gap-3.5 px-7 py-3 rounded-full text-sm sm:text-base font-black text-slate-950 bg-[#ffdf0f] hover:bg-[#ffe733] shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 group cursor-pointer"
