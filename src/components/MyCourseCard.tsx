@@ -17,6 +17,11 @@ import {
   CreditCard,
   User,
   Calendar,
+  Building,
+  Copy,
+  Check,
+  X,
+  AlertTriangle,
 } from 'lucide-react';
 
 export interface EnrollmentCourseData {
@@ -55,6 +60,8 @@ export default function MyCourseCard({ enrollment, onCancelRequest }: Props) {
   const { kursus, status, nominal, batas_bayar, modul_lulus, id, didaftarkan_pada, sertifikat } = enrollment;
   const [timeLeft, setTimeLeft] = useState<string>('');
   const [isExpired, setIsExpired] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [copiedBank, setCopiedBank] = useState<string | null>(null);
 
   // Perhitungan progres kelulusan
   const totalModul = kursus.total_modul || 1;
@@ -347,13 +354,14 @@ export default function MyCourseCard({ enrollment, onCancelRequest }: Props) {
               <span>Batalkan</span>
             </button>
 
-            <Link
-              href={`/kursus/${kursus.slug}`}
-              className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-bold transition-all shadow-xs"
+            <button
+              type="button"
+              onClick={() => setShowPaymentModal(true)}
+              className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-bold transition-all shadow-xs cursor-pointer"
             >
               <CreditCard size={14} />
               <span>Bayar Sekarang</span>
-            </Link>
+            </button>
           </div>
         )}
 
@@ -392,6 +400,189 @@ export default function MyCourseCard({ enrollment, onCancelRequest }: Props) {
           </Link>
         )}
       </div>
+
+      {/* Modal Petunjuk Pembayaran Kursus */}
+      {showPaymentModal && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 animate-fadeIn">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-lg p-6 sm:p-8 relative max-h-[90vh] overflow-y-auto text-slate-900">
+            {/* Tombol Tutup */}
+            <button
+              type="button"
+              onClick={() => setShowPaymentModal(false)}
+              className="absolute top-5 right-5 text-slate-400 hover:text-slate-700 p-2 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer"
+              aria-label="Tutup modal"
+            >
+              <X size={20} />
+            </button>
+
+            <div className="space-y-5">
+              <div>
+                <span className="text-[11px] font-extrabold px-3 py-1 rounded-full bg-amber-100 text-amber-900 border border-amber-200 uppercase tracking-wider">
+                  Instruksi Pembayaran
+                </span>
+                <h3 className="text-xl font-black text-slate-900 tracking-tight mt-2">
+                  {kursus.judul}
+                </h3>
+                <p className="text-xs text-slate-500 mt-1">
+                  Selesaikan pembayaran Anda sebelum batas waktu berakhir untuk mengaktifkan akses materi kursus.
+                </p>
+              </div>
+
+              {/* Rincian Tagihan */}
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                <div className="flex items-center justify-between text-xs text-slate-600">
+                  <span>Nominal Tagihan:</span>
+                  <span className="text-lg font-black text-slate-900">
+                    {formatRupiah(nominal)}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-xs text-slate-600 pt-2 border-t border-slate-200">
+                  <span>Batas Waktu Bayar:</span>
+                  <span className="font-semibold text-slate-800">
+                    {formattedDeadline(batas_bayar)}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-xs text-slate-600">
+                  <span>Sisa Waktu:</span>
+                  <span className={`font-mono font-bold ${isExpired ? 'text-red-600' : 'text-amber-700'}`}>
+                    {timeLeft || '24:00:00'}
+                  </span>
+                </div>
+              </div>
+
+              {/* JIKA SUDAH KEDALUWARSA */}
+              {isExpired ? (
+                <div className="p-4 rounded-2xl bg-red-50 border border-red-200 space-y-3">
+                  <div className="flex items-start gap-2.5">
+                    <AlertTriangle size={18} className="text-red-600 shrink-0 mt-0.5" />
+                    <div>
+                      <h4 className="text-xs font-bold text-red-900">
+                        Batas Waktu Pembayaran Telah Habis
+                      </h4>
+                      <p className="text-xs text-red-700 mt-1 leading-relaxed">
+                        Batas waktu pembayaran 24 jam untuk pendaftaran ini telah terlewati, sehingga reservasi kursi otomatis hangus dan tidak dapat dikonfirmasi. Silakan batalkan pendaftaran ini terlebih dahulu, lalu daftar kembali dari katalog untuk mendapatkan batas waktu baru.
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowPaymentModal(false);
+                      onCancelRequest?.(id, kursus.judul);
+                    }}
+                    className="w-full py-2.5 px-4 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs shadow-xs transition-all cursor-pointer"
+                  >
+                    Batalkan Pendaftaran Ini Sekarang
+                  </button>
+                </div>
+              ) : (
+                /* JIKA BELUM KEDALUWARSA: TAMPILKAN REKENING TRANSFER MANUAL */
+                <div className="space-y-4">
+                  <div className="text-xs font-bold text-slate-800">
+                    Pilihan Rekening Resmi LKP Pijar Aksara:
+                  </div>
+
+                  {/* Rekening BCA */}
+                  <div className="p-3.5 rounded-2xl border border-slate-200 bg-white hover:border-[#843bab]/40 transition-all flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center font-black text-xs shrink-0">
+                        BCA
+                      </div>
+                      <div>
+                        <div className="font-mono text-sm font-black text-slate-900 tracking-wider">
+                          123-456-7890
+                        </div>
+                        <div className="text-[11px] text-slate-500">
+                          a.n. Lembaga Kursus Pijar Aksara
+                        </div>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigator.clipboard.writeText('1234567890');
+                        setCopiedBank('BCA');
+                        setTimeout(() => setCopiedBank(null), 2500);
+                      }}
+                      className="px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-xs font-bold text-slate-700 flex items-center gap-1.5 transition-colors cursor-pointer"
+                    >
+                      {copiedBank === 'BCA' ? (
+                        <>
+                          <Check size={13} className="text-emerald-600" />
+                          <span className="text-emerald-700">Tersalin</span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy size={13} />
+                          <span>Salin</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+
+                  {/* Rekening Mandiri */}
+                  <div className="p-3.5 rounded-2xl border border-slate-200 bg-white hover:border-[#843bab]/40 transition-all flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-800 flex items-center justify-center font-black text-xs shrink-0">
+                        MDR
+                      </div>
+                      <div>
+                        <div className="font-mono text-sm font-black text-slate-900 tracking-wider">
+                          157-00-1234567-8
+                        </div>
+                        <div className="text-[11px] text-slate-500">
+                          a.n. Lembaga Kursus Pijar Aksara
+                        </div>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigator.clipboard.writeText('1570012345678');
+                        setCopiedBank('MANDIRI');
+                        setTimeout(() => setCopiedBank(null), 2500);
+                      }}
+                      className="px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-xs font-bold text-slate-700 flex items-center gap-1.5 transition-colors cursor-pointer"
+                    >
+                      {copiedBank === 'MANDIRI' ? (
+                        <>
+                          <Check size={13} className="text-emerald-600" />
+                          <span className="text-emerald-700">Tersalin</span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy size={13} />
+                          <span>Salin</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+
+                  {/* Info Verifikasi Admin */}
+                  <div className="p-3 rounded-xl bg-purple-50/70 border border-[#843bab]/20 text-[11px] text-slate-700 space-y-1">
+                    <div className="font-bold text-[#843bab] flex items-center gap-1">
+                      <CheckCircle2 size={13} />
+                      <span>Verifikasi Pembayaran Manual</span>
+                    </div>
+                    <p className="leading-relaxed">
+                      Setelah transfer berhasil, Admin Lembaga Kursus Pijar Aksara akan melakukan konfirmasi melalui sistem verifikasi pembayaran. Begitu dikonfirmasi, akses ruang belajar kursus Anda akan langsung terbuka otomatis.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Tombol Tutup */}
+              <button
+                type="button"
+                onClick={() => setShowPaymentModal(false)}
+                className="w-full py-3 px-4 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-700 font-bold text-xs transition-colors cursor-pointer"
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
