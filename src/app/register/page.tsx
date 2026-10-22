@@ -98,9 +98,12 @@ export default function RegisterPage() {
       if (res?.error) {
         setError(res.error);
         setLoading(false);
+      } else if (res?.success && res.redirectTo) {
+        window.location.href = res.redirectTo;
       }
     } catch {
-      // Redirect handled by Next.js Server Action
+      setError('Terjadi kendala saat mendaftarkan akun. Silakan coba lagi.');
+      setLoading(false);
     }
   };
 
