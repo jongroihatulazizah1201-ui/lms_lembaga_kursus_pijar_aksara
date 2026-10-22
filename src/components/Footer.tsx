@@ -1,0 +1,83 @@
+import Link from 'next/link';
+import { MapPin, Mail, ShieldCheck } from 'lucide-react';
+import Logo from './Logo';
+
+export default function Footer() {
+  return (
+    <footer className="border-t border-slate-200 bg-slate-50 pt-12 pb-8 mt-12">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
+          {/* Brand Info */}
+          <div className="md:col-span-2">
+            <div className="mb-4">
+              <Logo size="md" />
+            </div>
+            <p className="text-slate-600 text-sm leading-relaxed max-w-md mb-4">
+              Lembaga Kursus & Pelatihan vokasi terdepan di Depok. Membantu peningkatan kompetensi kerja dan literasi digital dengan materi bertahap berstandar industri.
+            </p>
+            <div className="flex items-center gap-2 text-slate-500 text-xs font-medium">
+              <MapPin size={15} className="text-[#843bab]" />
+              <span>Kota Depok, Jawa Barat</span>
+            </div>
+          </div>
+
+          {/* Quick Links */}
+          <div>
+            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 mb-4">
+              Katalog Kursus
+            </h4>
+            <ul className="space-y-2.5 text-sm text-slate-600">
+              <li>
+                <Link href="/kursus?kategori=Teknologi" className="hover:text-[#843bab] transition-colors">
+                  Teknologi & Komputer
+                </Link>
+              </li>
+              <li>
+                <Link href="/kursus?kategori=Desain" className="hover:text-[#843bab] transition-colors">
+                  Desain Media Sosial
+                </Link>
+              </li>
+              <li>
+                <Link href="/kursus?kategori=Bisnis" className="hover:text-[#843bab] transition-colors">
+                  Pembukuan & Bisnis UMKM
+                </Link>
+              </li>
+              <li>
+                <Link href="/kursus?kategori=Bahasa" className="hover:text-[#843bab] transition-colors">
+                  Bahasa Asing Percakapan
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Verification & Trust */}
+          <div>
+            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 mb-4">
+              Kepercayaan & Legalitas
+            </h4>
+            <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-2.5">
+              <div className="flex items-center gap-2 text-emerald-600 text-xs font-bold">
+                <ShieldCheck size={16} />
+                <span>Terverifikasi & Bersertifikat</span>
+              </div>
+              <p className="text-xs text-slate-500 leading-normal">
+                Sertifikat kelulusan resmi bertanda tangan digital dengan kode verifikasi unik PA-TAHUN-NOMOR.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom copyright */}
+        <div className="pt-6 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+          <div>
+            © {new Date().getFullYear()} Lembaga Kursus Pijar Aksara. Seluruh hak cipta dilindungi.
+          </div>
+          <div className="flex items-center gap-6">
+            <span className="hover:text-slate-700 cursor-pointer">Syarat & Ketentuan</span>
+            <span className="hover:text-slate-700 cursor-pointer">Kebijakan Privasi</span>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}
