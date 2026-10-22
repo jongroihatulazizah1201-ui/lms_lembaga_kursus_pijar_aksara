@@ -206,80 +206,100 @@ export default function AdminUserManagement({ users, currentAdminId }: Props) {
         </div>
       )}
 
-      {/* 1. Filter & Search Toolbar (Ditaruh di Atas & Sticky saat di-scroll) */}
-      <div className="sticky top-[60px] lg:top-3 z-20 bg-white/95 backdrop-blur-md rounded-2xl border border-slate-200/90 p-4 shadow-sm hover:shadow-md flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 transition-all">
-        {/* Search Input */}
-        <div className="relative flex-1 min-w-[280px]">
-          <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Cari nama pengguna, email, atau no HP..."
-            className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-slate-50/70 border border-slate-200 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#843bab]/20 focus:border-[#843bab] transition-all"
-          />
-          {searchQuery && (
-            <button
-              onClick={() => setSearchQuery('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600"
-            >
-              <X size={14} />
-            </button>
-          )}
+      {/* 1. STICKY TOP HEADER: Judul Halaman & Toolbar Pencarian/Filter Pengguna */}
+      <div className="sticky top-[57px] lg:top-0 z-20 bg-white/95 backdrop-blur-md rounded-2xl border border-slate-200/90 p-4 sm:p-5 shadow-sm space-y-4 transition-all">
+        {/* Judul Halaman */}
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-purple-100 text-[#843bab] flex items-center justify-center shrink-0 shadow-2xs">
+              <Users size={18} />
+            </div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <h1 className="text-lg sm:text-2xl font-black text-slate-900 tracking-tight">
+                Pengguna (Ubah Peran, Nonaktifkan)
+              </h1>
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-slate-100 text-slate-700 border border-slate-200 shadow-2xs">
+                {users.length}
+              </span>
+            </div>
+          </div>
         </div>
 
-        {/* Filter Role & Status Dropdowns / Buttons */}
-        <div className="flex flex-wrap items-center gap-2">
-          {/* Role Filter */}
-          <div className="flex items-center gap-1 bg-slate-50 p-1 rounded-xl border border-slate-200">
-            {[
-              { id: 'semua', label: 'Semua Peran' },
-              { id: 'peserta', label: 'Peserta' },
-              { id: 'instruktur', label: 'Instruktur' },
-              { id: 'admin', label: 'Admin' },
-            ].map((r) => {
-              const isActive = filterRole === r.id;
-              return (
-                <button
-                  key={r.id}
-                  onClick={() => setFilterRole(r.id)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                    isActive
-                      ? 'bg-[#843bab] text-white shadow-2xs'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-white'
-                  }`}
-                >
-                  {r.label}
-                </button>
-              );
-            })}
+        {/* Filter & Search Toolbar */}
+        <div className="bg-slate-50/70 border border-slate-200/80 rounded-xl p-2.5 sm:p-3 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+          {/* Search Input */}
+          <div className="relative flex-1 min-w-[280px]">
+            <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Cari nama pengguna, email, atau no HP..."
+              className="w-full pl-10 pr-10 py-2 rounded-xl bg-white border border-slate-200 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#843bab]/20 focus:border-[#843bab] transition-all"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600"
+              >
+                <X size={14} />
+              </button>
+            )}
           </div>
 
-          {/* Status Filter */}
-          <select
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
-            className="px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-700 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#843bab]/20 cursor-pointer"
-          >
-            <option value="semua">Semua Status</option>
-            <option value="aktif">Akun Aktif</option>
-            <option value="nonaktif">Dinonaktifkan</option>
-          </select>
+          {/* Filter Role & Status Dropdowns / Buttons */}
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Role Filter */}
+            <div className="flex items-center gap-1 bg-white p-1 rounded-xl border border-slate-200">
+              {[
+                { id: 'semua', label: 'Semua Peran' },
+                { id: 'peserta', label: 'Peserta' },
+                { id: 'instruktur', label: 'Instruktur' },
+                { id: 'admin', label: 'Admin' },
+              ].map((r) => {
+                const isActive = filterRole === r.id;
+                return (
+                  <button
+                    key={r.id}
+                    onClick={() => setFilterRole(r.id)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                      isActive
+                        ? 'bg-[#843bab] text-white shadow-2xs'
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                    }`}
+                  >
+                    {r.label}
+                  </button>
+                );
+              })}
+            </div>
 
-          {/* Reset Button */}
-          {(searchQuery || filterRole !== 'semua' || filterStatus !== 'semua') && (
-            <button
-              onClick={() => {
-                setSearchQuery('');
-                setFilterRole('semua');
-                setFilterStatus('semua');
-              }}
-              className="p-2 rounded-xl text-slate-500 hover:text-red-600 hover:bg-red-50 border border-slate-200 transition-colors"
-              title="Reset Filter"
+            {/* Status Filter */}
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              className="px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#843bab]/20 cursor-pointer"
             >
-              <RotateCcw size={14} />
-            </button>
-          )}
+              <option value="semua">Semua Status</option>
+              <option value="aktif">Akun Aktif</option>
+              <option value="nonaktif">Dinonaktifkan</option>
+            </select>
+
+            {/* Reset Button */}
+            {(searchQuery || filterRole !== 'semua' || filterStatus !== 'semua') && (
+              <button
+                onClick={() => {
+                  setSearchQuery('');
+                  setFilterRole('semua');
+                  setFilterStatus('semua');
+                }}
+                className="p-2 rounded-xl text-slate-500 hover:text-red-600 hover:bg-red-50 bg-white border border-slate-200 transition-colors cursor-pointer"
+                title="Reset Filter"
+              >
+                <RotateCcw size={14} />
+              </button>
+            )}
+          </div>
         </div>
       </div>
 

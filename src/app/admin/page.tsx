@@ -1,22 +1,10 @@
 import { redirect } from 'next/navigation';
-import Link from 'next/link';
 import type { Metadata } from 'next';
 import { createClient } from '@/lib/supabase/server';
 import AdminCourseReview from '@/components/AdminCourseReview';
 import AdminRegistrations from '@/components/AdminRegistrations';
 import AdminUserManagement from '@/components/AdminUserManagement';
 import AdminAuditLog from '@/components/AdminAuditLog';
-import {
-  Shield,
-  BookOpen,
-  CreditCard,
-  Users,
-  FileText,
-  Clock,
-  CheckCircle2,
-  AlertCircle,
-  ArrowRight,
-} from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Panel Admin | Lembaga Kursus Pijar Aksara',
@@ -177,110 +165,7 @@ export default async function AdminPanelPage({ searchParams }: Props) {
 
   return (
     <div className="min-h-screen bg-slate-50/60 text-slate-900 pb-28">
-      {/* =========================================================================
-          1. HEADER BANNER SECTION
-         ========================================================================= */}
-      <section className="bg-gradient-to-b from-purple-50/70 via-white to-slate-50/50 border-b border-slate-200 pt-8 pb-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div>
-            <span className="text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-purple-100 text-[#843bab] uppercase tracking-wider border border-purple-200">
-              Pusat Pengelola Lembaga
-            </span>
-            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mt-1">
-              Panel Administrator
-            </h1>
-            <p className="text-sm text-slate-600 leading-relaxed mt-2 max-w-3xl">
-              Pusat kendali siklus penerbitan kursus, konfirmasi transaksi pendaftaran, tata kelola peran pengguna, dan audit log lembaga.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* =========================================================================
-          2. MAIN TABS NAVIGATION (4 Core Tabs)
-         ========================================================================= */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
-        <div className="flex items-center gap-2 border-b border-slate-200 mb-8 overflow-x-auto pb-1 scrollbar-none">
-          {/* TAB 1: Tinjauan Kursus (tombol status) */}
-          <Link
-            href="/admin?tab=kursus"
-            className={`flex items-center gap-2 px-4 py-3 text-xs font-bold border-b-2 whitespace-nowrap transition-all ${
-              activeTab === 'kursus'
-                ? 'border-[#843bab] text-[#843bab]'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
-            }`}
-          >
-            <BookOpen size={15} />
-            <span>Tinjauan Kursus (Tombol Status)</span>
-            {pendingReviewCount > 0 ? (
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-[#ffdf0f] text-slate-900 shadow-2xs animate-pulse">
-                {pendingReviewCount} Menunggu
-              </span>
-            ) : (
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600">
-                {formattedCourses.length}
-              </span>
-            )}
-          </Link>
-
-          {/* TAB 2: Pendaftaran dan Pembayaran (konfirmasi, batal) */}
-          <Link
-            href="/admin?tab=pendaftaran"
-            className={`flex items-center gap-2 px-4 py-3 text-xs font-bold border-b-2 whitespace-nowrap transition-all ${
-              activeTab === 'pendaftaran'
-                ? 'border-[#843bab] text-[#843bab]'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
-            }`}
-          >
-            <CreditCard size={15} />
-            <span>Pendaftaran & Pembayaran (Konfirmasi, Batal)</span>
-            {pendingPaymentsCount > 0 ? (
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-100 text-amber-800 shadow-2xs">
-                {pendingPaymentsCount} Menunggu
-              </span>
-            ) : (
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600">
-                {formattedRegistrations.length}
-              </span>
-            )}
-          </Link>
-
-          {/* TAB 3: Pengguna (ubah peran, nonaktifkan) */}
-          <Link
-            href="/admin?tab=pengguna"
-            className={`flex items-center gap-2 px-4 py-3 text-xs font-bold border-b-2 whitespace-nowrap transition-all ${
-              activeTab === 'pengguna'
-                ? 'border-[#843bab] text-[#843bab]'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
-            }`}
-          >
-            <Users size={15} />
-            <span>Pengguna (Ubah Peran, Nonaktifkan)</span>
-            <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600">
-              {users?.length || 0}
-            </span>
-          </Link>
-
-          {/* TAB 4: Audit Log */}
-          <Link
-            href="/admin?tab=audit"
-            className={`flex items-center gap-2 px-4 py-3 text-xs font-bold border-b-2 whitespace-nowrap transition-all ${
-              activeTab === 'audit'
-                ? 'border-[#843bab] text-[#843bab]'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
-            }`}
-          >
-            <FileText size={15} />
-            <span>Audit Log</span>
-            <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600">
-              {auditLogs?.length || 0}
-            </span>
-          </Link>
-        </div>
-
-        {/* =======================================================================
-            3. TAB CONTENT ROUTING
-           ======================================================================= */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 sm:pt-4">
         {/* Tab 1: Tinjauan Kursus (tombol status) */}
         {activeTab === 'kursus' && (
           <AdminCourseReview courses={formattedCourses} />
