@@ -65,6 +65,7 @@ export default function Sidebar({ user, profile }: SidebarProps) {
   const isPeserta = profile?.peran === 'peserta';
   const isInstruktur = profile?.peran === 'instruktur';
   const isAdmin = profile?.peran === 'admin';
+  const portalHome = isAdmin ? '/admin/dashboard' : isInstruktur ? '/instruktur' : isPeserta ? '/kursus-saya' : '/';
 
   // Quick switch role simulation handler (Latihan#2026)
   const handleQuickSwitch = async (email: string, targetPath: string) => {
@@ -139,7 +140,6 @@ export default function Sidebar({ user, profile }: SidebarProps) {
         items: [
           { label: 'Katalog Kursus', href: '/kursus', icon: BookOpen },
           { label: 'Verifikasi Sertifikat', href: '/sertifikat/cek', icon: ShieldCheck },
-          { label: 'Beranda Utama', href: '/', icon: Home },
         ],
       },
     ];
@@ -175,7 +175,6 @@ export default function Sidebar({ user, profile }: SidebarProps) {
         items: [
           { label: 'Katalog Kursus', href: '/kursus', icon: BookOpen },
           { label: 'Verifikasi Sertifikat', href: '/sertifikat/cek', icon: ShieldCheck },
-          { label: 'Beranda Utama', href: '/', icon: Home },
         ],
       },
     ];
@@ -199,7 +198,6 @@ export default function Sidebar({ user, profile }: SidebarProps) {
         items: [
           { label: 'Katalog Kursus', href: '/kursus', icon: BookOpen },
           { label: 'Verifikasi Sertifikat', href: '/sertifikat/cek', icon: ShieldCheck },
-          { label: 'Beranda Utama', href: '/', icon: Home },
         ],
       },
     ];
@@ -283,7 +281,7 @@ export default function Sidebar({ user, profile }: SidebarProps) {
     <div className="flex flex-col h-full bg-white select-none">
       {/* Brand Logo Header */}
       <div className="p-4 border-b border-slate-200 flex items-center justify-between">
-        <Logo size="sm" href="/" />
+        <Logo size="sm" href={portalHome} />
         {/* Mobile Close Button */}
         <button
           type="button"
@@ -532,7 +530,7 @@ export default function Sidebar({ user, profile }: SidebarProps) {
           >
             <Menu size={22} />
           </button>
-          <Logo size="sm" href="/" showText={true} />
+          <Logo size="sm" href={portalHome} showText={true} />
         </div>
 
         {user && profile ? (
