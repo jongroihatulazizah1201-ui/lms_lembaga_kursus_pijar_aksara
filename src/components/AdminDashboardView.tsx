@@ -12,11 +12,9 @@ import {
   AlertTriangle,
   CheckCircle2,
   BookOpen,
-  ArrowLeft,
   ChevronRight,
   ExternalLink,
   Printer,
-  GraduationCap,
   Info,
   Clock,
   Layers,
@@ -183,8 +181,8 @@ export default function AdminDashboardView({
             </span>
           </div>
 
-          {/* Tombol Aksi Jejer Lurus */}
-          <div className="flex items-center gap-2.5 flex-nowrap shrink-0 overflow-x-auto no-scrollbar">
+          {/* Tombol Aksi Cetak */}
+          <div className="flex items-center gap-2.5 flex-nowrap shrink-0">
             <button
               type="button"
               onClick={() => window.print()}
@@ -194,24 +192,6 @@ export default function AdminDashboardView({
               <Printer size={15} />
               <span>Cetak Ringkasan</span>
             </button>
-
-            <Link
-              href="/instruktur/nilai"
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-slate-300 hover:border-[#843bab] hover:text-[#843bab] text-slate-700 font-bold text-xs shadow-2xs hover:shadow transition-all shrink-0 whitespace-nowrap cursor-pointer"
-              title="Buka Buku Nilai Peserta &amp; Kuis"
-            >
-              <GraduationCap size={15} className="text-[#843bab]" />
-              <span>Peserta &amp; Nilai</span>
-            </Link>
-
-            <Link
-              href="/admin"
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-2xs hover:shadow transition-all shrink-0 whitespace-nowrap cursor-pointer"
-              title="Kembali ke Panel Pengelola Utama"
-            >
-              <ArrowLeft size={15} />
-              <span>Panel Pengelola</span>
-            </Link>
           </div>
         </div>
       </header>
