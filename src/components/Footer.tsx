@@ -28,23 +28,28 @@ export default function Footer() {
             </h4>
             <ul className="space-y-2.5 text-sm text-slate-700">
               <li>
-                <Link href="/kursus?kategori=Teknologi" className="hover:text-[#843bab] transition-colors font-medium">
-                  Teknologi &amp; Komputer
+                <Link href="/kursus?kategori=Perkantoran" className="hover:text-[#843bab] transition-colors font-medium">
+                  Perkantoran (Excel &amp; Word)
                 </Link>
               </li>
               <li>
                 <Link href="/kursus?kategori=Desain" className="hover:text-[#843bab] transition-colors font-medium">
-                  Desain Media Sosial
-                </Link>
-              </li>
-              <li>
-                <Link href="/kursus?kategori=Bisnis" className="hover:text-[#843bab] transition-colors font-medium">
-                  Pembukuan &amp; Bisnis UMKM
+                  Desain (Canva &amp; Foto Produk)
                 </Link>
               </li>
               <li>
                 <Link href="/kursus?kategori=Bahasa" className="hover:text-[#843bab] transition-colors font-medium">
-                  Bahasa Asing Percakapan
+                  Bahasa (Inggris Kerja)
+                </Link>
+              </li>
+              <li>
+                <Link href="/kursus?kategori=Keuangan" className="hover:text-[#843bab] transition-colors font-medium">
+                  Keuangan (Pembukuan UMKM)
+                </Link>
+              </li>
+              <li>
+                <Link href="/kursus?kategori=Pengembangan%20Diri" className="hover:text-[#843bab] transition-colors font-medium">
+                  Pengembangan Diri (Public Speaking)
                 </Link>
               </li>
             </ul>

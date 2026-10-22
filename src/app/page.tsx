@@ -187,17 +187,17 @@ export default async function HomePage() {
                         </p>
                       </div>
 
-                      {/* Section 1: Kursus Kesiapan Kerja */}
+                      {/* Section 1: Administrasi & Kreatif */}
                       <div className="mb-2">
                         <div className="flex items-center justify-between mb-1 px-0.5">
                           <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">
-                            Kesiapan Kerja
+                            Program Vokasi
                           </p>
-                          <span className="text-[8px] text-slate-400 font-medium">Vokasi</span>
+                          <span className="text-[8px] text-slate-400 font-medium">Resmi</span>
                         </div>
 
                         <div className="space-y-1.5">
-                          {/* Item 1 */}
+                          {/* Item 1 - Perkantoran */}
                           <div className="bg-purple-50/80 p-1.5 rounded-xl border border-purple-200 shadow-2xs flex items-center justify-between">
                             <div className="flex items-center gap-1.5">
                               <div className="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0">
@@ -210,12 +210,12 @@ export default async function HomePage() {
                                 <p className="text-[8px] text-slate-500">12 Modul • Formula Laporan</p>
                               </div>
                             </div>
-                            <span className="text-[8px] font-extrabold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded-sm">
-                              Populer
+                            <span className="text-[8px] font-extrabold text-purple-700 bg-purple-100 px-1.5 py-0.5 rounded-sm">
+                              Perkantoran
                             </span>
                           </div>
 
-                          {/* Item 2 */}
+                          {/* Item 2 - Desain */}
                           <div className="bg-white p-1.5 rounded-xl border border-slate-200/80 shadow-2xs flex items-center justify-between">
                             <div className="flex items-center gap-1.5">
                               <div className="w-6 h-6 rounded-lg bg-purple-100 text-[#843bab] flex items-center justify-center shrink-0">
@@ -228,10 +228,12 @@ export default async function HomePage() {
                                 <p className="text-[8px] text-slate-500">8 Modul • Feed &amp; Banner</p>
                               </div>
                             </div>
-                            <span className="text-[8px] font-bold text-slate-400">Favorit</span>
+                            <span className="text-[8px] font-extrabold text-[#843bab] bg-purple-50 px-1.5 py-0.5 rounded-sm">
+                              Desain
+                            </span>
                           </div>
 
-                          {/* Item 3 */}
+                          {/* Item 3 - Pengembangan Diri */}
                           <div className="bg-white p-1.5 rounded-xl border border-slate-200/80 shadow-2xs flex items-center justify-between">
                             <div className="flex items-center gap-1.5">
                               <div className="w-6 h-6 rounded-lg bg-blue-100 text-blue-800 flex items-center justify-center shrink-0">
@@ -244,22 +246,24 @@ export default async function HomePage() {
                                 <p className="text-[8px] text-slate-500">6 Modul • Presentasi</p>
                               </div>
                             </div>
-                            <span className="text-[8px] font-bold text-slate-400">Karir</span>
+                            <span className="text-[8px] font-extrabold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded-sm">
+                              Pengembangan Diri
+                            </span>
                           </div>
                         </div>
                       </div>
 
-                      {/* Section 2: Usaha Mandiri */}
+                      {/* Section 2: Keuangan & Bahasa */}
                       <div className="mb-2">
                         <div className="flex items-center justify-between mb-1 px-0.5">
                           <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">
-                            Usaha Mandiri
+                            Keahlian Terapan
                           </p>
                           <span className="text-[8px] text-slate-400 font-medium">Praktis</span>
                         </div>
 
                         <div className="space-y-1.5">
-                          {/* Item 4 */}
+                          {/* Item 4 - Keuangan */}
                           <div className="bg-white p-1.5 rounded-xl border border-slate-200/80 shadow-2xs flex items-center justify-between">
                             <div className="flex items-center gap-1.5">
                               <div className="w-6 h-6 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center shrink-0">
@@ -272,13 +276,15 @@ export default async function HomePage() {
                                 <p className="text-[8px] text-slate-500">6 Modul • Laba Rugi Kas</p>
                               </div>
                             </div>
-                            <span className="text-[8px] font-bold text-slate-400">UMKM</span>
+                            <span className="text-[8px] font-extrabold text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded-sm">
+                              Keuangan
+                            </span>
                           </div>
 
-                          {/* Item 5 */}
+                          {/* Item 5 - Bahasa */}
                           <div className="bg-white p-1.5 rounded-xl border border-slate-200/80 shadow-2xs flex items-center justify-between">
                             <div className="flex items-center gap-1.5">
-                              <div className="w-6 h-6 rounded-lg bg-purple-100 text-[#843bab] flex items-center justify-center shrink-0">
+                              <div className="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0">
                                 <Languages size={13} />
                               </div>
                               <div>
@@ -288,7 +294,9 @@ export default async function HomePage() {
                                 <p className="text-[8px] text-slate-500">10 Modul • Komunikasi</p>
                               </div>
                             </div>
-                            <span className="text-[8px] font-bold text-slate-400">Bisnis</span>
+                            <span className="text-[8px] font-extrabold text-emerald-800 bg-emerald-50 px-1.5 py-0.5 rounded-sm">
+                              Bahasa
+                            </span>
                           </div>
                         </div>
                       </div>

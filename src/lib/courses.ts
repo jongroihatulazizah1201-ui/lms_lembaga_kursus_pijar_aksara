@@ -22,6 +22,16 @@ export interface CourseDetailData {
   }>;
 }
 
+export const KATEGORI_KURSUS = [
+  'Perkantoran',
+  'Desain',
+  'Bahasa',
+  'Keuangan',
+  'Pengembangan Diri',
+] as const;
+
+export type KategoriKursus = typeof KATEGORI_KURSUS[number];
+
 export async function getPublishedCourses(
   category?: string,
   search?: string,
@@ -63,7 +73,8 @@ export async function getPublishedCourses(
     filtered = filtered.filter(k => 
       k.judul.toLowerCase().includes(q) ||
       k.ringkasan.toLowerCase().includes(q) ||
-      k.instruktur_nama.toLowerCase().includes(q)
+      k.instruktur_nama.toLowerCase().includes(q) ||
+      k.kategori.toLowerCase().includes(q)
     );
   }
 

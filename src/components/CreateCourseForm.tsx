@@ -13,7 +13,7 @@ export default function CreateCourseForm() {
 
   const [judul, setJudul] = useState('');
   const [slug, setSlug] = useState('');
-  const [kategori, setKategori] = useState('Teknologi & Komputer');
+  const [kategori, setKategori] = useState('Perkantoran');
   const [ringkasan, setRingkasan] = useState('');
   const [deskripsi, setDeskripsi] = useState('');
   const [harga, setHarga] = useState<number>(0);
@@ -151,12 +151,11 @@ export default function CreateCourseForm() {
               onChange={(e) => setKategori(e.target.value)}
               className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#843bab]/30 focus:border-[#843bab] transition-all"
             >
-              <option value="Teknologi & Komputer">Teknologi &amp; Komputer</option>
-              <option value="Desain Media Sosial">Desain Media Sosial</option>
-              <option value="Pembukuan & Bisnis UMKM">Pembukuan &amp; Bisnis UMKM</option>
-              <option value="Bahasa Asing Percakapan">Bahasa Asing Percakapan</option>
-              <option value="Komunikasi & Public Speaking">Komunikasi &amp; Public Speaking</option>
-              <option value="Umum & Vokasi">Umum &amp; Vokasi</option>
+              <option value="Perkantoran">Perkantoran</option>
+              <option value="Desain">Desain</option>
+              <option value="Bahasa">Bahasa</option>
+              <option value="Keuangan">Keuangan</option>
+              <option value="Pengembangan Diri">Pengembangan Diri</option>
             </select>
           </div>
         </div>

@@ -2,7 +2,16 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { ChevronDown, BookOpen, Monitor, Palette, Briefcase, Globe, ArrowRight } from 'lucide-react';
+import {
+  ChevronDown,
+  BookOpen,
+  Briefcase,
+  Palette,
+  Languages,
+  Calculator,
+  Mic,
+  ArrowRight
+} from 'lucide-react';
 
 export default function ProgramDropdown() {
   const [isOpen, setIsOpen] = useState(false);
@@ -27,30 +36,42 @@ export default function ProgramDropdown() {
     };
   }, []);
 
+  // Sinkron 100% dengan data kategori kursus di database Supabase:
+  // 1. Perkantoran (Excel untuk Administrasi Perkantoran, Microsoft Word untuk Surat Dinas)
+  // 2. Desain (Desain Konten Media Sosial dengan Canva, Fotografi Produk dengan Ponsel)
+  // 3. Bahasa (Bahasa Inggris untuk Percakapan Kerja)
+  // 4. Keuangan (Dasar Pembukuan untuk UMKM)
+  // 5. Pengembangan Diri (Public Speaking untuk Presentasi Kantor)
   const programs = [
     {
-      title: 'Teknologi & Komputer',
-      desc: 'Microsoft Excel, Word & Administrasi Perkantoran',
-      href: '/kursus?kategori=Teknologi',
-      icon: Monitor,
+      title: 'Perkantoran',
+      desc: 'Excel Administrasi Perkantoran & Word Surat Dinas',
+      href: '/kursus?kategori=Perkantoran',
+      icon: Briefcase,
     },
     {
-      title: 'Desain Grafis & Konten',
-      desc: 'Canva & Desain Media Sosial Promosi UMKM',
+      title: 'Desain',
+      desc: 'Desain Konten Canva & Fotografi Produk Ponsel',
       href: '/kursus?kategori=Desain',
       icon: Palette,
     },
     {
-      title: 'Pembukuan & Bisnis',
-      desc: 'Pencatatan Kas Masuk-Keluar & Laba Rugi UMKM',
-      href: '/kursus?kategori=Bisnis',
-      icon: Briefcase,
+      title: 'Bahasa',
+      desc: 'Bahasa Inggris untuk Percakapan & Komunikasi Kerja',
+      href: '/kursus?kategori=Bahasa',
+      icon: Languages,
     },
     {
-      title: 'Bahasa Asing Percakapan',
-      desc: 'Bahasa Inggris Praktis untuk Dunia Kerja',
-      href: '/kursus?kategori=Bahasa',
-      icon: Globe,
+      title: 'Keuangan',
+      desc: 'Dasar Pembukuan Kas Masuk-Keluar & Laba Rugi UMKM',
+      href: '/kursus?kategori=Keuangan',
+      icon: Calculator,
+    },
+    {
+      title: 'Pengembangan Diri',
+      desc: 'Public Speaking & Percaya Diri Presentasi Kantor',
+      href: '/kursus?kategori=Pengembangan%20Diri',
+      icon: Mic,
     },
   ];
 

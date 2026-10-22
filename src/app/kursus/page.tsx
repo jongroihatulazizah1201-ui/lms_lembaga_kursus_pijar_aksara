@@ -64,7 +64,8 @@ export default async function KatalogPage({ searchParams }: Props) {
     activePrice === 'semua' ? undefined : activePrice
   );
 
-  const categories = ['Semua', 'Teknologi', 'Desain', 'Bisnis', 'Bahasa'];
+  // Kategori resmi kursus tersinkronisasi 100% dengan database Supabase
+  const categories = ['Semua', 'Perkantoran', 'Desain', 'Bahasa', 'Keuangan', 'Pengembangan Diri'];
 
   // Total stat counter
   const freeCoursesCount = courses.filter((c) => c.harga === 0).length;

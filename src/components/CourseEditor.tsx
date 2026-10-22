@@ -696,14 +696,18 @@ export default function CourseEditor({ course }: Props) {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1">
                 <label className="block font-semibold text-slate-700">Kategori Kursus *</label>
-                <input
-                  type="text"
-                  required
+                <select
                   disabled={isLocked}
                   value={editKategori}
                   onChange={(e) => setEditKategori(e.target.value)}
                   className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#843bab]/30 focus:border-[#843bab] transition-all disabled:opacity-60 disabled:cursor-not-allowed"
-                />
+                >
+                  <option value="Perkantoran">Perkantoran</option>
+                  <option value="Desain">Desain</option>
+                  <option value="Bahasa">Bahasa</option>
+                  <option value="Keuangan">Keuangan</option>
+                  <option value="Pengembangan Diri">Pengembangan Diri</option>
+                </select>
               </div>
 
               <div className="space-y-1">
