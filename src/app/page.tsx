@@ -49,11 +49,11 @@ export default async function HomePage() {
                 Lembaga Kursus &amp; Pelatihan Vokasi Resmi di Kota Depok
               </p>
 
-              {/* Headline Jargon Utama (Titik Fokus Utama, Proporsional & Presisi 2 Baris) */}
-              <h1 className="text-3xl sm:text-[38px] lg:text-[40px] xl:text-[44px] font-black text-white tracking-tight leading-[1.16] mb-4.5 sm:mb-5">
+              {/* Headline Jargon Utama (Titik Fokus Utama, Jarak Antar-Huruf Lega & Rapi 2 Baris) */}
+              <h1 className="text-2xl sm:text-[32px] lg:text-[35px] xl:text-[38px] font-extrabold text-white tracking-normal sm:tracking-[0.015em] leading-[1.22] mb-4.5 sm:mb-5">
                 Kurang Skill?<br />
                 <span>Pijar Aksara, </span>
-                <span className="text-[#ffdf0f] inline-block sm:inline sm:whitespace-nowrap">Bikin Auto Nyala.</span>
+                <span className="text-[#ffdf0f]">Bikin Auto Nyala.</span>
               </h1>
 
               {/* Deskripsi Singkat (Ukuran Disamakan: 13px, Ringan, Tidak Berat di Mata, Jarak Sewajarnya) */}
