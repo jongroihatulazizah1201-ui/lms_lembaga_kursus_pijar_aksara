@@ -31,7 +31,7 @@ export default function LoginPage() {
     setLoading(true);
 
     const formData = new FormData();
-    formData.append('email', email);
+    formData.append('email', email.trim().toLowerCase());
     formData.append('password', password);
     if (redirectParam) formData.append('redirect', redirectParam);
 
@@ -95,6 +95,7 @@ export default function LoginPage() {
                   placeholder="nama@email.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  autoComplete="email"
                   className="w-full pl-11 pr-4 py-3 rounded-xl text-sm bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#843bab] focus:bg-white transition-all"
                 />
               </div>
@@ -115,6 +116,7 @@ export default function LoginPage() {
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  autoComplete="current-password"
                   className="w-full pl-11 pr-11 py-3 rounded-xl text-sm bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#843bab] focus:bg-white transition-all font-mono"
                 />
                 <button

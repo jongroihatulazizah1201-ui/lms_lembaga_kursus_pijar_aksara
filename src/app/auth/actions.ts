@@ -5,8 +5,8 @@ import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 
 export async function loginAction(formData: FormData) {
-  const email = formData.get('email') as string;
-  const password = formData.get('password') as string;
+  const email = (formData.get('email') as string || '').trim().toLowerCase();
+  const password = (formData.get('password') as string || '');
   const redirectTo = (formData.get('redirect') as string) || '';
 
   if (!email || !password) {
@@ -21,6 +21,11 @@ export async function loginAction(formData: FormData) {
   });
 
   if (error || !data.user) {
+    if (error?.message === 'Invalid login credentials') {
+      return { 
+        error: 'Email atau kata sandi salah. Silakan pastikan kata sandi sudah benar (untuk akun uji coba: Latihan#2026). Klik ikon mata pada kolom kata sandi untuk memastikan tidak ada salah ketik.' 
+      };
+    }
     return { error: error?.message || 'Email atau kata sandi salah.' };
   }
 
