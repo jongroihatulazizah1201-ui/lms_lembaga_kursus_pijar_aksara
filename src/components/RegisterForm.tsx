@@ -17,7 +17,6 @@ import {
   EyeOff,
   Check,
   Loader2,
-  Sparkles
 } from 'lucide-react';
 
 interface Props {
@@ -116,22 +115,18 @@ export default function RegisterForm({ redirectParam = '' }: Props) {
       <div className="max-w-5xl w-full bg-white rounded-[32px] sm:rounded-[36px] shadow-2xl border border-slate-200/80 overflow-hidden grid grid-cols-1 lg:grid-cols-12 p-3 sm:p-4 gap-4 lg:gap-8">
         
         {/* =====================================================================
-            KOLOM KIRI: Visual & Headline Inspiratif Vokasi Pijar Aksara
+            KOLOM KIRI: Visual Vektor & Headline Vokasi Pijar Aksara
            ===================================================================== */}
         <div className="lg:col-span-5 bg-gradient-to-br from-[#843bab] via-[#702996] to-[#4c1669] rounded-[28px] p-6 sm:p-8 flex flex-col justify-between text-white relative overflow-hidden shadow-inner">
-          {/* Efek Lingkaran Cahaya Dekoratif */}
-          <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full bg-purple-400/20 blur-2xl pointer-events-none" />
-          <div className="absolute -bottom-12 -left-12 w-48 h-48 rounded-full bg-[#ffdf0f]/15 blur-2xl pointer-events-none" />
-
-          {/* Header Kartu Kiri: Logo & Lembaga */}
+          {/* Header Kartu Kiri: Logo Pijar Aksara (Putih Jelas) & Lembaga */}
           <div className="relative z-10 flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl bg-white/20 backdrop-blur-md p-2 flex items-center justify-center border border-white/30 shadow-sm">
+            <div className="w-11 h-11 rounded-2xl bg-white/15 p-2 flex items-center justify-center border border-white/20 shadow-sm">
               <Image
                 src="/logo-pijar-aksara.png"
                 alt="Logo Pijar Aksara"
                 width={36}
                 height={36}
-                className="object-contain"
+                className="object-contain brightness-0 invert"
                 priority
               />
             </div>
@@ -145,11 +140,10 @@ export default function RegisterForm({ redirectParam = '' }: Props) {
             </div>
           </div>
 
-          {/* Konten Teks Inspiratif */}
+          {/* Konten Teks Bersih (Tanpa Stiker / Pop-up Blur) */}
           <div className="relative z-10 my-6">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md text-[11px] font-extrabold text-[#ffdf0f] border border-white/20 mb-3">
-              <Sparkles size={12} />
-              <span>Pendaftaran Peserta Didik</span>
+            <div className="text-xs font-black text-[#ffdf0f] uppercase tracking-widest mb-2.5">
+              Pendaftaran Peserta Didik
             </div>
             <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight">
               Mulai Perjalanan Belajarmu Hari Ini.
@@ -159,14 +153,15 @@ export default function RegisterForm({ redirectParam = '' }: Props) {
             </p>
           </div>
 
-          {/* Ilustrasi Siswa 3D Modern */}
-          <div className="relative z-10 mt-2 flex justify-center items-end">
-            <div className="relative w-full max-w-[340px] aspect-[4/3] rounded-2xl overflow-hidden shadow-lg border border-white/25 bg-purple-900/40">
+          {/* Ilustrasi Vektor Belajar Asli (Bukan AI 3D) */}
+          <div className="relative z-10 mt-2 flex justify-center items-center">
+            <div className="w-full max-w-[340px] bg-white/95 rounded-2xl p-4 sm:p-5 shadow-xl border border-white/40 flex items-center justify-center hover:scale-[1.02] transition-transform duration-300">
               <Image
-                src="/auth-students.jpg"
-                alt="Siswa Vokasi Pijar Aksara"
-                fill
-                className="object-cover object-top hover:scale-105 transition-transform duration-500"
+                src="/auth-illustration.svg"
+                alt="Ilustrasi Pembelajaran Vokasi Pijar Aksara"
+                width={320}
+                height={230}
+                className="w-full h-auto object-contain"
                 priority
               />
             </div>
@@ -177,13 +172,17 @@ export default function RegisterForm({ redirectParam = '' }: Props) {
             KOLOM KANAN: Formulir Pendaftaran Akun
            ===================================================================== */}
         <div className="lg:col-span-7 flex flex-col justify-center px-4 sm:px-8 lg:px-10 py-6 sm:py-8">
-          {/* Header Form */}
+          {/* Header Form dengan Logo Asli */}
           <div className="mb-6">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-8 h-8 rounded-xl bg-purple-100 text-[#843bab] flex items-center justify-center font-black text-xs">
-                PA
-              </div>
-              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+            <div className="flex items-center gap-2.5 mb-3">
+              <Image
+                src="/logo-pijar-aksara.png"
+                alt="Logo Pijar Aksara"
+                width={30}
+                height={30}
+                className="object-contain"
+              />
+              <span className="text-xs font-extrabold text-slate-800 tracking-wider">
                 LMS Pijar Aksara
               </span>
             </div>
