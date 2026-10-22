@@ -111,60 +111,53 @@ export default function RegisterForm({ redirectParam = '' }: Props) {
   };
 
   return (
-    <div className="min-h-[calc(100vh-140px)] flex items-center justify-center py-10 px-4 sm:px-6 lg:px-8 bg-slate-50/70">
-      <div className="max-w-5xl w-full bg-white rounded-[32px] sm:rounded-[36px] shadow-2xl border border-slate-200/80 overflow-hidden grid grid-cols-1 lg:grid-cols-12 p-3 sm:p-4 gap-4 lg:gap-8">
+    <div className="min-h-[calc(100vh-65px)] flex items-center justify-center p-3 sm:p-5 lg:p-6 bg-slate-50/70">
+      <div className="max-w-4xl lg:max-w-[960px] w-full bg-white rounded-[32px] sm:rounded-[36px] shadow-2xl border border-slate-200/80 overflow-hidden grid grid-cols-1 lg:grid-cols-12 p-3 sm:p-3.5 gap-4 lg:gap-6 my-auto">
         
         {/* =====================================================================
-            KOLOM KIRI: Visual Vektor & Headline Vokasi Pijar Aksara
+            KOLOM KIRI: Visual Card Proporsional (Sesuai Konsep Contoh)
            ===================================================================== */}
-        <div className="lg:col-span-5 bg-gradient-to-br from-[#843bab] via-[#702996] to-[#4c1669] rounded-[28px] p-6 sm:p-8 flex flex-col justify-between text-white relative overflow-hidden shadow-inner">
-          {/* Header Kartu Kiri: Logo Pijar Aksara (Putih Jelas) & Lembaga */}
-          <div className="relative z-10 flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl bg-white/15 p-2 flex items-center justify-center border border-white/20 shadow-sm">
+        <div className="lg:col-span-5 bg-gradient-to-br from-[#843bab] via-[#702996] to-[#4c1669] rounded-[26px] p-6 sm:p-7 flex flex-col justify-between text-white relative overflow-hidden shadow-inner min-h-[460px] lg:min-h-[520px]">
+          
+          {/* Header Lembaga Ringkas */}
+          <div className="relative z-10 flex items-center gap-2.5 mb-4">
+            <div className="w-8 h-8 rounded-xl bg-white/15 p-1.5 flex items-center justify-center border border-white/20 shadow-sm shrink-0">
               <Image
                 src="/logo-pijar-aksara.png"
                 alt="Logo Pijar Aksara"
-                width={36}
-                height={36}
+                width={22}
+                height={22}
                 className="object-contain brightness-0 invert"
                 priority
               />
             </div>
-            <div>
-              <div className="text-base font-black tracking-tight text-white">
-                Pijar Aksara
-              </div>
-              <div className="text-[10px] font-extrabold text-[#ffdf0f] uppercase tracking-wider">
-                Lembaga Kursus Vokasi
-              </div>
+            <div className="text-xs font-black tracking-wide text-white">
+              Pijar Aksara <span className="text-purple-300 font-normal">|</span> <span className="text-[#ffdf0f] font-extrabold text-[10px] uppercase">Lembaga Vokasi</span>
             </div>
           </div>
 
-          {/* Konten Teks Bersih dengan Proporsi Pas */}
-          <div className="relative z-10 mt-6 mb-3 sm:mt-8 sm:mb-4">
-            <div className="text-xs font-black text-[#ffdf0f] uppercase tracking-widest mb-3">
-              Pendaftaran Peserta Didik
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-snug">
+          {/* Konten Judul Besar & Mantap (Posisi Pas, Tidak Keatasan) */}
+          <div className="relative z-10 my-auto py-1">
+            <h2 className="text-2xl sm:text-3xl lg:text-[31px] font-black text-white tracking-tight leading-[1.2]">
               Tingkatkan Keahlian <span className="text-[#ffdf0f]">Anda</span> untuk Masa Depan Gemilang.
             </h2>
-            <p className="text-xs sm:text-sm text-purple-100/90 mt-3 leading-relaxed">
+            <p className="text-xs sm:text-[13px] text-purple-100/90 mt-2.5 leading-relaxed">
               Daftarkan dirimu untuk mengakses kurikulum kursus vokasi berkualitas, video pembelajaran terstruktur, kuis kompetensi, dan sertifikat resmi berstandar industri.
             </p>
           </div>
 
-          {/* Ilustrasi Karakter Pembelajaran Pijar Aksara dengan Bayangan Realistis */}
-          <div className="relative z-10 mt-auto pt-4 flex flex-col items-center justify-end w-full">
-            <div className="relative w-full max-w-[340px] sm:max-w-[380px] h-[360px] sm:h-[420px] lg:h-[450px] flex items-end justify-center">
-              {/* Efek Bayangan Lantai Realistis (Ground Contact Shadow) */}
-              <div className="absolute bottom-1 w-4/5 max-w-[280px] h-6 bg-black/40 rounded-full blur-md pointer-events-none" />
-              <div className="absolute bottom-2 w-3/5 max-w-[200px] h-3 bg-black/60 rounded-full blur-xs pointer-events-none" />
+          {/* Ilustrasi Karakter 3D Pas & Berbayangan Nyata */}
+          <div className="relative z-10 mt-auto pt-3 flex flex-col items-center justify-end w-full">
+            <div className="relative w-full max-w-[280px] sm:max-w-[300px] h-[260px] sm:h-[285px] lg:h-[300px] flex items-end justify-center">
+              {/* Lapisan Bayangan Lantai Kontak (Ground Contact Shadow) */}
+              <div className="absolute bottom-1 w-4/5 max-w-[240px] h-4 bg-black/45 rounded-full blur-md pointer-events-none" />
+              <div className="absolute bottom-1.5 w-3/5 max-w-[170px] h-2 bg-black/60 rounded-full blur-xs pointer-events-none" />
               
               <Image
                 src="/login-character.png"
                 alt="Karakter Pembelajaran Pijar Aksara"
                 fill
-                className="object-contain object-bottom hover:scale-[1.03] transition-transform duration-300 drop-shadow-[0_20px_25px_rgba(0,0,0,0.45)]"
+                className="object-contain object-bottom hover:scale-[1.03] transition-transform duration-300 drop-shadow-[0_16px_24px_rgba(0,0,0,0.45)]"
                 priority
               />
             </div>
@@ -174,138 +167,139 @@ export default function RegisterForm({ redirectParam = '' }: Props) {
         {/* =====================================================================
             KOLOM KANAN: Formulir Pendaftaran Akun
            ===================================================================== */}
-        <div className="lg:col-span-7 flex flex-col justify-center px-4 sm:px-8 lg:px-10 py-6 sm:py-8">
+        <div className="lg:col-span-7 flex flex-col justify-center px-4 sm:px-8 lg:px-9 py-5 sm:py-6">
           {/* Header Form dengan Logo Asli */}
-          <div className="mb-6">
-            <div className="flex items-center gap-2.5 mb-3">
+          <div className="mb-4">
+            <div className="flex items-center gap-2 mb-1.5">
               <Image
                 src="/logo-pijar-aksara.png"
                 alt="Logo Pijar Aksara"
-                width={30}
-                height={30}
+                width={26}
+                height={26}
                 className="object-contain"
               />
               <span className="text-xs font-extrabold text-slate-800 tracking-wider">
                 LMS Pijar Aksara
               </span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+            <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
               Daftar Akun Baru
             </h1>
-            <p className="text-xs sm:text-sm text-slate-500 mt-1">
+            <p className="text-xs text-slate-500 mt-0.5">
               Lengkapi formulir di bawah ini untuk memulai akses belajar kursus vokasi Anda.
             </p>
           </div>
 
           {/* Pesan Error */}
           {error && (
-            <div className="flex items-start gap-2.5 p-3.5 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-xs font-medium mb-5 animate-fadeIn">
-              <AlertCircle size={16} className="shrink-0 mt-0.5" />
+            <div className="flex items-start gap-2 p-2.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-medium mb-3 animate-fadeIn">
+              <AlertCircle size={15} className="shrink-0 mt-0.5" />
               <span>{error}</span>
             </div>
           )}
 
           {/* Form Register */}
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-3">
             {/* 1. Nama Lengkap */}
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
                 Nama Lengkap (Sesuai Sertifikat)
               </label>
               <div className="relative">
-                <User size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                <User size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
                   type="text"
                   required
                   placeholder="Contoh: Budi Santoso"
                   value={namaLengkap}
                   onChange={(e) => setNamaLengkap(e.target.value)}
-                  className="w-full pl-11 pr-4 py-3 rounded-2xl text-sm bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#843bab] focus:bg-white focus:ring-2 focus:ring-[#843bab]/20 transition-all"
+                  className="w-full pl-10 pr-3.5 py-2.5 rounded-xl text-sm bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#843bab] focus:bg-white focus:ring-2 focus:ring-[#843bab]/20 transition-all"
                 />
               </div>
             </div>
 
-            {/* 2. Email */}
-            <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                Alamat Email Aktif
-              </label>
-              <div className="relative">
-                <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-                <input
-                  type="email"
-                  required
-                  placeholder="nama@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  autoComplete="email"
-                  className="w-full pl-11 pr-4 py-3 rounded-2xl text-sm bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#843bab] focus:bg-white focus:ring-2 focus:ring-[#843bab]/20 transition-all"
-                />
-              </div>
-            </div>
-
-            {/* 3. Nomor HP / WhatsApp */}
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
-                  Nomor HP / WhatsApp
+            {/* 2. Email & No HP dalam Grid 2 Kolom pada Tablet/Desktop agar Ringkas */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  Email
                 </label>
-                {nomorHp && (
-                  <span className={`text-[11px] font-semibold ${isHpValid ? 'text-emerald-600' : 'text-amber-600'}`}>
-                    {isHpValid ? 'Format valid' : 'Format: 08xxxxxxxxxx'}
-                  </span>
-                )}
+                <div className="relative">
+                  <Mail size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <input
+                    type="email"
+                    required
+                    placeholder="nama@email.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    autoComplete="email"
+                    className="w-full pl-10 pr-3 py-2.5 rounded-xl text-sm bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#843bab] focus:bg-white focus:ring-2 focus:ring-[#843bab]/20 transition-all"
+                  />
+                </div>
               </div>
-              <div className="relative">
-                <Phone size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-                <input
-                  type="tel"
-                  required
-                  placeholder="081234567890"
-                  value={nomorHp}
-                  onChange={(e) => setNomorHp(e.target.value)}
-                  className="w-full pl-11 pr-4 py-3 rounded-2xl text-sm bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#843bab] focus:bg-white focus:ring-2 focus:ring-[#843bab]/20 transition-all"
-                />
+
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider">
+                    No. WhatsApp
+                  </label>
+                  {nomorHp && (
+                    <span className={`text-[10px] font-semibold ${isHpValid ? 'text-emerald-600' : 'text-amber-600'}`}>
+                      {isHpValid ? 'Format valid' : '08xxxxxxxx'}
+                    </span>
+                  )}
+                </div>
+                <div className="relative">
+                  <Phone size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <input
+                    type="tel"
+                    required
+                    placeholder="081234567890"
+                    value={nomorHp}
+                    onChange={(e) => setNomorHp(e.target.value)}
+                    className="w-full pl-10 pr-3 py-2.5 rounded-xl text-sm bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#843bab] focus:bg-white focus:ring-2 focus:ring-[#843bab]/20 transition-all"
+                  />
+                </div>
               </div>
             </div>
 
-            {/* 4. Kata Sandi */}
+            {/* 3. Kata Sandi */}
             <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider">
                   Kata Sandi Kuat
                 </label>
                 {password && (
-                  <span className={`text-[11px] font-bold ${strength.text}`}>
+                  <span className={`text-[10px] font-bold ${strength.text}`}>
                     {strength.label}
                   </span>
                 )}
               </div>
               <div className="relative">
-                <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   required
-                  placeholder="Kombinasi huruf, angka & simbol"
+                  placeholder="Minimal 8 karakter (huruf, angka, simbol)"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   autoComplete="new-password"
-                  className="w-full pl-11 pr-12 py-3 rounded-2xl text-sm bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#843bab] focus:bg-white focus:ring-2 focus:ring-[#843bab]/20 transition-all font-mono"
+                  className="w-full pl-10 pr-11 py-2.5 rounded-xl text-sm bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#843bab] focus:bg-white focus:ring-2 focus:ring-[#843bab]/20 transition-all font-mono"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 transition-colors p-1 cursor-pointer"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 transition-colors p-1 cursor-pointer"
                   title={showPassword ? 'Sembunyikan' : 'Tampilkan'}
                   tabIndex={-1}
                 >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
 
               {/* Progress Bar Kekuatan Kata Sandi */}
               {password.length > 0 && (
-                <div className="w-full h-1.5 bg-slate-100 rounded-full mt-2 overflow-hidden">
+                <div className="w-full h-1 bg-slate-100 rounded-full mt-1.5 overflow-hidden">
                   <div
                     className={`h-full ${strength.color} transition-all duration-300`}
                     style={{ width: strength.width }}
@@ -313,53 +307,45 @@ export default function RegisterForm({ redirectParam = '' }: Props) {
                 </div>
               )}
 
-              {/* Checklist Kriteria Keamanan Sandi */}
-              <div className="mt-2.5 p-3 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1.5 text-[11px]">
-                <div className="text-xs font-bold text-slate-700 mb-1">
-                  Kriteria Kata Sandi:
+              {/* Checklist Ringkas Kriteria Keamanan Sandi */}
+              <div className="mt-2 p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 grid grid-cols-2 gap-1 text-[10px]">
+                <div className={`flex items-center gap-1 ${hasMinLength ? 'text-emerald-700 font-bold' : 'text-slate-500'}`}>
+                  {hasMinLength ? <Check size={11} className="text-emerald-600 shrink-0" /> : <div className="w-1.5 h-1.5 rounded-full bg-slate-300 shrink-0" />}
+                  <span>Min 8 karakter</span>
                 </div>
-                
-                <div className={`flex items-center gap-1.5 ${hasMinLength ? 'text-emerald-700 font-bold' : 'text-slate-500'}`}>
-                  {hasMinLength ? <Check size={13} className="text-emerald-600" /> : <div className="w-1.5 h-1.5 rounded-full bg-slate-300 ml-1 mr-1" />}
-                  <span>Minimal 8 karakter</span>
-                </div>
-
-                <div className={`flex items-center gap-1.5 ${hasUppercase ? 'text-emerald-700 font-bold' : 'text-slate-500'}`}>
-                  {hasUppercase ? <Check size={13} className="text-emerald-600" /> : <div className="w-1.5 h-1.5 rounded-full bg-slate-300 ml-1 mr-1" />}
+                <div className={`flex items-center gap-1 ${hasUppercase ? 'text-emerald-700 font-bold' : 'text-slate-500'}`}>
+                  {hasUppercase ? <Check size={11} className="text-emerald-600 shrink-0" /> : <div className="w-1.5 h-1.5 rounded-full bg-slate-300 shrink-0" />}
                   <span>Huruf besar (A-Z)</span>
                 </div>
-
-                <div className={`flex items-center gap-1.5 ${hasLowercase ? 'text-emerald-700 font-bold' : 'text-slate-500'}`}>
-                  {hasLowercase ? <Check size={13} className="text-emerald-600" /> : <div className="w-1.5 h-1.5 rounded-full bg-slate-300 ml-1 mr-1" />}
+                <div className={`flex items-center gap-1 ${hasLowercase ? 'text-emerald-700 font-bold' : 'text-slate-500'}`}>
+                  {hasLowercase ? <Check size={11} className="text-emerald-600 shrink-0" /> : <div className="w-1.5 h-1.5 rounded-full bg-slate-300 shrink-0" />}
                   <span>Huruf kecil (a-z)</span>
                 </div>
-
-                <div className={`flex items-center gap-1.5 ${hasNumber ? 'text-emerald-700 font-bold' : 'text-slate-500'}`}>
-                  {hasNumber ? <Check size={13} className="text-emerald-600" /> : <div className="w-1.5 h-1.5 rounded-full bg-slate-300 ml-1 mr-1" />}
+                <div className={`flex items-center gap-1 ${hasNumber ? 'text-emerald-700 font-bold' : 'text-slate-500'}`}>
+                  {hasNumber ? <Check size={11} className="text-emerald-600 shrink-0" /> : <div className="w-1.5 h-1.5 rounded-full bg-slate-300 shrink-0" />}
                   <span>Angka (0-9)</span>
                 </div>
-
-                <div className={`flex items-center gap-1.5 ${hasSymbol ? 'text-emerald-700 font-bold' : 'text-slate-500'}`}>
-                  {hasSymbol ? <Check size={13} className="text-emerald-600" /> : <div className="w-1.5 h-1.5 rounded-full bg-slate-300 ml-1 mr-1" />}
-                  <span>Karakter simbol / tanda khusus (!@#$%^&*)</span>
+                <div className={`flex items-center gap-1 col-span-2 ${hasSymbol ? 'text-emerald-700 font-bold' : 'text-slate-500'}`}>
+                  {hasSymbol ? <Check size={11} className="text-emerald-600 shrink-0" /> : <div className="w-1.5 h-1.5 rounded-full bg-slate-300 shrink-0" />}
+                  <span>Simbol khusus (!@#$%^&*)</span>
                 </div>
               </div>
             </div>
 
-            {/* 5. Konfirmasi Kata Sandi */}
+            {/* 4. Konfirmasi Kata Sandi */}
             <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider">
                   Ulangi Kata Sandi
                 </label>
                 {konfirmasiPassword && (
-                  <span className={`text-[11px] font-bold ${passwordsMatch ? 'text-emerald-600' : 'text-red-600'}`}>
+                  <span className={`text-[10px] font-bold ${passwordsMatch ? 'text-emerald-600' : 'text-red-600'}`}>
                     {passwordsMatch ? 'Cocok' : 'Belum cocok'}
                   </span>
                 )}
               </div>
               <div className="relative">
-                <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
                   type={showKonfirmasi ? 'text' : 'password'}
                   required
@@ -367,7 +353,7 @@ export default function RegisterForm({ redirectParam = '' }: Props) {
                   value={konfirmasiPassword}
                   onChange={(e) => setKonfirmasiPassword(e.target.value)}
                   autoComplete="new-password"
-                  className={`w-full pl-11 pr-12 py-3 rounded-2xl text-sm bg-slate-50 border text-slate-900 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:ring-2 transition-all font-mono ${
+                  className={`w-full pl-10 pr-11 py-2.5 rounded-xl text-sm bg-slate-50 border text-slate-900 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:ring-2 transition-all font-mono ${
                     konfirmasiPassword.length > 0
                       ? passwordsMatch
                         ? 'border-emerald-300 focus:border-emerald-500 focus:ring-emerald-500/20'
@@ -378,11 +364,11 @@ export default function RegisterForm({ redirectParam = '' }: Props) {
                 <button
                   type="button"
                   onClick={() => setShowKonfirmasi(!showKonfirmasi)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 transition-colors p-1 cursor-pointer"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 transition-colors p-1 cursor-pointer"
                   title={showKonfirmasi ? 'Sembunyikan' : 'Tampilkan'}
                   tabIndex={-1}
                 >
-                  {showKonfirmasi ? <EyeOff size={18} /> : <Eye size={18} />}
+                  {showKonfirmasi ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
             </div>
@@ -391,7 +377,7 @@ export default function RegisterForm({ redirectParam = '' }: Props) {
             <button
               type="submit"
               disabled={loading || !isPasswordStrong || !passwordsMatch}
-              className="w-full flex items-center justify-center gap-2 py-3.5 px-5 rounded-2xl text-sm font-bold text-white bg-gradient-to-r from-[#843bab] to-[#973ec4] hover:from-[#722f96] hover:to-[#843bab] shadow-md hover:shadow-lg active:scale-[0.99] transition-all duration-200 mt-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              className="w-full flex items-center justify-center gap-2 py-3 px-5 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-[#843bab] to-[#973ec4] hover:from-[#722f96] hover:to-[#843bab] shadow-md hover:shadow-lg active:scale-[0.99] transition-all duration-200 mt-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               {loading ? (
                 <span className="flex items-center gap-2">
@@ -408,13 +394,13 @@ export default function RegisterForm({ redirectParam = '' }: Props) {
           </form>
 
           {/* Info Peran Otomatis */}
-          <div className="mt-5 p-3 rounded-2xl bg-purple-50 border border-purple-100 flex items-center gap-2 text-xs text-[#843bab] font-semibold">
-            <ShieldCheck size={16} className="shrink-0 text-[#843bab]" />
+          <div className="mt-3 p-2 rounded-xl bg-purple-50 border border-purple-100 flex items-center gap-2 text-[11px] text-[#843bab] font-semibold">
+            <ShieldCheck size={14} className="shrink-0 text-[#843bab]" />
             <span>Akun pendaftaran baru otomatis aktif sebagai Peserta Kursus.</span>
           </div>
 
           {/* Switch to Login */}
-          <div className="mt-6 text-center text-xs font-medium text-slate-600">
+          <div className="mt-4 text-center text-xs font-medium text-slate-600">
             Sudah memiliki akun?{' '}
             <Link
               href={redirectParam ? `/login?redirect=${redirectParam}` : '/login'}
