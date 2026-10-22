@@ -99,67 +99,89 @@ export default async function HomePage() {
               </div>
             </div>
 
-            {/* ================= KOLOM KANAN: Mockup Smartphone Proporsional + Pop-up Rapi ================= */}
+            {/* ================= KOLOM KANAN: Mockup iPhone 16 + Bubble Chat iPhone ================= */}
             <div className="lg:col-span-5 flex items-center justify-center relative">
               {/* Cincin Geometris Kuning Lembut di Belakang Smartphone */}
               <div className="absolute -bottom-8 -right-8 w-60 h-60 rounded-full border-[20px] border-[#ffdf0f]/20 pointer-events-none select-none z-0 hidden sm:block" />
 
-              {/* Wrapper Smartphone & Floating Badges */}
+              {/* Wrapper Smartphone & Bubble Chat Badges */}
               <div className="relative inline-block z-10">
-                {/* Pop-up Badge 1: Akses LMS 24 Jam (Melayang di Sisi Kiri Atas dengan Jarak Aman, Bebas Nyegol) */}
-                <div className="hidden xl:flex absolute right-[calc(100%+22px)] top-6 z-30 bg-white/95 backdrop-blur-md rounded-2xl p-2.5 shadow-xl border border-purple-100 items-center gap-2.5 w-[170px] hover:scale-105 transition-transform duration-200">
-                  <div className="w-8 h-8 rounded-xl bg-purple-100 text-[#843bab] flex items-center justify-center shrink-0">
-                    <Laptop size={16} />
+                {/* Bubble Chat iPhone 1: Akses LMS 24 Jam (Menyenggol Sisi Kiri iPhone 16 dengan Ekor Pesan iMessage) */}
+                <div className="hidden xl:flex absolute right-[calc(100%-14px)] top-9 z-30 bg-white/95 backdrop-blur-md rounded-2xl rounded-tr-xs p-2.5 sm:p-3 shadow-[0_12px_30px_rgba(0,0,0,0.18)] border border-purple-100/90 items-center gap-2.5 sm:gap-3 w-[185px] hover:scale-105 transition-transform duration-200 group">
+                  <div className="w-8 h-8 rounded-full bg-purple-100 text-[#843bab] flex items-center justify-center shrink-0 shadow-xs">
+                    <Laptop size={15} />
                   </div>
-                  <div className="text-left">
-                    <p className="text-xs font-black text-slate-900 leading-tight">Akses LMS 24 Jam</p>
-                    <p className="text-[10px] text-slate-500 font-medium">Belajar mandiri fleksibel</p>
+                  <div className="text-left flex-1 min-w-0">
+                    <div className="flex items-center justify-between mb-0.5">
+                      <p className="text-[11px] font-black text-slate-900 leading-tight truncate">Akses LMS 24 Jam</p>
+                      <span className="text-[8px] text-slate-400 font-medium">09:41</span>
+                    </div>
+                    <p className="text-[9.5px] text-slate-500 font-medium leading-snug">Belajar mandiri fleksibel</p>
                   </div>
+                  {/* Ekor Bubble Chat iMessage mengarah ke bodi iPhone 16 */}
+                  <div className="absolute -right-2 top-3 w-0 h-0 border-y-[5px] border-y-transparent border-l-[8px] border-l-white/95 filter drop-shadow-[2px_0_1px_rgba(0,0,0,0.04)]" />
                 </div>
 
-                {/* Pop-up Badge 2: Server Kuis Otomatis (Melayang di Sisi Kiri Bawah dengan Jarak Aman, Bebas Nyegol) */}
-                <div className="hidden xl:flex absolute right-[calc(100%+22px)] bottom-10 z-30 bg-white/95 backdrop-blur-md rounded-2xl p-2.5 shadow-xl border border-purple-100 items-center gap-2.5 w-[175px] hover:scale-105 transition-transform duration-200">
-                  <div className="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center shrink-0">
-                    <CheckCircle2 size={16} />
+                {/* Bubble Chat iPhone 2: Server Kuis Otomatis (Menyenggol Sisi Kiri iPhone 16 dengan Ekor Pesan iMessage) */}
+                <div className="hidden xl:flex absolute right-[calc(100%-10px)] bottom-12 z-30 bg-white/95 backdrop-blur-md rounded-2xl rounded-tr-xs p-2.5 sm:p-3 shadow-[0_12px_30px_rgba(0,0,0,0.18)] border border-purple-100/90 items-center gap-2.5 sm:gap-3 w-[190px] hover:scale-105 transition-transform duration-200 group">
+                  <div className="w-8 h-8 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center shrink-0 shadow-xs">
+                    <CheckCircle2 size={15} />
                   </div>
-                  <div className="text-left">
-                    <p className="text-xs font-black text-slate-900 leading-tight">Server Kuis Otomatis</p>
-                    <p className="text-[10px] text-slate-500 font-medium">Evaluasi kelulusan instan</p>
+                  <div className="text-left flex-1 min-w-0">
+                    <div className="flex items-center justify-between mb-0.5">
+                      <p className="text-[11px] font-black text-slate-900 leading-tight truncate">Server Kuis Otomatis</p>
+                      <span className="text-[8px] font-bold text-amber-700 bg-amber-100 px-1 rounded">Baru</span>
+                    </div>
+                    <p className="text-[9.5px] text-slate-500 font-medium leading-snug">Evaluasi kelulusan instan</p>
                   </div>
+                  {/* Ekor Bubble Chat iMessage mengarah ke bodi iPhone 16 */}
+                  <div className="absolute -right-2 top-3 w-0 h-0 border-y-[5px] border-y-transparent border-l-[8px] border-l-white/95 filter drop-shadow-[2px_0_1px_rgba(0,0,0,0.04)]" />
                 </div>
 
-                {/* Smartphone Mockup Ukuran Normal & Proporsional (Tinggi Terkontrol ~360px agar Fit 100%) */}
-                <div className="relative w-[235px] sm:w-[245px] lg:w-[255px] rounded-[38px] p-[5px] bg-gradient-to-b from-slate-500 via-slate-800 to-slate-950 shadow-[0_20px_50px_-10px_rgba(0,0,0,0.65),0_0_0_1px_rgba(255,255,255,0.2)]">
-                  {/* Tombol Fisik Volume Kiri */}
-                  <div className="absolute -left-[4px] top-18 w-[3px] h-6 bg-slate-500 rounded-l" />
-                  <div className="absolute -left-[4px] top-26 w-[3px] h-6 bg-slate-500 rounded-l" />
-                  {/* Tombol Fisik Power Kanan */}
-                  <div className="absolute -right-[4px] top-20 w-[3px] h-9 bg-slate-500 rounded-r" />
+                {/* Mockup iPhone 16 Asli (Action Button, Camera Control, Dynamic Island, Bezel Super Tipis) */}
+                <div className="relative w-[240px] sm:w-[250px] lg:w-[260px] rounded-[42px] p-[5px] bg-gradient-to-b from-slate-600 via-slate-800 to-slate-950 shadow-[0_22px_55px_-10px_rgba(0,0,0,0.7),0_0_0_1px_rgba(255,255,255,0.22)]">
+                  {/* Sisi Kiri iPhone 16: Action Button + Volume Up + Volume Down */}
+                  <div className="absolute -left-[4px] top-14 w-[3.5px] h-4 bg-slate-500 rounded-l" title="Action Button" />
+                  <div className="absolute -left-[4px] top-21 w-[3.5px] h-7 bg-slate-500 rounded-l" title="Volume Up" />
+                  <div className="absolute -left-[4px] top-31 w-[3.5px] h-7 bg-slate-500 rounded-l" title="Volume Down" />
 
-                  {/* Bezel Hitam & Layar Kaca */}
-                  <div className="relative rounded-[34px] overflow-hidden bg-slate-950 border-[2px] border-slate-950 shadow-inner">
-                    {/* Dynamic Island Notch */}
-                    <div className="absolute top-2 left-1/2 -translate-x-1/2 w-18 h-3.5 bg-black rounded-full z-30 flex items-center justify-end pr-1.5">
+                  {/* Sisi Kanan iPhone 16: Power Button + Camera Control Baru khas iPhone 16 */}
+                  <div className="absolute -right-[4px] top-20 w-[3.5px] h-10 bg-slate-500 rounded-r" title="Side Button" />
+                  <div className="absolute -right-[3.5px] bottom-20 w-[3px] h-9 bg-slate-600 rounded-r border-r border-slate-400/80" title="Camera Control iPhone 16" />
+
+                  {/* Bezel Hitam & Layar Kaca iPhone 16 */}
+                  <div className="relative rounded-[37px] overflow-hidden bg-slate-950 border-[2px] border-slate-950 shadow-inner">
+                    {/* Dynamic Island Khas iPhone 16 */}
+                    <div className="absolute top-2 left-1/2 -translate-x-1/2 w-19 h-3.5 bg-black rounded-full z-30 flex items-center justify-between px-1.5">
                       <div className="w-1.5 h-1.5 rounded-full bg-[#0e1726] border border-slate-700" />
+                      <div className="w-1 h-1 rounded-full bg-[#1e293b]" />
                     </div>
 
-                    {/* Pantulan Kaca (Glass Sheen) */}
+                    {/* Pantulan Kaca Mengkilap (Glass Sheen iOS) */}
                     <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.03] to-white/[0.07] z-20" />
 
                     {/* Layar Aplikasi Pijar Aksara */}
                     <div className="bg-slate-50 text-slate-900 pt-6 pb-3 px-3 select-none text-left">
-                      {/* Status Bar */}
+                      {/* iOS Status Bar */}
                       <div className="flex items-center justify-between text-[10px] font-semibold text-slate-600 px-1 mb-1.5">
                         <span>09:41</span>
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-1.5">
+                          {/* Sinyal Bar iOS */}
+                          <div className="flex items-end gap-[1px] h-2">
+                            <span className="w-[1.5px] h-1 bg-slate-700 rounded-xs" />
+                            <span className="w-[1.5px] h-1.5 bg-slate-700 rounded-xs" />
+                            <span className="w-[1.5px] h-2 bg-slate-700 rounded-xs" />
+                            <span className="w-[1.5px] h-2.5 bg-slate-700 rounded-xs" />
+                          </div>
                           <span className="text-[9px] font-bold">5G</span>
-                          <div className="w-3.5 h-1.5 rounded-2xs border border-slate-500 p-[0.5px]">
-                            <div className="h-full w-3/4 bg-slate-700 rounded-2xs" />
+                          {/* Indikator Baterai iOS */}
+                          <div className="w-4 h-2 rounded-[3px] border border-slate-600 p-[0.5px] flex items-center">
+                            <div className="h-full w-4/5 bg-emerald-500 rounded-[1.5px]" />
                           </div>
                         </div>
                       </div>
 
-                      {/* Header Aplikasi */}
+                      {/* Header Aplikasi Kursus */}
                       <div className="pb-1.5 mb-1.5 border-b border-slate-200">
                         <div className="flex items-center justify-between mb-0.5">
                           <p className="text-xs font-black text-slate-900 tracking-tight">
@@ -267,8 +289,8 @@ export default async function HomePage() {
                         Mulai Belajar Sekarang →
                       </div>
 
-                      {/* Home Bar Bawah HP ala iPhone */}
-                      <div className="w-16 h-1 bg-slate-300 rounded-full mx-auto mt-2" />
+                      {/* Home Bar Bawah iPhone 16 */}
+                      <div className="w-18 h-1 bg-slate-300 rounded-full mx-auto mt-2" />
                     </div>
                   </div>
                 </div>
