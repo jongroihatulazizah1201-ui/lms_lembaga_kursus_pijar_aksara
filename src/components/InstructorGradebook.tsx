@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
   Users,
@@ -12,7 +11,6 @@ import {
   AlertCircle,
   Search,
   Filter,
-  ArrowLeft,
   ChevronDown,
   Phone,
   Mail,
@@ -288,34 +286,48 @@ export default function InstructorGradebook({
 
   return (
     <div className="min-h-screen bg-slate-50/60 pb-28 text-slate-900 print:bg-white print:p-0">
-      {/* =========================================================================
-          1. HEADER BANNER: Navigasi, Judul, Pemilih Kursus & Aksi Ekspor
-         ========================================================================= */}
-      <section className="bg-gradient-to-b from-purple-50/70 via-white to-slate-50/50 border-b border-slate-200 pt-8 pb-10 print:hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-
-          {/* Judul & Kontrol Kursus */}
-          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
-            <div className="space-y-2 max-w-2xl">
-              <div className="flex items-center gap-2.5">
-                <Link
-                  href={currentUser.peran === 'admin' ? '/admin' : '/instruktur'}
-                  className="p-2 rounded-xl bg-white border border-slate-200 text-slate-600 hover:text-[#843bab] hover:border-purple-200 hover:bg-purple-50/40 transition-all shadow-2xs"
-                  title="Kembali"
-                >
-                  <ArrowLeft size={18} />
-                </Link>
-                <div>
-                  <span className="text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-[#ffdf0f]/30 text-amber-900 uppercase tracking-wider border border-amber-300/40">
-                    Buku Nilai & Peserta
-                  </span>
-                  <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mt-0.5">
-                    Peserta dan Nilai Kuis
-                  </h1>
-                </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 sm:pt-4">
+        {/* =========================================================================
+            1. PRINT ONLY HEADER (Muncul saat dicetak ke PDF / Printer)
+           ========================================================================= */}
+        <div className="hidden print:block p-8 border-b-2 border-slate-800 mb-6">
+          <div className="flex justify-between items-start">
+            <div>
+              <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">
+                Lembaga Kursus Pijar Aksara
+              </h1>
+              <p className="text-sm text-slate-600">
+                Laporan Rekapitulasi Peserta & Nilai Kuis Vokasi
+              </p>
+              <div className="mt-3 text-xs text-slate-700 space-y-1">
+                <div><strong>Kursus:</strong> {judul_kursus} ({kategori})</div>
+                <div><strong>Tanggal Cetak:</strong> {new Date().toLocaleDateString('id-ID', { dateStyle: 'full' })}</div>
               </div>
-              <p className="text-sm text-slate-600 leading-relaxed pl-11">
+            </div>
+            <div className="text-right text-xs text-slate-500">
+              <div>Dicetak oleh: {currentUser.nama_lengkap}</div>
+              <div>Peran: {currentUser.peran.toUpperCase()}</div>
+            </div>
+          </div>
+        </div>
+
+        {/* =========================================================================
+            2. STICKY TOP HEADER: Judul Halaman, Pemilih Kursus, Ekspor, & Filter Toolbar
+           ========================================================================= */}
+        <div className="sticky top-[57px] lg:top-0 z-20 bg-white/95 backdrop-blur-md rounded-2xl border border-slate-200/90 p-4 sm:p-5 shadow-sm space-y-4 transition-all print:hidden mb-6">
+          {/* Baris 1: Judul Halaman & Kontrol Kursus / Ekspor */}
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            {/* Sisi Kiri: Judul Halaman & Deskripsi (Tombol panah kembali dihapus) */}
+            <div className="space-y-1 max-w-2xl">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-[#ffdf0f]/30 text-amber-900 uppercase tracking-wider border border-amber-300/40">
+                  Buku Nilai & Peserta
+                </span>
+              </div>
+              <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                Peserta dan Nilai Kuis
+              </h1>
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
                 Tabel rekapitulasi peserta aktif per kursus: memantau progres belajar, nilai kuis terbaik, dan jumlah percobaan per modul kuis vokasi.
               </p>
             </div>
@@ -323,7 +335,7 @@ export default function InstructorGradebook({
             {/* Sisi Kanan: Pemilih Kursus & Aksi Dokumen */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
               {/* Dropdown Pemilih Kursus */}
-              <div className="relative min-w-[280px]">
+              <div className="relative min-w-[260px] lg:min-w-[300px]">
                 <label className="block text-xs font-bold text-slate-600 mb-1">
                   Pilih Kursus Aktif:
                 </label>
@@ -331,7 +343,7 @@ export default function InstructorGradebook({
                   <select
                     value={kursus_id}
                     onChange={handleSelectCourse}
-                    className="w-full appearance-none pl-10 pr-10 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-900 font-bold text-sm shadow-2xs hover:border-[#843bab] focus:outline-none focus:ring-2 focus:ring-[#843bab]/20 focus:border-[#843bab] transition-all cursor-pointer"
+                    className="w-full appearance-none pl-9 pr-9 py-2 rounded-xl bg-white border border-slate-300 text-slate-900 font-bold text-xs sm:text-sm shadow-2xs hover:border-[#843bab] focus:outline-none focus:ring-2 focus:ring-[#843bab]/20 focus:border-[#843bab] transition-all cursor-pointer truncate"
                   >
                     {instructorCourses.map((c) => (
                       <option key={c.id} value={c.id}>
@@ -340,21 +352,21 @@ export default function InstructorGradebook({
                     ))}
                   </select>
                   <BookOpen
-                    size={16}
-                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+                    size={15}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
                   />
                   <ChevronDown
-                    size={16}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+                    size={15}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
                   />
                 </div>
               </div>
 
               {/* Tombol Ekspor CSV & Cetak */}
-              <div className="flex items-center gap-2 pt-5 sm:pt-0">
+              <div className="flex items-center gap-2 pt-0 sm:pt-5">
                 <button
                   onClick={handleExportCSV}
-                  className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs hover:shadow transition-all cursor-pointer"
+                  className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs hover:shadow transition-all cursor-pointer min-h-[38px]"
                   title="Unduh format spreadsheet CSV"
                 >
                   <FileSpreadsheet size={15} />
@@ -363,7 +375,7 @@ export default function InstructorGradebook({
 
                 <button
                   onClick={handlePrint}
-                  className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold text-xs shadow-2xs transition-all cursor-pointer"
+                  className="inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold text-xs shadow-2xs transition-all cursor-pointer min-h-[38px]"
                   title="Cetak lembar rekapitulasi"
                 >
                   <Printer size={15} />
@@ -372,34 +384,92 @@ export default function InstructorGradebook({
               </div>
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* =========================================================================
-          2. PRINT ONLY HEADER (Muncul saat dicetak ke PDF / Printer)
-         ========================================================================= */}
-      <div className="hidden print:block p-8 border-b-2 border-slate-800 mb-6">
-        <div className="flex justify-between items-start">
-          <div>
-            <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">
-              Lembaga Kursus Pijar Aksara
-            </h1>
-            <p className="text-sm text-slate-600">
-              Laporan Rekapitulasi Peserta & Nilai Kuis Vokasi
-            </p>
-            <div className="mt-3 text-xs text-slate-700 space-y-1">
-              <div><strong>Kursus:</strong> {judul_kursus} ({kategori})</div>
-              <div><strong>Tanggal Cetak:</strong> {new Date().toLocaleDateString('id-ID', { dateStyle: 'full' })}</div>
+          {/* Baris 2: Search & Filter Toolbar */}
+          <div className="bg-slate-50/70 border border-slate-200/80 rounded-xl p-2.5 sm:p-3 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+            {/* Search Input */}
+            <div className="relative flex-1 min-w-[260px]">
+              <Search
+                size={16}
+                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
+              />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Cari berdasarkan nama peserta, email, atau no HP..."
+                className="w-full pl-10 pr-10 py-2 rounded-xl bg-white border border-slate-200 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#843bab]/20 focus:border-[#843bab] transition-all"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600"
+                >
+                  <X size={14} />
+                </button>
+              )}
+            </div>
+
+            {/* Filter Dropdowns */}
+            <div className="flex flex-wrap items-center gap-2">
+              {/* Filter Status */}
+              <div className="flex items-center gap-1.5">
+                <Filter size={14} className="text-slate-400" />
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#843bab]/20 cursor-pointer"
+                >
+                  <option value="semua">Semua Status</option>
+                  <option value="aktif">Aktif Belajar</option>
+                  <option value="selesai">Selesai / Lulus</option>
+                  <option value="menunggu_bayar">Menunggu Bayar</option>
+                  <option value="dibatalkan">Dibatalkan</option>
+                </select>
+              </div>
+
+              {/* Filter Progres */}
+              <select
+                value={progresFilter}
+                onChange={(e) => setProgresFilter(e.target.value)}
+                className="px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#843bab]/20 cursor-pointer"
+              >
+                <option value="semua">Semua Progres</option>
+                <option value="tuntas">Tuntas (100%)</option>
+                <option value="berjalan">Sedang Belajar (1-99%)</option>
+                <option value="belum_mulai">Belum Mulai (0%)</option>
+              </select>
+
+              {/* Sorting */}
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as any)}
+                className="px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#843bab]/20 cursor-pointer"
+              >
+                <option value="terbaru">Terbaru Terdaftar</option>
+                <option value="nama">Nama (A-Z)</option>
+                <option value="progres-tinggi">Progres Tertinggi</option>
+                <option value="progres-rendah">Progres Terendah</option>
+              </select>
+
+              {/* Reset Filter Button */}
+              {(searchQuery || statusFilter !== 'semua' || progresFilter !== 'semua') && (
+                <button
+                  onClick={() => {
+                    setSearchQuery('');
+                    setStatusFilter('semua');
+                    setProgresFilter('semua');
+                    setSortBy('terbaru');
+                  }}
+                  className="p-2 rounded-xl text-slate-500 hover:text-red-600 hover:bg-red-50 bg-white border border-slate-200 transition-colors cursor-pointer"
+                  title="Reset Filter"
+                >
+                  <RotateCcw size={14} />
+                </button>
+              )}
             </div>
           </div>
-          <div className="text-right text-xs text-slate-500">
-            <div>Dicetak oleh: {currentUser.nama_lengkap}</div>
-            <div>Peran: {currentUser.peran.toUpperCase()}</div>
-          </div>
         </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
         {/* =======================================================================
             3. KARTU RINGKASAN METRIK (KPI CARDS)
            ======================================================================= */}
@@ -472,94 +542,6 @@ export default function InstructorGradebook({
           </div>
         </div>
 
-        {/* =======================================================================
-            4. SEARCH & FILTER TOOLBAR
-           ======================================================================= */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-4 mb-6 shadow-2xs print:hidden">
-          <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
-            {/* Search Input */}
-            <div className="relative flex-1">
-              <Search
-                size={16}
-                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
-              />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Cari berdasarkan nama peserta, email, atau no HP..."
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50/70 border border-slate-200 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#843bab]/20 focus:border-[#843bab] transition-all"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600"
-                >
-                  <X size={14} />
-                </button>
-              )}
-            </div>
-
-            {/* Filter Dropdowns */}
-            <div className="flex flex-wrap items-center gap-2.5">
-              {/* Filter Status */}
-              <div className="flex items-center gap-1.5">
-                <Filter size={14} className="text-slate-400" />
-                <select
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
-                  className="px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#843bab]/20 cursor-pointer"
-                >
-                  <option value="semua">Semua Status</option>
-                  <option value="aktif">Aktif Belajar</option>
-                  <option value="selesai">Selesai / Lulus</option>
-                  <option value="menunggu_bayar">Menunggu Bayar</option>
-                  <option value="dibatalkan">Dibatalkan</option>
-                </select>
-              </div>
-
-              {/* Filter Progres */}
-              <select
-                value={progresFilter}
-                onChange={(e) => setProgresFilter(e.target.value)}
-                className="px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#843bab]/20 cursor-pointer"
-              >
-                <option value="semua">Semua Progres</option>
-                <option value="tuntas">Tuntas (100%)</option>
-                <option value="berjalan">Sedang Belajar (1-99%)</option>
-                <option value="belum_mulai">Belum Mulai (0%)</option>
-              </select>
-
-              {/* Sorting */}
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as any)}
-                className="px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#843bab]/20 cursor-pointer"
-              >
-                <option value="terbaru">Terbaru Terdaftar</option>
-                <option value="nama">Nama (A-Z)</option>
-                <option value="progres-tinggi">Progres Tertinggi</option>
-                <option value="progres-rendah">Progres Terendah</option>
-              </select>
-
-              {/* Reset Filter Button */}
-              {(searchQuery || statusFilter !== 'semua' || progresFilter !== 'semua') && (
-                <button
-                  onClick={() => {
-                    setSearchQuery('');
-                    setStatusFilter('semua');
-                    setProgresFilter('semua');
-                    setSortBy('terbaru');
-                  }}
-                  className="p-2 rounded-xl text-slate-500 hover:text-red-600 hover:bg-red-50 border border-slate-200 transition-colors"
-                  title="Reset Filter"
-                >
-                  <RotateCcw size={14} />
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
 
         {/* =======================================================================
             5. TABEL UTAMA: PESERTA & NILAI KUIS PER MODUL (The Core Table)
