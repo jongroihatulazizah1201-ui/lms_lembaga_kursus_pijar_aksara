@@ -81,7 +81,7 @@ export async function middleware(request: NextRequest) {
     if (profile?.peran === 'admin') {
       return NextResponse.redirect(new URL('/admin', request.url));
     } else if (profile?.peran === 'instruktur') {
-      return NextResponse.redirect(new URL('/instruktur/kursus', request.url));
+      return NextResponse.redirect(new URL('/instruktur', request.url));
     } else {
       return NextResponse.redirect(new URL('/kursus-saya', request.url));
     }

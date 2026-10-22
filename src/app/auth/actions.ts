@@ -44,15 +44,25 @@ export async function loginAction(formData: FormData) {
   // Bersihkan cache layout agar nama/peran user langsung sinkron
   revalidatePath('/', 'layout');
 
+  // Arahkan langsung ke halaman utama sesuai peran pengguna tanpa singgah ke /profil
   let targetUrl = '/kursus-saya';
-  if (redirectTo && redirectTo.startsWith('/')) {
-    targetUrl = redirectTo;
-  } else if (profile.peran === 'admin') {
+  if (profile.peran === 'admin') {
     targetUrl = '/admin';
   } else if (profile.peran === 'instruktur') {
-    targetUrl = '/instruktur/kursus';
+    targetUrl = '/instruktur';
   } else {
-    targetUrl = '/kursus-saya';
+    // Untuk Peserta: jika sebelumnya mencoba membuka ruang belajar atau kursus tertentu, arahkan ke sana
+    if (
+      redirectTo &&
+      redirectTo.startsWith('/') &&
+      !redirectTo.startsWith('/login') &&
+      !redirectTo.startsWith('/register') &&
+      !redirectTo.startsWith('/profil')
+    ) {
+      targetUrl = redirectTo;
+    } else {
+      targetUrl = '/kursus-saya';
+    }
   }
 
   return { success: true, redirectTo: targetUrl };
