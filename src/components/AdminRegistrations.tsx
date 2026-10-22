@@ -236,64 +236,7 @@ export default function AdminRegistrations({ registrations }: Props) {
         </div>
       )}
 
-      {/* 1. KPI Cards Ringkasan Pendaftaran */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-              Total Pendaftaran
-            </span>
-            <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
-              <CreditCard size={16} />
-            </div>
-          </div>
-          <div className="text-3xl font-black text-slate-900">{totalPendaftaran}</div>
-          <div className="text-xs text-slate-500 mt-1">Semua riwayat pendaftaran</div>
-        </div>
-
-        <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-              Perlu Konfirmasi
-            </span>
-            <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
-              <Clock size={16} />
-            </div>
-          </div>
-          <div className="text-3xl font-black text-amber-600">{menungguBayarCount}</div>
-          <div className="text-xs text-slate-500 mt-1">Status menunggu bayar</div>
-        </div>
-
-        <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-              Peserta Aktif
-            </span>
-            <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-              <CheckCircle2 size={16} />
-            </div>
-          </div>
-          <div className="text-3xl font-black text-emerald-600">{aktifCount}</div>
-          <div className="text-xs text-slate-500 mt-1">Belajar di ruang kursus</div>
-        </div>
-
-        <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-              Nominal Terverifikasi
-            </span>
-            <div className="w-8 h-8 rounded-xl bg-purple-50 text-[#843bab] flex items-center justify-center">
-              <DollarSign size={16} />
-            </div>
-          </div>
-          <div className="text-xl sm:text-2xl font-black text-slate-900 truncate">
-            {formatRupiah(totalNominalAktif)}
-          </div>
-          <div className="text-xs text-slate-500 mt-1">{aktifCount + selesaiCount} transaksi berhasil</div>
-        </div>
-      </div>
-
-      {/* 2. Filter & Search Toolbar (Sticky saat di-scroll) */}
+      {/* 1. Filter & Search Toolbar (Ditaruh di Atas & Sticky saat di-scroll) */}
       <div className="sticky top-[60px] lg:top-3 z-20 bg-white/95 backdrop-blur-md rounded-2xl border border-slate-200/90 p-4 shadow-sm hover:shadow-md flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 transition-all">
         {/* Search Box */}
         <div className="relative flex-1 min-w-[280px]">
@@ -350,6 +293,63 @@ export default function AdminRegistrations({ registrations }: Props) {
               </button>
             );
           })}
+        </div>
+      </div>
+
+      {/* 2. KPI Cards Ringkasan Pendaftaran */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+              Total Pendaftaran
+            </span>
+            <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+              <CreditCard size={16} />
+            </div>
+          </div>
+          <div className="text-3xl font-black text-slate-900">{totalPendaftaran}</div>
+          <div className="text-xs text-slate-500 mt-1">Semua riwayat pendaftaran</div>
+        </div>
+
+        <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+              Perlu Konfirmasi
+            </span>
+            <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+              <Clock size={16} />
+            </div>
+          </div>
+          <div className="text-3xl font-black text-amber-600">{menungguBayarCount}</div>
+          <div className="text-xs text-slate-500 mt-1">Status menunggu bayar</div>
+        </div>
+
+        <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+              Peserta Aktif
+            </span>
+            <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+              <CheckCircle2 size={16} />
+            </div>
+          </div>
+          <div className="text-3xl font-black text-emerald-600">{aktifCount}</div>
+          <div className="text-xs text-slate-500 mt-1">Belajar di ruang kursus</div>
+        </div>
+
+        <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+              Nominal Terverifikasi
+            </span>
+            <div className="w-8 h-8 rounded-xl bg-purple-50 text-[#843bab] flex items-center justify-center">
+              <DollarSign size={16} />
+            </div>
+          </div>
+          <div className="text-xl sm:text-2xl font-black text-slate-900 truncate">
+            {formatRupiah(totalNominalAktif)}
+          </div>
+          <div className="text-xs text-slate-500 mt-1">{aktifCount + selesaiCount} transaksi berhasil</div>
         </div>
       </div>
 
