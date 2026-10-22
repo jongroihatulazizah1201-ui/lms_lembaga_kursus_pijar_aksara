@@ -234,47 +234,53 @@ export default function CourseEditor({ course }: Props) {
   };
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6 pb-24 text-slate-900">
-      {/* Top Navigation & Status Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
-        <div className="flex items-center gap-3">
-          <Link
-            href="/instruktur"
-            className="p-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 transition-colors shrink-0"
-            title="Kembali ke Dashboard Instruktur"
-          >
-            <ArrowLeft size={18} />
-          </Link>
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-[11px] font-bold text-[#843bab] uppercase tracking-wider">
-                {course.kategori}
-              </span>
-              <CourseStatusBadge status={course.status} size="sm" />
+    <div className="space-y-6 text-slate-900">
+      {/* =========================================================
+          STICKY COURSE HEADER BAR (Tetap Stay di Atas Saat Di-scroll)
+         ========================================================= */}
+      <div className="sticky top-[57px] lg:top-0 z-20 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs transition-all">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <Link
+              href="/instruktur"
+              className="p-2 sm:p-2.5 rounded-xl border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors shrink-0"
+              title="Kembali ke Dashboard Instruktur"
+            >
+              <ArrowLeft size={18} />
+            </Link>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2 mb-0.5">
+                <span className="text-[11px] font-bold text-[#843bab] uppercase tracking-wider shrink-0">
+                  {course.kategori}
+                </span>
+                <CourseStatusBadge status={course.status} size="sm" />
+              </div>
+              <h1 className="text-lg sm:text-2xl font-extrabold text-slate-900 leading-snug truncate">
+                {course.judul}
+              </h1>
             </div>
-            <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 leading-snug">
-              {course.judul}
-            </h1>
           </div>
-        </div>
 
-        {isLocked && (
-          <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-100 border border-slate-200 text-xs font-semibold text-slate-700 w-fit">
-            <Lock size={14} className="text-[#843bab]" />
-            <span>Konten Terkunci ({course.status})</span>
-          </div>
-        )}
+          {isLocked && (
+            <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-slate-100 border border-slate-200 text-xs font-semibold text-slate-700 w-fit shrink-0 self-start sm:self-auto">
+              <Lock size={14} className="text-[#843bab]" />
+              <span>Konten Terkunci ({course.status})</span>
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Alert Notifikasi */}
-      {feedbackMsg && (
-        <div
-          className={`flex items-center gap-2.5 p-4 rounded-2xl text-sm font-medium border shadow-sm ${
-            feedbackMsg.type === 'success'
-              ? 'bg-emerald-50 border-emerald-200 text-emerald-900'
-              : 'bg-red-50 border-red-200 text-red-900'
-          }`}
-        >
+      {/* Main Content Workspace */}
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 space-y-6">
+        {/* Alert Notifikasi */}
+        {feedbackMsg && (
+          <div
+            className={`flex items-center gap-2.5 p-4 rounded-2xl text-sm font-medium border shadow-sm ${
+              feedbackMsg.type === 'success'
+                ? 'bg-emerald-50 border-emerald-200 text-emerald-900'
+                : 'bg-red-50 border-red-200 text-red-900'
+            }`}
+          >
           {feedbackMsg.type === 'success' ? (
             <CheckCircle2 size={18} className="text-emerald-600 shrink-0" />
           ) : (
@@ -792,6 +798,7 @@ export default function CourseEditor({ course }: Props) {
           )}
         </form>
       )}
+      </div>
     </div>
   );
 }
