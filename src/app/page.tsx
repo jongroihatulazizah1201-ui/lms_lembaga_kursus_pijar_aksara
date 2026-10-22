@@ -138,17 +138,8 @@ export default async function HomePage() {
                   <div className="absolute -right-2 top-3 w-0 h-0 border-y-[5px] border-y-transparent border-l-[8px] border-l-white/95 filter drop-shadow-[2px_0_1px_rgba(0,0,0,0.04)]" />
                 </div>
 
-                {/* Mockup iPhone 16 Asli (Ramping, Jenjang 19.5:9, Action Button, Camera Control, Dynamic Island) */}
+                {/* Mockup iPhone 16 Asli (Ramping, Jenjang 19.5:9, Dynamic Island, Bodi Mulus Tanpa Tonjolan Tombol) */}
                 <div className="relative w-[230px] sm:w-[240px] h-[465px] sm:h-[480px] rounded-[48px] p-[6px] bg-gradient-to-b from-slate-600 via-slate-800 to-slate-950 shadow-[0_25px_60px_-12px_rgba(0,0,0,0.7),0_0_0_1px_rgba(255,255,255,0.22)]">
-                  {/* Sisi Kiri iPhone 16: Action Button + Volume Up + Volume Down */}
-                  <div className="absolute -left-[4px] top-14 w-[3.5px] h-3.5 bg-slate-400 rounded-l" title="Action Button" />
-                  <div className="absolute -left-[4px] top-21 w-[3.5px] h-9 bg-slate-400 rounded-l" title="Volume Up" />
-                  <div className="absolute -left-[4px] top-33 w-[3.5px] h-9 bg-slate-400 rounded-l" title="Volume Down" />
-
-                  {/* Sisi Kanan iPhone 16: Power Button + Camera Control Baru khas iPhone 16 */}
-                  <div className="absolute -right-[4px] top-20 w-[3.5px] h-12 bg-slate-400 rounded-r" title="Side Button" />
-                  <div className="absolute -right-[3.5px] bottom-24 w-[3px] h-10 bg-slate-500 rounded-r border-r border-slate-300" title="Camera Control iPhone 16" />
-
                   {/* Bezel Hitam & Layar Kaca iPhone 16 */}
                   <div className="relative h-full rounded-[42px] overflow-hidden bg-slate-50 border-[2.5px] border-slate-950 shadow-inner flex flex-col justify-between select-none text-left">
                     {/* Dynamic Island Khas iPhone 16 */}
