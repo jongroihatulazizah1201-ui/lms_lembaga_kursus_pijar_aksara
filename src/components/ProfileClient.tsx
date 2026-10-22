@@ -180,26 +180,31 @@ export default function ProfileClient({ profile }: Props) {
   const effectiveAvatar = isRemoveAvatar ? null : previewAvatarUrl || currentAvatarUrl;
 
   return (
-    <div className="min-h-screen bg-slate-50/60 pb-20 pt-6 sm:pt-8">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 space-y-6">
-        {/* Navigasi Header */}
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <Link
-              href={
-                profile.peran === 'admin'
-                  ? '/admin'
-                  : profile.peran === 'instruktur'
-                  ? '/instruktur'
-                  : '/kursus-saya'
-              }
-              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl border border-slate-200 hover:border-slate-300 text-slate-700 hover:text-slate-900 bg-white shadow-2xs text-xs font-bold transition-all"
-            >
-              <ArrowLeft size={16} />
-              <span>Kembali ke Beranda</span>
-            </Link>
-          </div>
+    <div className="min-h-screen bg-slate-50/60 pb-20 text-slate-900">
+      {/* Navigasi Header Sticky: Tetap Stay di Atas Saat Di-scroll */}
+      <header className="sticky top-[57px] lg:top-0 z-20 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs transition-all">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
+          <Link
+            href={
+              profile.peran === 'admin'
+                ? '/admin'
+                : profile.peran === 'instruktur'
+                ? '/instruktur'
+                : '/kursus-saya'
+            }
+            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl border border-slate-200 hover:border-slate-300 text-slate-700 hover:text-slate-900 bg-white shadow-2xs text-xs font-bold transition-all hover:bg-slate-50 cursor-pointer"
+            title="Kembali ke Beranda"
+          >
+            <ArrowLeft size={16} />
+            <span>Kembali ke Beranda</span>
+          </Link>
+          <span className="text-xs font-semibold text-slate-400 hidden sm:inline">
+            Pengaturan Akun & Profil Pengguna
+          </span>
         </div>
+      </header>
+
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-6 space-y-6">
 
         {/* Banner Judul Halaman */}
         <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-8">
