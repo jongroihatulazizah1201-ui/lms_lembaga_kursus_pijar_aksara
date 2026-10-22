@@ -16,7 +16,6 @@ import {
   ChevronRight,
   ExternalLink,
   Printer,
-  ShieldCheck,
   GraduationCap,
   Info,
   Clock,
@@ -76,15 +75,13 @@ export interface AdminDashboardData {
 interface AdminDashboardViewProps {
   initialData: AdminDashboardData;
   currentRange: string;
-  adminName: string;
-  adminEmail: string;
+  adminName?: string;
+  adminEmail?: string;
 }
 
 export default function AdminDashboardView({
   initialData,
   currentRange,
-  adminName,
-  adminEmail,
 }: AdminDashboardViewProps) {
   const router = useRouter();
   const [hoveredWeekIdx, setHoveredWeekIdx] = useState<number | null>(null);
@@ -180,26 +177,6 @@ export default function AdminDashboardView({
          ========================================================================= */}
       <section className="bg-gradient-to-b from-purple-50/80 via-white to-slate-50/50 border-b border-slate-200 pt-8 pb-10 print:bg-white print:border-none print:py-4">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Breadcrumb & Admin identity */}
-          <div className="flex flex-wrap items-center justify-between gap-3 mb-4 print:hidden">
-            <div className="flex items-center gap-2 text-xs font-medium text-slate-500">
-              <Link href="/" className="hover:text-[#843bab] transition-colors">
-                Beranda
-              </Link>
-              <span>/</span>
-              <Link href="/admin" className="hover:text-[#843bab] transition-colors">
-                Panel Administrator
-              </Link>
-              <span>/</span>
-              <span className="text-[#843bab] font-bold">Dashboard Statistik (Bagian 9)</span>
-            </div>
-
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-purple-50 text-[#843bab] border border-purple-200 shadow-2xs">
-              <ShieldCheck size={13} className="text-[#843bab]" />
-              Administrator: {adminName} ({adminEmail})
-            </span>
-          </div>
-
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
             <div className="space-y-2 max-w-2xl">
               <div>
