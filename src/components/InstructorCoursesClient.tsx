@@ -43,7 +43,7 @@ interface Props {
   initialCourses: InstructorCourseItem[];
   profile: {
     nama_lengkap: string;
-    email: string;
+    email?: string;
   };
 }
 
@@ -204,12 +204,13 @@ export default function InstructorCoursesClient({ initialCourses, profile }: Pro
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6">
             <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <span className="text-[11px] font-extrabold px-3 py-1 rounded-full bg-[#843bab]/10 text-[#843bab] uppercase tracking-wider border border-[#843bab]/20">
-                  Panel Instruktur
+              <div className="flex flex-wrap items-center gap-2.5">
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-extrabold px-3 py-1 rounded-full bg-[#843bab]/10 text-[#843bab] uppercase tracking-wider border border-[#843bab]/20">
+                  <BookOpen size={13} />
+                  <span>Panel Instruktur</span>
                 </span>
-                <span className="text-xs text-slate-500 font-medium">
-                  {profile.email}
+                <span className="text-xs text-slate-600 font-medium">
+                  Selamat Datang, <strong className="font-bold text-slate-900">{profile.nama_lengkap || 'Instruktur'}</strong>
                 </span>
               </div>
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 tracking-tight">
