@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { BookOpen, GraduationCap, LayoutDashboard, UserCircle, LogIn, Award } from 'lucide-react';
+import { BookOpen, GraduationCap, LayoutDashboard, UserCircle, LogIn, Award, Home } from 'lucide-react';
 
 interface Props {
   user: {
@@ -35,9 +35,6 @@ export default function MobileBottomNav({ user, profile }: Props) {
     }
     if (path === '/instruktur') {
       return pathname.startsWith('/instruktur');
-    }
-    if (path === '/sertifikat/cek') {
-      return pathname.startsWith('/sertifikat');
     }
     return pathname === path;
   };
@@ -97,15 +94,27 @@ export default function MobileBottomNav({ user, profile }: Props) {
             <LayoutDashboard size={20} className={isActive('/instruktur') ? 'stroke-[2.5]' : ''} />
             <span className="text-[11px] mt-1">Instruktur</span>
           </Link>
-        ) : (
+        ) : isPeserta ? (
           <Link
-            href="/sertifikat/cek"
+            href="/kursus-saya?tab=selesai"
             className={`flex flex-col items-center justify-center h-full min-h-[48px] py-1 transition-colors ${
-              isActive('/sertifikat/cek') ? 'text-[#843bab] font-semibold' : 'text-slate-500 hover:text-slate-900'
+              pathname === '/kursus-saya'
+                ? 'text-[#843bab] font-semibold'
+                : 'text-slate-500 hover:text-slate-900'
             }`}
           >
-            <Award size={20} className={isActive('/sertifikat/cek') ? 'stroke-[2.5]' : ''} />
+            <Award size={20} className={pathname === '/kursus-saya' ? 'stroke-[2.5]' : ''} />
             <span className="text-[11px] mt-1">Sertifikat</span>
+          </Link>
+        ) : (
+          <Link
+            href="/"
+            className={`flex flex-col items-center justify-center h-full min-h-[48px] py-1 transition-colors ${
+              isActive('/') ? 'text-[#843bab] font-semibold' : 'text-slate-500 hover:text-slate-900'
+            }`}
+          >
+            <Home size={20} className={isActive('/') ? 'stroke-[2.5]' : ''} />
+            <span className="text-[11px] mt-1">Beranda</span>
           </Link>
         )}
 

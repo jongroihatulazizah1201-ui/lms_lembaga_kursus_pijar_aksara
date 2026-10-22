@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState, useTransition } from 'react';
+import React, { useState, useEffect, useTransition } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import MyCourseCard, { EnrollmentItem } from './MyCourseCard';
 import { batalkanPendaftaranAction } from '@/app/kursus/actions';
 import {
@@ -31,7 +31,20 @@ type TabFilter = 'semua' | 'aktif' | 'menunggu_bayar' | 'selesai' | 'dibatalkan'
 
 export default function MyCoursesClient({ initialCourses, userProfile }: Props) {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<TabFilter>('semua');
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get('tab') as TabFilter | null;
+
+  const validTabs: TabFilter[] = ['semua', 'aktif', 'menunggu_bayar', 'selesai', 'dibatalkan'];
+  const [activeTab, setActiveTab] = useState<TabFilter>(
+    tabParam && validTabs.includes(tabParam) ? tabParam : 'semua'
+  );
+
+  useEffect(() => {
+    if (tabParam && validTabs.includes(tabParam)) {
+      setActiveTab(tabParam);
+    }
+  }, [tabParam]);
+
   const [searchQuery, setSearchQuery] = useState('');
   const [isPending, startTransition] = useTransition();
 

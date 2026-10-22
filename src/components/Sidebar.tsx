@@ -8,7 +8,6 @@ import { logoutAction } from '@/app/auth/actions';
 import {
   Home,
   BookOpen,
-  ShieldCheck,
   GraduationCap,
   CreditCard,
   FileEdit,
@@ -108,10 +107,9 @@ export default function Sidebar({ user, profile }: SidebarProps) {
         ],
       },
       {
-        title: 'Katalog & Informasi',
+        title: 'Katalog Publik',
         items: [
           { label: 'Katalog Kursus', href: '/kursus', icon: BookOpen },
-          { label: 'Verifikasi Sertifikat', href: '/sertifikat/cek', icon: ShieldCheck },
         ],
       },
     ];
@@ -143,10 +141,9 @@ export default function Sidebar({ user, profile }: SidebarProps) {
         ],
       },
       {
-        title: 'Katalog & Informasi',
+        title: 'Katalog Publik',
         items: [
           { label: 'Katalog Kursus', href: '/kursus', icon: BookOpen },
-          { label: 'Verifikasi Sertifikat', href: '/sertifikat/cek', icon: ShieldCheck },
         ],
       },
     ];
@@ -166,10 +163,9 @@ export default function Sidebar({ user, profile }: SidebarProps) {
         ],
       },
       {
-        title: 'Katalog & Informasi',
+        title: 'Katalog Publik',
         items: [
           { label: 'Katalog Kursus', href: '/kursus', icon: BookOpen },
-          { label: 'Verifikasi Sertifikat', href: '/sertifikat/cek', icon: ShieldCheck },
         ],
       },
     ];
@@ -180,7 +176,6 @@ export default function Sidebar({ user, profile }: SidebarProps) {
         title: 'Menu Utama Publik',
         items: [
           { label: 'Katalog Kursus', href: '/kursus', icon: BookOpen },
-          { label: 'Verifikasi Sertifikat', href: '/sertifikat/cek', icon: ShieldCheck },
           { label: 'Beranda Utama', href: '/', icon: Home },
         ],
       },
@@ -237,11 +232,6 @@ export default function Sidebar({ user, profile }: SidebarProps) {
     // 8. Katalog Kursus (/kursus) - Ketat: TIDAK BOLEH mencocokkan /kursus-saya!
     if (href === '/kursus') {
       return pathname === '/kursus' || pathname.startsWith('/kursus/');
-    }
-
-    // 9. Verifikasi Sertifikat (/sertifikat/cek)
-    if (href === '/sertifikat/cek') {
-      return pathname.startsWith('/sertifikat');
     }
 
     return pathname === href;
