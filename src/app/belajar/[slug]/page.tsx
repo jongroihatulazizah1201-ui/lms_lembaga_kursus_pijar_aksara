@@ -1,11 +1,11 @@
-import { redirect, notFound } from 'next/navigation';
+import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { createClient } from '@/lib/supabase/server';
 import LearningRoom from '@/components/LearningRoom';
-import { Lock, BookOpen, ArrowLeft, ShieldAlert } from 'lucide-react';
+import { BookOpen, ArrowLeft, ShieldAlert } from 'lucide-react';
 
-// Kebutuhan Non-Fungsional PRD Bagian 10: Ruang Belajar wajib noindex
+// Kebutuhan Non-Fungsional PRD: Ruang Belajar wajib noindex
 export const metadata: Metadata = {
   title: 'Ruang Belajar | Lembaga Kursus Pijar Aksara',
   description: 'Ruang belajar peserta untuk membaca materi, menonton video, dan mengerjakan kuis berurutan.',
@@ -26,7 +26,9 @@ export default async function RuangBelajarPage({ params, searchParams }: Props) 
   const initialUrutan = modul ? parseInt(modul, 10) : undefined;
 
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) {
     redirect(`/login?redirect=/belajar/${slug}`);
@@ -40,42 +42,33 @@ export default async function RuangBelajarPage({ params, searchParams }: Props) 
   // Jika ditolak oleh database (belum terdaftar aktif atau kursus tidak ditemukan)
   if (error || !modules || modules.length === 0) {
     return (
-      <div style={{
-        minHeight: '75vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '32px 16px'
-      }}>
-        <div className="glass-panel" style={{ padding: '48px 32px', textAlign: 'center', maxWidth: '520px' }}>
-          <div style={{
-            width: '64px',
-            height: '64px',
-            borderRadius: '50%',
-            backgroundColor: 'rgba(239, 68, 68, 0.12)',
-            color: '#f87171',
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginBottom: '20px'
-          }}>
+      <div className="min-h-[75vh] flex items-center justify-center p-6 bg-slate-50/50">
+        <div className="bg-white rounded-3xl border border-slate-200 p-8 sm:p-12 text-center max-w-lg shadow-sm space-y-4">
+          <div className="w-16 h-16 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center mx-auto">
             <ShieldAlert size={32} />
           </div>
 
-          <h2 style={{ fontSize: '1.4rem', color: '#ffffff', marginBottom: '10px' }}>
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-900">
             Akses Ruang Belajar Terbatas
           </h2>
 
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem', marginBottom: '28px', lineHeight: 1.6 }}>
-            {error?.message || 'Materi pembelajaran hanya dapat dibuka oleh peserta dengan pendaftaran berstatus aktif atau selesai (BR-08).'}
+          <p className="text-slate-600 text-sm leading-relaxed">
+            {error?.message ||
+              'Materi pembelajaran hanya dapat dibuka oleh peserta dengan pendaftaran berstatus aktif atau selesai (BR-08).'}
           </p>
 
-          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link href={`/kursus/${slug}`} className="btn btn-primary" style={{ padding: '10px 20px' }}>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center pt-3">
+            <Link
+              href={`/kursus/${slug}`}
+              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#843bab] hover:bg-[#722f96] text-white font-bold text-sm shadow-xs transition-all"
+            >
               <BookOpen size={16} />
               <span>Detail & Pendaftaran Kursus</span>
             </Link>
-            <Link href="/kursus-saya" className="btn btn-outline" style={{ padding: '10px 20px' }}>
+            <Link
+              href="/kursus-saya"
+              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl border border-slate-200 hover:border-slate-300 bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-sm transition-all"
+            >
               <ArrowLeft size={16} />
               <span>Kembali ke Kursus Saya</span>
             </Link>
@@ -88,12 +81,28 @@ export default async function RuangBelajarPage({ params, searchParams }: Props) 
   const kursusJudul = modules[0]?.kursus_judul || 'Ruang Belajar Kursus';
   const pendaftaranId = modules[0]?.pendaftaran_id;
 
+  // Ambil riwayat percobaan kuis untuk pendaftaran ini
+  const { data: quizAttempts } = await supabase
+    .from('percobaan_kuis')
+    .select('id, modul_id, nomor_percobaan, nilai, lulus, dibuat_pada')
+    .eq('pendaftaran_id', pendaftaranId)
+    .order('dibuat_pada', { ascending: true });
+
+  // Cek apakah sertifikat sudah terbit
+  const { data: certificate } = await supabase
+    .from('sertifikat')
+    .select('id, nomor_sertifikat')
+    .eq('pendaftaran_id', pendaftaranId)
+    .maybeSingle();
+
   return (
     <LearningRoom
       kursusSlug={slug}
       kursusJudul={kursusJudul}
       pendaftaranId={pendaftaranId}
       modules={modules}
+      quizAttempts={quizAttempts || []}
+      certificate={certificate || null}
       initialUrutan={initialUrutan}
     />
   );

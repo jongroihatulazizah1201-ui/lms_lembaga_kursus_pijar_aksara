@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState, useEffect, useTransition } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { tandaiMateriDibacaAction, getSignedPdfUrlAction } from '@/app/belajar/actions';
+import { getSoalKuisAction, submitKuisAction } from '@/app/belajar/kuis-actions';
 import {
   BookOpen,
   CheckCircle2,
@@ -17,11 +18,16 @@ import {
   Award,
   AlertCircle,
   HelpCircle,
+  RotateCcw,
+  Sparkles,
+  Loader2,
+  Check,
   ChevronRight,
-  ExternalLink
+  Printer,
+  XCircle,
 } from 'lucide-react';
 
-interface ModulItem {
+export interface ModulItem {
   pendaftaran_id: string;
   kursus_id: string;
   kursus_judul: string;
@@ -38,11 +44,36 @@ interface ModulItem {
   lulus_pada: string | null;
 }
 
+export interface QuizAttemptItem {
+  id: string;
+  modul_id: string;
+  nomor_percobaan: number;
+  nilai: number;
+  lulus: boolean;
+  dibuat_pada: string;
+}
+
+interface QuestionItem {
+  id: string;
+  modul_id: string;
+  urutan: number;
+  pertanyaan: string;
+  pilihan_a: string;
+  pilihan_b: string;
+  pilihan_c: string;
+  pilihan_d: string;
+}
+
 interface Props {
   kursusSlug: string;
   kursusJudul: string;
   pendaftaranId: string;
   modules: ModulItem[];
+  quizAttempts: QuizAttemptItem[];
+  certificate?: {
+    id: string;
+    nomor_sertifikat: string;
+  } | null;
   initialUrutan?: number;
 }
 
@@ -51,47 +82,105 @@ export default function LearningRoom({
   kursusJudul,
   pendaftaranId,
   modules,
+  quizAttempts: initialAttempts,
+  certificate,
   initialUrutan,
 }: Props) {
   const router = useRouter();
 
-  // Tentukan modul aktif awal: jika tidak ditentukan, pilih modul pertama yang 'terbuka', atau modul 1
-  const defaultModul = modules.find(m => m.status_akses === 'terbuka') || modules[0];
+  // Tentukan modul aktif default: modul pertama yang 'terbuka', atau modul 1
+  const defaultModul = modules.find((m) => m.status_akses === 'terbuka') || modules[0];
   const [activeUrutan, setActiveUrutan] = useState<number>(initialUrutan || defaultModul?.urutan || 1);
 
-  const [loadingAction, setLoadingAction] = useState(false);
+  // Tab aktif: 'materi' (Materi Bacaan & Video) atau 'kuis' (Kuis Evaluasi)
+  const [activeTab, setActiveTab] = useState<'materi' | 'kuis'>('materi');
+
+  // State Aksi Materi & PDF
+  const [loadingRead, setLoadingRead] = useState(false);
   const [downloadingPdf, setDownloadingPdf] = useState(false);
-  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [feedbackMsg, setFeedbackMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-  const activeModule = modules.find(m => m.urutan === activeUrutan) || modules[0];
+  // State Kuis
+  const [questionsCache, setQuestionsCache] = useState<Record<string, QuestionItem[]>>({});
+  const [loadingQuestions, setLoadingQuestions] = useState(false);
+  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [submittingQuiz, setSubmittingQuiz] = useState(false);
+  const [quizError, setQuizError] = useState<string | null>(null);
+  const [latestQuizResult, setLatestQuizResult] = useState<{
+    nomor_percobaan: number;
+    jumlah_soal: number;
+    jumlah_benar: number;
+    nilai: number;
+    nilai_lulus: number;
+    lulus: boolean;
+    sisa_percobaan: number;
+    semua_modul_selesai: boolean;
+  } | null>(null);
+
+  // Modul aktif saat ini
+  const activeModule = modules.find((m) => m.urutan === activeUrutan) || modules[0];
   const isLocked = activeModule?.status_akses === 'terkunci';
   const isPassed = activeModule?.status_akses === 'lulus';
   const isRead = !!activeModule?.materi_dibaca_pada;
 
-  // Handle pindah modul
+  // Riwayat percobaan kuis modul aktif
+  const moduleAttempts = initialAttempts.filter((a) => a.modul_id === activeModule?.modul_id);
+  const totalAttemptsMade = moduleAttempts.length;
+  const highestScore = moduleAttempts.length > 0 ? Math.max(...moduleAttempts.map((a) => a.nilai)) : null;
+  const sisaPercobaan = Math.max(0, 3 - totalAttemptsMade);
+
+  // Ringkasan progres kursus
+  const totalLulus = modules.filter((m) => m.status_akses === 'lulus').length;
+  const progressPercent = Math.min(100, Math.round((totalLulus / modules.length) * 100));
+
+  // Ambil soal kuis ketika user berpindah ke tab 'kuis'
+  useEffect(() => {
+    if (activeTab === 'kuis' && activeModule && !isLocked) {
+      const modulId = activeModule.modul_id;
+      if (!questionsCache[modulId]) {
+        setLoadingQuestions(true);
+        setQuizError(null);
+        getSoalKuisAction(modulId).then((res) => {
+          setLoadingQuestions(false);
+          if (res?.error) {
+            setQuizError(res.error);
+          } else if (res?.soal) {
+            setQuestionsCache((prev) => ({
+              ...prev,
+              [modulId]: res.soal,
+            }));
+          }
+        });
+      }
+    }
+  }, [activeTab, activeModule, isLocked, questionsCache]);
+
+  // Handle pilih modul dari sidebar
   const handleSelectModule = (urutan: number) => {
-    const target = modules.find(m => m.urutan === urutan);
+    const target = modules.find((m) => m.urutan === urutan);
     if (target?.status_akses === 'terkunci') {
       setFeedbackMsg({
         type: 'error',
-        text: `Modul ${urutan} masih terkunci. Anda harus lulus kuis modul sebelumnya terlebih dahulu (BR-08).`,
+        text: `Modul ${urutan} masih terkunci. Anda harus menyelesaikan dan lulus kuis pada modul sebelumnya terlebih dahulu (BR-08).`,
       });
       return;
     }
     setActiveUrutan(urutan);
+    setActiveTab('materi');
     setFeedbackMsg(null);
-    setPdfUrl(null);
+    setQuizError(null);
+    setLatestQuizResult(null);
+    setAnswers({});
   };
 
   // Handle Tandai Materi Sudah Dibaca (BR-08)
   const handleMarkAsRead = async () => {
     if (!activeModule) return;
-    setLoadingAction(true);
+    setLoadingRead(true);
     setFeedbackMsg(null);
 
     const res = await tandaiMateriDibacaAction(pendaftaranId, activeModule.modul_id, kursusSlug);
-    setLoadingAction(false);
+    setLoadingRead(false);
 
     if (res?.error) {
       setFeedbackMsg({ type: 'error', text: res.error });
@@ -104,7 +193,7 @@ export default function LearningRoom({
     }
   };
 
-  // Handle Unduh PDF via Signed URL 60 menit (BR Bagian 10 Poin 4)
+  // Handle Unduh Dokumen PDF (Signed URL 60 menit)
   const handleDownloadPdf = async () => {
     if (!activeModule?.lampiran_path) return;
     setDownloadingPdf(true);
@@ -113,14 +202,47 @@ export default function LearningRoom({
     setDownloadingPdf(false);
 
     if (res?.success && res.signedUrl) {
-      setPdfUrl(res.signedUrl);
       window.open(res.signedUrl, '_blank');
     } else {
       alert('Gagal mengambil tautan unduh dokumen PDF.');
     }
   };
 
-  // Helper untuk embed YouTube jika ada video_url
+  // Handle Pilih Opsi Jawaban Kuis
+  const handleSelectOption = (soalId: string, choice: string) => {
+    setAnswers((prev) => ({
+      ...prev,
+      [soalId]: choice,
+    }));
+    setQuizError(null);
+  };
+
+  // Handle Submit Kuis
+  const handleSubmitQuiz = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setQuizError(null);
+
+    const currentQuestions = questionsCache[activeModule.modul_id] || [];
+    const answeredCount = Object.keys(answers).length;
+
+    if (answeredCount < currentQuestions.length) {
+      setQuizError(`Harap jawab seluruh ${currentQuestions.length} soal kuis sebelum mengirimkan jawaban.`);
+      return;
+    }
+
+    setSubmittingQuiz(true);
+    const res = await submitKuisAction(pendaftaranId, activeModule.modul_id, answers, kursusSlug);
+    setSubmittingQuiz(false);
+
+    if (res?.error) {
+      setQuizError(res.error);
+    } else if (res?.hasil) {
+      setLatestQuizResult(res.hasil);
+      router.refresh();
+    }
+  };
+
+  // Helper Embed YouTube
   const getEmbedVideoUrl = (url: string | null) => {
     if (!url) return null;
     if (url.includes('youtube.com/watch?v=')) {
@@ -135,445 +257,710 @@ export default function LearningRoom({
   };
 
   const embedUrl = getEmbedVideoUrl(activeModule?.video_url);
+  const activeQuestions = questionsCache[activeModule?.modul_id] || [];
 
   return (
-    <div style={{ minHeight: '85vh', display: 'flex', flexDirection: 'column' }}>
-      {/* Top Header Navigation Bar */}
-      <section style={{
-        backgroundColor: 'rgba(18, 26, 43, 0.75)',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
-        padding: '16px 0',
-        backdropFilter: 'blur(12px)',
-        position: 'sticky',
-        top: '74px',
-        zIndex: 40
-      }}>
-        <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <div className="min-h-screen bg-slate-50/50 pb-24">
+      {/* =========================================================
+          1. TOP STICKY APP BAR: Navigasi, Judul Kursus & Progres
+         ========================================================= */}
+      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-2xs">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-18 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3 min-w-0">
             <Link
               href="/kursus-saya"
-              className="btn btn-outline"
-              style={{ padding: '6px 12px', fontSize: '0.82rem' }}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 hover:border-slate-300 text-slate-700 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 text-xs font-bold transition-all shrink-0"
+              title="Kembali ke Kursus Saya"
             >
               <ArrowLeft size={15} />
-              <span>Kembali ke Kursus Saya</span>
+              <span className="hidden sm:inline">Kursus Saya</span>
             </Link>
-            <div>
-              <div style={{ fontSize: '0.74rem', color: 'var(--text-dim)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                Ruang Belajar & Kurikulum Berurutan
+
+            <div className="min-w-0">
+              <div className="text-[10px] sm:text-xs font-bold text-[#843bab] uppercase tracking-wider truncate">
+                Ruang Belajar Vokasi
               </div>
-              <h2 style={{ fontSize: '1.15rem', color: '#ffffff', margin: 0, fontWeight: 700 }}>
+              <h1 className="text-sm sm:text-base font-extrabold text-slate-900 truncate">
                 {kursusJudul}
-              </h2>
+              </h1>
             </div>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <span className="badge badge-primary" style={{ padding: '6px 12px', fontSize: '0.8rem' }}>
-              Modul {activeModule?.urutan} dari {modules.length}
-            </span>
+          {/* Progres Belajar Header Capsule */}
+          <div className="flex items-center gap-3 shrink-0">
+            <div className="hidden md:flex flex-col items-end text-xs">
+              <span className="font-bold text-slate-800">
+                {totalLulus} dari {modules.length} Modul Lulus
+              </span>
+              <span className="text-[11px] text-slate-500">{progressPercent}% Selesai</span>
+            </div>
+
+            <div className="w-16 sm:w-24 h-2 bg-slate-200 rounded-full overflow-hidden hidden sm:block">
+              <div
+                className="h-full bg-gradient-to-r from-[#843bab] to-purple-500 rounded-full transition-all duration-500"
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
+
+            {certificate?.id && (
+              <Link
+                href={`/sertifikat/${pendaftaranId}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-2xs transition-all"
+              >
+                <Award size={14} />
+                <span className="hidden sm:inline">Lihat Sertifikat</span>
+              </Link>
+            )}
           </div>
         </div>
-      </section>
+      </header>
 
-      {/* Main Workspace Layout (Sidebar + Content Reader) */}
-      <div className="container" style={{ flex: 1, padding: '32px 0 80px 0' }}>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'minmax(280px, 340px) 1fr',
-          gap: '32px',
-          alignItems: 'flex-start'
-        }}>
-          {/* Left Sidebar: Sequential Modules List (BR-08) */}
-          <aside className="glass-panel" style={{ padding: '24px', position: 'sticky', top: '160px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <h3 style={{ fontSize: '1rem', color: '#ffffff', fontWeight: 700, margin: 0 }}>
-                Daftar Modul
-              </h3>
-              <span style={{ fontSize: '0.78rem', color: 'var(--text-dim)' }}>
-                {modules.filter(m => m.status_akses === 'lulus').length}/{modules.length} Lulus
-              </span>
-            </div>
+      {/* =========================================================
+          2. MAIN WORKSPACE: Sidebar (Daftar Modul) + Main Reader
+         ========================================================= */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-6 sm:pt-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          {/* =========================================================
+              KOLOM KIRI (SIDEBAR): DAFTAR MODUL (TERKUNCI / TERBUKA)
+             ========================================================= */}
+          <aside className="lg:col-span-4 lg:sticky lg:top-24 space-y-4">
+            <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                  <BookOpen size={16} className="text-[#843bab]" />
+                  <span>Daftar Modul</span>
+                </h2>
+                <span className="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-purple-50 text-[#843bab] border border-purple-200">
+                  {totalLulus}/{modules.length} Lulus
+                </span>
+              </div>
 
-            <p style={{ fontSize: '0.78rem', color: 'var(--text-dim)', marginBottom: '18px', lineHeight: 1.4 }}>
-              Sesuai <strong>BR-08</strong>: Modul terbuka berurutan. Selesaikan materi & kuis untuk membuka modul berikutnya.
-            </p>
+              <p className="text-xs text-slate-500 leading-relaxed mb-4">
+                Sesuai aturan <strong>BR-08</strong>: Modul terbuka berurutan. Selesaikan materi &amp; kuis untuk membuka modul berikutnya.
+              </p>
 
-            {/* Modules List Items */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {modules.map((m) => {
-                const isActive = m.urutan === activeUrutan;
-                const mLocked = m.status_akses === 'terkunci';
-                const mPassed = m.status_akses === 'lulus';
+              {/* List of Modules */}
+              <div className="space-y-2">
+                {modules.map((m) => {
+                  const isActive = m.urutan === activeUrutan;
+                  const mLocked = m.status_akses === 'terkunci';
+                  const mPassed = m.status_akses === 'lulus';
 
-                return (
-                  <button
-                    key={m.modul_id}
-                    onClick={() => handleSelectModule(m.urutan)}
-                    style={{
-                      width: '100%',
-                      textAlign: 'left',
-                      padding: '12px 14px',
-                      borderRadius: 'var(--radius-md)',
-                      backgroundColor: isActive
-                        ? 'rgba(59, 130, 246, 0.16)'
-                        : mLocked
-                        ? 'rgba(255, 255, 255, 0.01)'
-                        : 'rgba(255, 255, 255, 0.04)',
-                      border: `1px solid ${
+                  // Ambil riwayat percobaan untuk modul ini
+                  const attemptsForModul = initialAttempts.filter((a) => a.modul_id === m.modul_id);
+                  const maxScore = attemptsForModul.length > 0 ? Math.max(...attemptsForModul.map((a) => a.nilai)) : null;
+
+                  return (
+                    <button
+                      key={m.modul_id}
+                      type="button"
+                      onClick={() => handleSelectModule(m.urutan)}
+                      className={`w-full text-left p-3.5 rounded-xl border transition-all flex items-center justify-between gap-3 cursor-pointer ${
                         isActive
-                          ? 'var(--primary)'
+                          ? 'bg-purple-50/70 border-[#843bab] ring-1 ring-[#843bab]/30 shadow-xs'
                           : mLocked
-                          ? 'rgba(255, 255, 255, 0.04)'
-                          : 'rgba(255, 255, 255, 0.08)'
-                      }`,
-                      cursor: mLocked ? 'not-allowed' : 'pointer',
-                      opacity: mLocked ? 0.5 : 1,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      gap: '12px',
-                      transition: 'all 0.2s ease'
-                    }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
-                      <div style={{
-                        width: '28px',
-                        height: '28px',
-                        borderRadius: '8px',
-                        backgroundColor: mPassed
-                          ? 'rgba(16, 185, 129, 0.2)'
-                          : isActive
-                          ? 'var(--primary)'
-                          : 'rgba(255, 255, 255, 0.08)',
-                        color: '#ffffff',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: '0.8rem',
-                        fontWeight: 700,
-                        flexShrink: 0
-                      }}>
-                        {m.urutan}
-                      </div>
-                      <div style={{ minWidth: 0 }}>
-                        <div style={{
-                          fontSize: '0.86rem',
-                          fontWeight: isActive ? 600 : 500,
-                          color: isActive ? '#ffffff' : 'var(--text-muted)',
-                          whiteSpace: 'nowrap',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis'
-                        }}>
-                          {m.judul}
+                          ? 'bg-slate-50/60 border-slate-200/60 opacity-60 cursor-not-allowed'
+                          : 'bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        {/* Number badge / status icon */}
+                        <div
+                          className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-black shrink-0 ${
+                            mPassed
+                              ? 'bg-emerald-500 text-white'
+                              : isActive
+                              ? 'bg-[#843bab] text-white'
+                              : mLocked
+                              ? 'bg-slate-200 text-slate-400'
+                              : 'bg-slate-100 text-slate-700'
+                          }`}
+                        >
+                          {mPassed ? <Check size={14} strokeWidth={3} /> : mLocked ? <Lock size={12} /> : m.urutan}
                         </div>
-                        <div style={{ fontSize: '0.72rem', color: 'var(--text-dim)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <Clock size={11} />
-                          <span>{m.durasi_menit} menit</span>
-                        </div>
-                      </div>
-                    </div>
 
-                    {/* Status Icon */}
-                    <div style={{ flexShrink: 0 }}>
-                      {mPassed ? (
-                        <CheckCircle2 size={16} color="#34d399" />
-                      ) : mLocked ? (
-                        <Lock size={15} color="var(--text-dim)" />
-                      ) : (
-                        <BookOpen size={15} color="#60a5fa" />
-                      )}
-                    </div>
-                  </button>
-                );
-              })}
+                        <div className="min-w-0">
+                          <div
+                            className={`text-xs font-bold truncate leading-snug ${
+                              isActive ? 'text-slate-900 font-extrabold' : 'text-slate-700'
+                            }`}
+                          >
+                            Modul {m.urutan}: {m.judul}
+                          </div>
+                          <div className="flex items-center gap-2 text-[11px] text-slate-500 mt-0.5">
+                            <span className="flex items-center gap-1">
+                              <Clock size={11} />
+                              {m.durasi_menit} mnt
+                            </span>
+                            {mPassed && maxScore !== null && (
+                              <span className="text-emerald-700 font-bold">
+                                Nilai: {maxScore}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Right indicator badge */}
+                      <div className="shrink-0">
+                        {mPassed ? (
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200">
+                            Lulus
+                          </span>
+                        ) : mLocked ? (
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 border border-slate-200">
+                            Terkunci
+                          </span>
+                        ) : (
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-purple-50 text-[#843bab] border border-purple-200">
+                            Aktif
+                          </span>
+                        )}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </aside>
 
-          {/* Right Main Content Area: Material Reader */}
-          <main style={{ minWidth: 0 }}>
+          {/* =========================================================
+              KOLOM KANAN (MAIN CONTENT): TAB MATERI & TAB KUIS
+             ========================================================= */}
+          <main className="lg:col-span-8 space-y-6">
+            {/* Feedback Alert Banner */}
             {feedbackMsg && (
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '10px',
-                padding: '14px 18px',
-                borderRadius: 'var(--radius-md)',
-                backgroundColor: feedbackMsg.type === 'success' ? 'rgba(16, 185, 129, 0.12)' : 'var(--danger-bg)',
-                border: `1px solid ${feedbackMsg.type === 'success' ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`,
-                color: feedbackMsg.type === 'success' ? '#34d399' : '#f87171',
-                fontSize: '0.88rem',
-                marginBottom: '24px'
-              }}>
-                {feedbackMsg.type === 'success' ? <CheckCircle2 size={18} /> : <AlertCircle size={18} />}
-                <span>{feedbackMsg.text}</span>
+              <div
+                className={`p-4 rounded-2xl border text-sm flex items-center justify-between shadow-2xs ${
+                  feedbackMsg.type === 'success'
+                    ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+                    : 'bg-rose-50 border-rose-200 text-rose-800'
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  {feedbackMsg.type === 'success' ? (
+                    <CheckCircle2 size={18} className="text-emerald-600 shrink-0" />
+                  ) : (
+                    <AlertCircle size={18} className="text-rose-600 shrink-0" />
+                  )}
+                  <span>{feedbackMsg.text}</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setFeedbackMsg(null)}
+                  className="text-xs font-bold hover:underline shrink-0 ml-3"
+                >
+                  Tutup
+                </button>
               </div>
             )}
 
             {isLocked ? (
-              /* Locked State Card (BR-08) */
-              <div className="glass-panel" style={{ padding: '64px 32px', textAlign: 'center' }}>
-                <div style={{
-                  width: '64px',
-                  height: '64px',
-                  borderRadius: '50%',
-                  backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                  color: '#f87171',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginBottom: '20px'
-                }}>
+              /* =========================================================
+                  KONTEN TERKUNCI (BR-08)
+                 ========================================================= */
+              <div className="bg-white rounded-3xl border border-slate-200 p-8 sm:p-12 text-center shadow-xs space-y-4">
+                <div className="w-16 h-16 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto">
                   <Lock size={32} />
                 </div>
-                <h3 style={{ fontSize: '1.4rem', color: '#ffffff', marginBottom: '10px' }}>
+                <h3 className="text-xl font-bold text-slate-900">
                   Modul {activeModule.urutan} Masih Terkunci
                 </h3>
-                <p style={{ color: 'var(--text-muted)', fontSize: '0.94rem', maxWidth: '480px', margin: '0 auto 24px auto', lineHeight: 1.6 }}>
-                  Sesuai aturan bisnis <strong>BR-08</strong>, modul ini hanya akan terbuka setelah Anda menyelesaikan dan lulus kuis pada Modul {activeModule.urutan - 1}.
+                <p className="text-sm text-slate-600 max-w-md mx-auto leading-relaxed">
+                  Sesuai aturan kurikulum vokasi berstandar industri (<strong>BR-08</strong>), modul ini akan terbuka otomatis setelah Anda lulus kuis pada Modul {activeModule.urutan - 1}.
                 </p>
                 <button
+                  type="button"
                   onClick={() => handleSelectModule(activeModule.urutan - 1)}
-                  className="btn btn-primary"
-                  style={{ padding: '10px 20px', justifyContent: 'center' }}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#843bab] hover:bg-[#722f96] text-white text-xs font-bold shadow-xs transition-all cursor-pointer"
                 >
-                  <ArrowLeft size={16} />
+                  <ArrowLeft size={14} />
                   <span>Kembali ke Modul {activeModule.urutan - 1}</span>
                 </button>
               </div>
             ) : (
-              /* Unlocked Content View */
-              <div className="glass-panel" style={{ padding: '36px' }}>
-                {/* Module Heading */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px', marginBottom: '24px' }}>
-                  <div>
-                    <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              /* =========================================================
+                  KONTEN TERBUKA / AKTIF (TAB MATERI & TAB KUIS)
+                 ========================================================= */
+              <div className="bg-white rounded-3xl border border-slate-200 shadow-xs overflow-hidden">
+                {/* Header Modul & Switcher Tab */}
+                <div className="p-6 sm:p-8 pb-4 border-b border-slate-100">
+                  <div className="flex items-center justify-between gap-3 flex-wrap mb-2">
+                    <span className="text-[11px] font-extrabold uppercase tracking-wider px-3 py-1 rounded-md bg-[#843bab]/10 text-[#843bab] border border-[#843bab]/20">
                       Modul {activeModule.urutan}
                     </span>
-                    <h1 style={{ fontSize: 'clamp(1.5rem, 2.5vw, 2rem)', color: '#ffffff', margin: '4px 0 8px 0', lineHeight: 1.3 }}>
-                      {activeModule.judul}
-                    </h1>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '14px', fontSize: '0.84rem', color: 'var(--text-dim)' }}>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                        <Clock size={14} />
-                        Estimasi {activeModule.durasi_menit} Menit
-                      </span>
-                      <span>&bull;</span>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                        <BookOpen size={14} />
-                        Materi Bacaan Teks
-                      </span>
-                      {activeModule.video_url && (
-                        <>
-                          <span>&bull;</span>
-                          <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                            <Video size={14} color="#60a5fa" />
-                            Video Pembelajaran
-                          </span>
-                        </>
+
+                    <div className="flex items-center gap-2">
+                      {isPassed ? (
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                          <CheckCircle2 size={13} className="text-emerald-600" />
+                          Modul Telah Lulus
+                        </span>
+                      ) : isRead ? (
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-purple-50 text-[#843bab] border border-purple-200">
+                          <CheckCircle2 size={13} className="text-[#843bab]" />
+                          Materi Telah Dibaca
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium text-slate-500 bg-slate-100 border border-slate-200">
+                          Belum Ditandai Dibaca
+                        </span>
                       )}
                     </div>
                   </div>
 
-                  {isPassed ? (
-                    <span className="badge badge-success" style={{ padding: '6px 12px' }}>
-                      <CheckCircle2 size={14} />
-                      Kuis Modul Telah Lulus
-                    </span>
-                  ) : isRead ? (
-                    <span className="badge badge-primary" style={{ padding: '6px 12px' }}>
-                      <CheckCircle2 size={14} />
-                      Materi Telah Dibaca
-                    </span>
-                  ) : null}
-                </div>
+                  <h2 className="text-xl sm:text-2xl font-black text-slate-900 leading-snug mb-4">
+                    {activeModule.judul}
+                  </h2>
 
-                {/* Video Embed (if available) */}
-                {embedUrl && (
-                  <div style={{
-                    marginBottom: '32px',
-                    borderRadius: 'var(--radius-md)',
-                    overflow: 'hidden',
-                    backgroundColor: '#000000',
-                    border: '1px solid rgba(255, 255, 255, 0.08)'
-                  }}>
-                    <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0 }}>
-                      <iframe
-                        src={embedUrl}
-                        title={activeModule.judul}
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                        style={{
-                          position: 'absolute',
-                          top: 0,
-                          left: 0,
-                          width: '100%',
-                          height: '100%',
-                          border: 'none'
-                        }}
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {/* Text Material Content */}
-                <div style={{
-                  padding: '24px 0',
-                  borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-                  borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
-                  marginBottom: '32px'
-                }}>
-                  <h3 style={{ fontSize: '1.2rem', color: '#ffffff', marginBottom: '16px' }}>
-                    Isi Materi Pembelajaran
-                  </h3>
-                  <div style={{
-                    fontSize: '1rem',
-                    color: 'var(--text-muted)',
-                    lineHeight: 1.85,
-                    whiteSpace: 'pre-line'
-                  }}>
-                    {activeModule.isi_materi || 'Materi sedang disiapkan oleh instruktur.'}
-                  </div>
-                </div>
-
-                {/* PDF Attachment Download Card (BR-08 & Non-Functional Point 4) */}
-                {activeModule.lampiran_path && (
-                  <div style={{
-                    padding: '20px',
-                    borderRadius: 'var(--radius-md)',
-                    backgroundColor: 'rgba(59, 130, 246, 0.06)',
-                    border: '1px solid rgba(59, 130, 246, 0.2)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    flexWrap: 'wrap',
-                    gap: '16px',
-                    marginBottom: '32px'
-                  }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                      <div style={{
-                        width: '42px',
-                        height: '42px',
-                        borderRadius: '10px',
-                        backgroundColor: 'rgba(59, 130, 246, 0.15)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: 'var(--primary)'
-                      }}>
-                        <FileText size={22} />
-                      </div>
-                      <div>
-                        <div style={{ fontWeight: 600, color: '#ffffff', fontSize: '0.94rem' }}>
-                          Bahan Bacaan & Dokumen Modul (PDF)
-                        </div>
-                        <div style={{ fontSize: '0.78rem', color: 'var(--text-dim)', marginTop: '2px' }}>
-                          Tautan unduh aman bertenggat waktu 60 menit (Kebutuhan Non-Fungsional Poin 4)
-                        </div>
-                      </div>
-                    </div>
+                  {/* Navigasi Tab: 1. Materi & Video | 2. Kuis Evaluasi */}
+                  <div className="flex items-center gap-3 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab('materi')}
+                      className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+                        activeTab === 'materi'
+                          ? 'bg-[#843bab] text-white shadow-xs'
+                          : 'bg-slate-100 text-slate-600 hover:text-slate-900 hover:bg-slate-200/80'
+                      }`}
+                    >
+                      <BookOpen size={16} />
+                      <span>Materi &amp; Video</span>
+                    </button>
 
                     <button
-                      onClick={handleDownloadPdf}
-                      disabled={downloadingPdf}
-                      className="btn btn-outline"
-                      style={{ padding: '8px 16px', fontSize: '0.86rem', borderColor: 'var(--primary)', color: '#60a5fa' }}
+                      type="button"
+                      onClick={() => setActiveTab('kuis')}
+                      className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+                        activeTab === 'kuis'
+                          ? 'bg-[#843bab] text-white shadow-xs'
+                          : 'bg-slate-100 text-slate-600 hover:text-slate-900 hover:bg-slate-200/80'
+                      }`}
                     >
-                      <Download size={15} />
-                      <span>{downloadingPdf ? 'Mengambil Tautan...' : 'Unduh File PDF'}</span>
+                      <Award size={16} />
+                      <span>Kuis Evaluasi Modul</span>
+                      {isPassed && (
+                        <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                      )}
                     </button>
                   </div>
-                )}
+                </div>
 
-                {/* Completion & Next Action Area (BR-08) */}
-                <div style={{
-                  padding: '28px',
-                  borderRadius: 'var(--radius-md)',
-                  backgroundColor: 'rgba(255, 255, 255, 0.03)',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '18px'
-                }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
-                    <div>
-                      <h4 style={{ fontSize: '1.05rem', color: '#ffffff', margin: '0 0 4px 0' }}>
-                        Langkah Selanjutnya: Evaluasi Pemahaman
-                      </h4>
-                      <p style={{ fontSize: '0.84rem', color: 'var(--text-dim)', margin: 0 }}>
-                        {isPassed
-                          ? 'Anda telah berhasil lulus kuis modul ini.'
-                          : isRead
-                          ? 'Materi telah selesai dibaca. Silakan mulai kuis modul di bawah ini.'
-                          : 'Sesuai BR-08: Anda wajib menandai materi sudah dibaca sebelum dapat membuka kuis.'}
-                      </p>
+                {/* =========================================================
+                    TAB 1: MATERI, VIDEO & LAMPIRAN PDF
+                   ========================================================= */}
+                {activeTab === 'materi' && (
+                  <div className="p-6 sm:p-8 space-y-8">
+                    {/* 1. Video Pembelajaran (Jika Tersedia) */}
+                    {embedUrl && (
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2 text-xs font-bold text-slate-700 uppercase tracking-wider">
+                          <Video size={15} className="text-[#843bab]" />
+                          <span>Video Pembelajaran</span>
+                        </div>
+                        <div className="relative rounded-2xl overflow-hidden bg-slate-900 border border-slate-200 shadow-sm aspect-video">
+                          <iframe
+                            src={embedUrl}
+                            title={activeModule.judul}
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                            className="absolute inset-0 w-full h-full border-0"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* 2. Isi Materi Teks */}
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2 text-xs font-bold text-slate-700 uppercase tracking-wider">
+                        <BookOpen size={15} className="text-[#843bab]" />
+                        <span>Isi Materi Pelatihan</span>
+                      </div>
+                      <div className="p-6 rounded-2xl bg-slate-50/70 border border-slate-200 text-slate-700 text-sm sm:text-base leading-relaxed whitespace-pre-line">
+                        {activeModule.isi_materi || 'Materi sedang disiapkan oleh instruktur.'}
+                      </div>
                     </div>
 
-                    {/* Mark as read button */}
-                    {!isRead && !isPassed && (
-                      <button
-                        onClick={handleMarkAsRead}
-                        disabled={loadingAction}
-                        className="btn btn-primary"
-                        style={{ padding: '10px 18px', backgroundColor: '#3b82f6' }}
-                      >
-                        <CheckCircle2 size={16} />
-                        <span>{loadingAction ? 'Menandai...' : 'Tandai Materi Sudah Dibaca (BR-08)'}</span>
-                      </button>
-                    )}
-                  </div>
+                    {/* 3. Lampiran Dokumen PDF (Jika Tersedia) */}
+                    {activeModule.lampiran_path && (
+                      <div className="p-5 rounded-2xl bg-purple-50/50 border border-purple-200/70 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-12 h-12 rounded-xl bg-purple-100 text-[#843bab] flex items-center justify-center shrink-0">
+                            <FileText size={24} />
+                          </div>
+                          <div>
+                            <h4 className="text-sm font-bold text-slate-900">
+                              Bahan Bacaan &amp; Dokumen Modul (PDF)
+                            </h4>
+                            <p className="text-xs text-slate-500 mt-0.5">
+                              Tautan unduh aman bertenggat waktu 60 menit.
+                            </p>
+                          </div>
+                        </div>
 
-                  {/* Quiz Action Button */}
-                  <div style={{ paddingTop: '16px', borderTop: '1px solid rgba(255, 255, 255, 0.06)', display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
-                    {isPassed ? (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <span style={{ fontSize: '0.86rem', color: '#34d399', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <CheckCircle2 size={16} />
-                          Lulus Kuis Modul Ini
-                        </span>
-                        {activeModule.urutan < modules.length && (
+                        <button
+                          type="button"
+                          onClick={handleDownloadPdf}
+                          disabled={downloadingPdf}
+                          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#843bab] hover:bg-[#722f96] text-white text-xs font-bold shadow-2xs transition-all disabled:opacity-50 cursor-pointer"
+                        >
+                          {downloadingPdf ? (
+                            <>
+                              <Loader2 size={14} className="animate-spin" />
+                              <span>Mengambil Tautan...</span>
+                            </>
+                          ) : (
+                            <>
+                              <Download size={15} />
+                              <span>Unduh Dokumen PDF</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    )}
+
+                    {/* 4. Tombol "Tandai Materi Sudah Dibaca" & Navigasi Kuis */}
+                    <div className="pt-6 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                      <div>
+                        <h4 className="text-sm font-bold text-slate-900">
+                          {isPassed
+                            ? 'Evaluasi Modul Selesai'
+                            : isRead
+                            ? 'Materi Sudah Selesai Dibaca'
+                            : 'Langkah Lanjutan: Evaluasi Kuis'}
+                        </h4>
+                        <p className="text-xs text-slate-500 mt-0.5">
+                          {isPassed
+                            ? 'Anda telah lulus kuis modul ini. Silakan lanjut ke modul berikutnya.'
+                            : isRead
+                            ? 'Materi telah ditandai dibaca. Anda dapat langsung membuka kuis modul.'
+                            : 'Wajib menandai materi sudah dibaca untuk membuka akses pengerjaan kuis (BR-08).'}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-3 shrink-0">
+                        {!isRead && !isPassed ? (
                           <button
-                            onClick={() => handleSelectModule(activeModule.urutan + 1)}
-                            className="btn btn-primary"
-                            style={{ padding: '10px 18px' }}
+                            type="button"
+                            onClick={handleMarkAsRead}
+                            disabled={loadingRead}
+                            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#843bab] hover:bg-[#722f96] text-white text-xs font-bold shadow-xs hover:shadow-md transition-all disabled:opacity-50 cursor-pointer active:scale-[0.99]"
                           >
-                            <span>Lanjut ke Modul {activeModule.urutan + 1}</span>
-                            <ArrowRight size={16} />
+                            {loadingRead ? (
+                              <>
+                                <Loader2 size={15} className="animate-spin" />
+                                <span>Menandai...</span>
+                              </>
+                            ) : (
+                              <>
+                                <CheckCircle2 size={16} />
+                                <span>Tandai Materi Sudah Dibaca</span>
+                              </>
+                            )}
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => setActiveTab('kuis')}
+                            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs hover:shadow-md transition-all cursor-pointer active:scale-[0.99]"
+                          >
+                            <Award size={16} />
+                            <span>{isPassed ? 'Buka Hasil Kuis' : 'Mulai Pengerjaan Kuis'}</span>
+                            <ArrowRight size={15} />
                           </button>
                         )}
                       </div>
-                    ) : isRead ? (
-                      <Link
-                        href={`/belajar/${kursusSlug}/kuis?modul=${activeModule.urutan}`}
-                        className="btn btn-primary"
-                        style={{ padding: '12px 24px', backgroundColor: '#10b981', fontSize: '0.96rem' }}
-                      >
-                        <Award size={18} />
-                        <span>Mulai Kuis Modul {activeModule.urutan}</span>
-                        <ArrowRight size={18} />
-                      </Link>
+                    </div>
+                  </div>
+                )}
+
+                {/* =========================================================
+                    TAB 2: KUIS, NILAI & SISA PERCOBAAN
+                   ========================================================= */}
+                {activeTab === 'kuis' && (
+                  <div className="p-6 sm:p-8 space-y-6">
+                    {/* Ringkasan Nilai & Sisa Percobaan Header */}
+                    <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                      <div className="space-y-1">
+                        <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                          Evaluasi Pemahaman
+                        </span>
+                        <h3 className="text-base font-extrabold text-slate-900">
+                          Kuis Objektif Modul {activeModule.urutan}
+                        </h3>
+                        <p className="text-xs text-slate-500">
+                          Passing grade minimal: <strong className="text-slate-800">70 poin</strong>. Maksimal 3 kali percobaan (BR-10).
+                        </p>
+                      </div>
+
+                      {/* Info Nilai & Sisa Percobaan Pill */}
+                      <div className="flex items-center gap-3">
+                        <div className="p-3 rounded-xl bg-white border border-slate-200 text-center">
+                          <div className="text-xs text-slate-500 font-medium">Nilai Terbaik</div>
+                          <div className="text-base font-black text-slate-900">
+                            {highestScore !== null ? `${highestScore}/100` : '-'}
+                          </div>
+                        </div>
+
+                        <div className="p-3 rounded-xl bg-white border border-slate-200 text-center">
+                          <div className="text-xs text-slate-500 font-medium">Sisa Percobaan</div>
+                          <div
+                            className={`text-base font-black ${
+                              sisaPercobaan === 0
+                                ? 'text-rose-600'
+                                : sisaPercobaan === 1
+                                ? 'text-amber-600'
+                                : 'text-emerald-600'
+                            }`}
+                          >
+                            {sisaPercobaan}x
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Jika Materi Belum Dibaca */}
+                    {!isRead && !isPassed ? (
+                      <div className="p-8 rounded-2xl bg-amber-50 border border-amber-200 text-center space-y-3">
+                        <div className="w-12 h-12 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center mx-auto">
+                          <Lock size={22} />
+                        </div>
+                        <h4 className="text-base font-bold text-slate-900">
+                          Kuis Masih Terkunci
+                        </h4>
+                        <p className="text-xs text-slate-600 max-w-md mx-auto">
+                          Sesuai aturan bisnis <strong>BR-08</strong>, Anda wajib membaca materi dan menekan tombol &quot;Tandai Materi Sudah Dibaca&quot; di tab Materi terlebih dahulu.
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => setActiveTab('materi')}
+                          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#843bab] text-white text-xs font-bold"
+                        >
+                          <BookOpen size={14} />
+                          <span>Buka Tab Materi &amp; Video</span>
+                        </button>
+                      </div>
                     ) : (
-                      <button
-                        disabled
-                        className="btn"
-                        style={{
-                          backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                          color: 'var(--text-dim)',
-                          cursor: 'not-allowed',
-                          padding: '12px 20px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '8px',
-                          fontSize: '0.9rem'
-                        }}
-                        title="Tandai materi sudah dibaca terlebih dahulu untuk membuka kuis (BR-08)"
-                      >
-                        <Lock size={16} />
-                        <span>Kuis Modul Terkunci (Baca Materi Dahulu)</span>
-                      </button>
+                      <>
+                        {/* Riwayat Hasil Submit Terbaru (Nilai & Status Lulus) */}
+                        {latestQuizResult && (
+                          <div
+                            className={`p-6 rounded-2xl border space-y-3 shadow-xs ${
+                              latestQuizResult.lulus
+                                ? 'bg-emerald-50 border-emerald-200 text-emerald-900'
+                                : 'bg-rose-50 border-rose-200 text-rose-900'
+                            }`}
+                          >
+                            <div className="flex items-center gap-3">
+                              {latestQuizResult.lulus ? (
+                                <div className="w-10 h-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center shrink-0">
+                                  <Award size={20} />
+                                </div>
+                              ) : (
+                                <div className="w-10 h-10 rounded-xl bg-rose-500 text-white flex items-center justify-center shrink-0">
+                                  <XCircle size={20} />
+                                </div>
+                              )}
+                              <div>
+                                <h4 className="text-base font-black">
+                                  {latestQuizResult.lulus
+                                    ? 'Selamat! Anda Berhasil Lulus Kuis Modul Ini'
+                                    : 'Belum Mencapai Nilai Minimal Kelulusan'}
+                                </h4>
+                                <p className="text-xs opacity-90">
+                                  {latestQuizResult.lulus
+                                    ? 'Nilai Anda memenuhi standar industri (passing grade 70).'
+                                    : `Nilai Anda adalah ${latestQuizResult.nilai}. Silakan ulangi kuis setelah mempelajari materi.`}
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+                              <div className="p-2.5 rounded-lg bg-white/80 border border-current/20 text-center">
+                                <div className="text-[11px] opacity-75 font-medium">Nilai Anda</div>
+                                <div className="text-lg font-black">{latestQuizResult.nilai}</div>
+                              </div>
+                              <div className="p-2.5 rounded-lg bg-white/80 border border-current/20 text-center">
+                                <div className="text-[11px] opacity-75 font-medium">Soal Benar</div>
+                                <div className="text-lg font-black">
+                                  {latestQuizResult.jumlah_benar}/{latestQuizResult.jumlah_soal}
+                                </div>
+                              </div>
+                              <div className="p-2.5 rounded-lg bg-white/80 border border-current/20 text-center">
+                                <div className="text-[11px] opacity-75 font-medium">Percobaan Ke-</div>
+                                <div className="text-lg font-black">{latestQuizResult.nomor_percobaan}</div>
+                              </div>
+                              <div className="p-2.5 rounded-lg bg-white/80 border border-current/20 text-center">
+                                <div className="text-[11px] opacity-75 font-medium">Sisa Percobaan</div>
+                                <div className="text-lg font-black">{latestQuizResult.sisa_percobaan}x</div>
+                              </div>
+                            </div>
+
+                            {/* Tombol Aksi Hasil */}
+                            <div className="pt-3 flex items-center gap-3 flex-wrap">
+                              {latestQuizResult.semua_modul_selesai ? (
+                                <Link
+                                  href={`/sertifikat/${pendaftaranId}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs"
+                                >
+                                  <Award size={15} />
+                                  <span>Semua Modul Lulus! Buka Sertifikat</span>
+                                  <Printer size={14} />
+                                </Link>
+                              ) : latestQuizResult.lulus && activeModule.urutan < modules.length ? (
+                                <button
+                                  type="button"
+                                  onClick={() => handleSelectModule(activeModule.urutan + 1)}
+                                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs"
+                                >
+                                  <span>Lanjut ke Modul {activeModule.urutan + 1}</span>
+                                  <ArrowRight size={15} />
+                                </button>
+                              ) : null}
+
+                              {!latestQuizResult.lulus && latestQuizResult.sisa_percobaan > 0 && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setLatestQuizResult(null);
+                                    setAnswers({});
+                                  }}
+                                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold"
+                                >
+                                  <RotateCcw size={14} />
+                                  <span>Coba Kuis Lagi</span>
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Loading Soal */}
+                        {loadingQuestions && (
+                          <div className="p-12 text-center text-slate-500 space-y-3">
+                            <Loader2 size={24} className="animate-spin text-[#843bab] mx-auto" />
+                            <p className="text-xs">Memuat daftar soal kuis modul...</p>
+                          </div>
+                        )}
+
+                        {/* Error Memuat Kuis */}
+                        {quizError && (
+                          <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
+                            <AlertCircle size={16} className="shrink-0" />
+                            <span>{quizError}</span>
+                          </div>
+                        )}
+
+                        {/* Daftar Soal Kuis */}
+                        {!loadingQuestions && activeQuestions.length > 0 && (!latestQuizResult || !latestQuizResult.lulus) && (
+                          <form onSubmit={handleSubmitQuiz} className="space-y-6 pt-2">
+                            {/* Batas Percobaan Tercapai Warning */}
+                            {sisaPercobaan === 0 && !isPassed ? (
+                              <div className="p-6 rounded-2xl bg-rose-50 border border-rose-200 text-rose-900 space-y-2">
+                                <div className="font-bold text-sm flex items-center gap-2">
+                                  <AlertCircle size={16} />
+                                  <span>Batas Maksimal 3 Percobaan Tercapai (BR-10)</span>
+                                </div>
+                                <p className="text-xs leading-relaxed text-rose-800">
+                                  Anda telah menggunakan seluruh 3 kesempatan pengerjaan kuis pada modul ini. Hubungi instruktur atau tim Pijar Aksara jika Anda membutuhkan bimbingan materi lebih lanjut.
+                                </p>
+                              </div>
+                            ) : (
+                              <>
+                                <div className="space-y-6">
+                                  {activeQuestions.map((q, idx) => {
+                                    const selectedChoice = answers[q.id];
+
+                                    return (
+                                      <div
+                                        key={q.id}
+                                        className="p-5 sm:p-6 rounded-2xl bg-white border border-slate-200 shadow-2xs space-y-4"
+                                      >
+                                        <div className="flex items-start gap-3">
+                                          <div className="w-6 h-6 rounded-full bg-[#843bab]/10 text-[#843bab] text-xs font-black flex items-center justify-center shrink-0 mt-0.5">
+                                            {idx + 1}
+                                          </div>
+                                          <p className="text-sm sm:text-base font-bold text-slate-900 leading-relaxed">
+                                            {q.pertanyaan}
+                                          </p>
+                                        </div>
+
+                                        {/* Pilihan Jawaban A, B, C, D */}
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-2">
+                                          {(['A', 'B', 'C', 'D'] as const).map((choice) => {
+                                            const choiceKey = `pilihan_${choice.toLowerCase()}` as keyof QuestionItem;
+                                            const choiceText = q[choiceKey] as string;
+                                            const isSelected = selectedChoice === choice;
+
+                                            return (
+                                              <button
+                                                key={choice}
+                                                type="button"
+                                                onClick={() => handleSelectOption(q.id, choice)}
+                                                className={`text-left p-3.5 rounded-xl border text-xs sm:text-sm font-medium transition-all flex items-center gap-3 cursor-pointer ${
+                                                  isSelected
+                                                    ? 'bg-purple-50/80 border-[#843bab] text-[#843bab] ring-1 ring-[#843bab] font-bold shadow-2xs'
+                                                    : 'bg-slate-50/50 hover:bg-slate-100/70 border-slate-200 text-slate-700'
+                                                }`}
+                                              >
+                                                <div
+                                                  className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
+                                                    isSelected
+                                                      ? 'bg-[#843bab] text-white'
+                                                      : 'bg-slate-200 text-slate-600'
+                                                  }`}
+                                                >
+                                                  {choice}
+                                                </div>
+                                                <span className="leading-snug">{choiceText}</span>
+                                              </button>
+                                            );
+                                          })}
+                                        </div>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+
+                                {/* Submit Quiz Footer Bar */}
+                                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                  <div className="text-xs text-slate-600">
+                                    Terjawab:{' '}
+                                    <strong className="text-slate-900">
+                                      {Object.keys(answers).length} dari {activeQuestions.length} soal
+                                    </strong>
+                                  </div>
+
+                                  <button
+                                    type="submit"
+                                    disabled={submittingQuiz || Object.keys(answers).length < activeQuestions.length}
+                                    className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-[#843bab] hover:bg-[#722f96] text-white text-xs sm:text-sm font-bold shadow-xs hover:shadow-md transition-all disabled:opacity-50 cursor-pointer active:scale-[0.99]"
+                                  >
+                                    {submittingQuiz ? (
+                                      <>
+                                        <Loader2 size={16} className="animate-spin" />
+                                        <span>Menilai Kuis Otomatis...</span>
+                                      </>
+                                    ) : (
+                                      <>
+                                        <CheckCircle2 size={16} />
+                                        <span>Kirim &amp; Nilai Jawaban Kuis</span>
+                                      </>
+                                    )}
+                                  </button>
+                                </div>
+                              </>
+                            )}
+                          </form>
+                        )}
+                      </>
                     )}
                   </div>
-                </div>
+                )}
               </div>
             )}
           </main>
