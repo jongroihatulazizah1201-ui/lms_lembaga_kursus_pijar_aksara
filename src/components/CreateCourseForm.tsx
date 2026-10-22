@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createKursusAction } from '@/app/instruktur/actions';
-import { ArrowLeft, Plus, AlertCircle, CheckCircle2, Loader2, BookOpen } from 'lucide-react';
+import { Plus, AlertCircle, CheckCircle2, Loader2, BookOpen } from 'lucide-react';
 
 export default function CreateCourseForm() {
   const router = useRouter();
@@ -80,26 +80,17 @@ export default function CreateCourseForm() {
       className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-10 shadow-xs max-w-3xl mx-auto space-y-6"
     >
       {/* Header Form */}
-      <div className="flex items-center gap-3.5 pb-6 border-b border-slate-100">
-        <Link
-          href="/instruktur"
-          className="p-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 transition-colors shrink-0"
-          title="Kembali ke Panel Instruktur"
-        >
-          <ArrowLeft size={18} />
-        </Link>
-        <div>
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-[#843bab]/10 text-[#843bab] text-[11px] font-bold uppercase tracking-wider mb-1">
-            <BookOpen size={12} />
-            <span>Formulir Kursus Baru</span>
-          </div>
-          <h2 className="text-xl sm:text-2xl font-black text-slate-900 leading-snug">
-            Buat Kursus Baru (Status: Draf)
-          </h2>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Kursus baru otomatis berstatus draf (BR-02). Anda dapat menyusun modul dan butir soal setelah informasi dasar ini disimpan.
-          </p>
+      <div className="pb-6 border-b border-slate-100 space-y-1.5">
+        <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-[#843bab]/10 text-[#843bab] text-[11px] font-bold uppercase tracking-wider">
+          <BookOpen size={12} />
+          <span>Formulir Kursus Baru</span>
         </div>
+        <h1 className="text-xl sm:text-2xl font-black text-slate-900 leading-snug">
+          Buat Kursus Baru (Status: Draf)
+        </h1>
+        <p className="text-xs text-slate-500">
+          Kursus baru otomatis berstatus draf (BR-02). Anda dapat menyusun modul dan butir soal setelah informasi dasar ini disimpan.
+        </p>
       </div>
 
       {/* Error Alert */}
