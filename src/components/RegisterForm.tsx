@@ -146,18 +146,14 @@ export default function RegisterForm({ redirectParam = '' }: Props) {
             </p>
           </div>
 
-          {/* Ilustrasi Karakter 3D Pas & Berbayangan Nyata */}
-          <div className="relative z-10 mt-auto pt-3 flex flex-col items-center justify-end w-full">
-            <div className="relative w-full max-w-[280px] sm:max-w-[300px] h-[260px] sm:h-[285px] lg:h-[300px] flex items-end justify-center">
-              {/* Lapisan Bayangan Lantai Kontak (Ground Contact Shadow) */}
-              <div className="absolute bottom-1 w-4/5 max-w-[240px] h-4 bg-black/45 rounded-full blur-md pointer-events-none" />
-              <div className="absolute bottom-1.5 w-3/5 max-w-[170px] h-2 bg-black/60 rounded-full blur-xs pointer-events-none" />
-              
+          {/* Ilustrasi Karakter 3D (Tanpa Shadow, Ukuran Lebih Besar) */}
+          <div className="relative z-10 mt-auto pt-2 flex flex-col items-center justify-end w-full">
+            <div className="relative w-full max-w-[310px] sm:max-w-[340px] lg:max-w-[360px] h-[285px] sm:h-[315px] lg:h-[335px] flex items-end justify-center">
               <Image
                 src="/login-character.png"
                 alt="Karakter Pembelajaran Pijar Aksara"
                 fill
-                className="object-contain object-bottom hover:scale-[1.03] transition-transform duration-300 drop-shadow-[0_16px_24px_rgba(0,0,0,0.45)]"
+                className="object-contain object-bottom hover:scale-[1.02] transition-transform duration-300"
                 priority
               />
             </div>
