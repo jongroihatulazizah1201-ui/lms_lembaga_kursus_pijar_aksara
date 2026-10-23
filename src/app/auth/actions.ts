@@ -32,7 +32,7 @@ export async function loginAction(formData: FormData) {
   // Ambil profil untuk menentukan redirect sesuai peran
   const { data: profile } = await supabase
     .from('profiles')
-    .select('peran, aktif')
+    .select('peran, aktif, nama_lengkap')
     .eq('id', data.user.id)
     .single();
 
@@ -62,7 +62,12 @@ export async function loginAction(formData: FormData) {
     }
   }
 
-  return { success: true, redirectTo: targetUrl };
+  return { 
+    success: true, 
+    redirectTo: targetUrl,
+    peran: profile.peran,
+    nama: profile.nama_lengkap || ''
+  };
 }
 
 export async function registerAction(formData: FormData) {
@@ -154,7 +159,12 @@ export async function registerAction(formData: FormData) {
   revalidatePath('/', 'layout');
 
   const targetUrl = redirectTo && redirectTo.startsWith('/') ? redirectTo : '/kursus-saya';
-  return { success: true, redirectTo: targetUrl };
+  return { 
+    success: true, 
+    redirectTo: targetUrl,
+    peran: 'peserta',
+    nama: namaLengkap
+  };
 }
 
 export async function logoutAction() {

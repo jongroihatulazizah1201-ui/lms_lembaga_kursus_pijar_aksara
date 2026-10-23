@@ -18,6 +18,7 @@ import {
   Check,
   Loader2,
 } from 'lucide-react';
+import AuthLoadingProgress from '@/components/AuthLoadingProgress';
 
 interface Props {
   redirectParam?: string;
@@ -35,6 +36,11 @@ export default function RegisterForm({ redirectParam = '' }: Props) {
   const [showKonfirmasi, setShowKonfirmasi] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [redirectData, setRedirectData] = useState<{
+    targetUrl: string;
+    peran?: string;
+    nama?: string;
+  } | null>(null);
 
   // Kriteria Kata Sandi Kuat (Strong Password Rules)
   const hasMinLength = password.length >= 8;
@@ -102,7 +108,12 @@ export default function RegisterForm({ redirectParam = '' }: Props) {
         setError(res.error);
         setLoading(false);
       } else if (res?.success && res.redirectTo) {
-        window.location.replace(res.redirectTo);
+        // Aktifkan progress loading transisi beranimasi dengan simbol UI resmi
+        setRedirectData({
+          targetUrl: res.redirectTo,
+          peran: res.peran || 'peserta',
+          nama: res.nama || namaLengkap,
+        });
       }
     } catch {
       setError('Terjadi kendala saat mendaftarkan akun. Silakan coba lagi.');
@@ -111,7 +122,17 @@ export default function RegisterForm({ redirectParam = '' }: Props) {
   };
 
   return (
-    <div className="min-h-[calc(100vh-65px)] flex items-center justify-center p-3 sm:p-5 lg:p-6 bg-slate-50/70">
+    <>
+      {redirectData ? (
+        <AuthLoadingProgress
+          targetUrl={redirectData.targetUrl}
+          peran={redirectData.peran}
+          nama={redirectData.nama}
+          mode="register"
+        />
+      ) : null}
+
+      <div className="min-h-[calc(100vh-65px)] flex items-center justify-center p-3 sm:p-5 lg:p-6 bg-slate-50/70">
       <div className="max-w-4xl lg:max-w-[960px] w-full bg-white rounded-[32px] sm:rounded-[36px] shadow-2xl border border-slate-200/80 overflow-hidden grid grid-cols-1 lg:grid-cols-12 p-3 sm:p-3.5 gap-4 lg:gap-6 my-auto">
         
         {/* =====================================================================
@@ -409,5 +430,6 @@ export default function RegisterForm({ redirectParam = '' }: Props) {
 
       </div>
     </div>
+    </>
   );
 }
