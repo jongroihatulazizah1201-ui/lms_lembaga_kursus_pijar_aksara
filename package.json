@@ -1,7 +1,7 @@
 {
   "name": "lms",
   "version": "1.0.0",
-  "description": "",
+  "description": "LMS Lembaga Kursus Pijar Aksara",
   "main": "import_akun.js",
   "directories": {
     "doc": "docs"
@@ -29,16 +29,14 @@
     "@types/node": "^26.6.5",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
+    "autoprefixer": "^10.6.1",
     "lucide-react": "^1.60.0",
     "next": "^16.4.2",
+    "postcss": "^8.5.31",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
+    "tailwindcss": "^3.4.19",
     "typescript": "^7.0.2",
     "xlsx": "^0.18.5"
-  },
-  "devDependencies": {
-    "autoprefixer": "^10.6.1",
-    "postcss": "^8.5.31",
-    "tailwindcss": "^3.4.19"
   }
 }
