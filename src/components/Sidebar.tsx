@@ -443,6 +443,7 @@ export default function Sidebar({ user, profile }: SidebarProps) {
             {/* Logout Action */}
             <button
               type="button"
+              suppressHydrationWarning
               onClick={() => setShowLogoutModal(true)}
               className="w-full flex items-center justify-center gap-2 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-red-700 hover:bg-red-50 rounded-xl border border-slate-200 hover:border-red-200 transition-colors min-h-[36px] cursor-pointer"
             >
@@ -486,6 +487,7 @@ export default function Sidebar({ user, profile }: SidebarProps) {
         <div className="flex items-center gap-2.5">
           <button
             type="button"
+            suppressHydrationWarning
             onClick={() => setMobileOpen(true)}
             className="p-2 -ml-1.5 rounded-xl text-slate-700 hover:bg-slate-100 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
             aria-label="Buka Menu Fitur"

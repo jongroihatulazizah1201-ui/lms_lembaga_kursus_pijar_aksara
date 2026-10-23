@@ -14,7 +14,6 @@ import {
   EyeOff,
   Loader2,
 } from 'lucide-react';
-import AuthLoadingProgress from '@/components/AuthLoadingProgress';
 
 interface Props {
   redirectParam?: string;
@@ -28,11 +27,6 @@ export default function LoginForm({ redirectParam = '', errorParam = '' }: Props
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState(errorParam === 'inactive' ? 'Akun Anda dinonaktifkan. Hubungi admin.' : '');
   const [loading, setLoading] = useState(false);
-  const [redirectData, setRedirectData] = useState<{
-    targetUrl: string;
-    peran?: string;
-    nama?: string;
-  } | null>(null);
 
   // Prefetch rute tujuan saat form login dibuka agar aset halaman sudah siap
   useEffect(() => {
@@ -57,12 +51,7 @@ export default function LoginForm({ redirectParam = '', errorParam = '' }: Props
         setError(res.error);
         setLoading(false);
       } else if (res?.success && res.redirectTo) {
-        // Aktifkan progress loading transisi beranimasi dengan simbol UI resmi
-        setRedirectData({
-          targetUrl: res.redirectTo,
-          peran: res.peran,
-          nama: res.nama,
-        });
+        window.location.replace(res.redirectTo);
       }
     } catch {
       setError('Terjadi kendala saat masuk akun. Silakan coba lagi.');
@@ -71,17 +60,7 @@ export default function LoginForm({ redirectParam = '', errorParam = '' }: Props
   };
 
   return (
-    <>
-      {redirectData ? (
-        <AuthLoadingProgress
-          targetUrl={redirectData.targetUrl}
-          peran={redirectData.peran}
-          nama={redirectData.nama}
-          mode="login"
-        />
-      ) : null}
-
-      <div className="min-h-[calc(100vh-65px)] flex items-center justify-center p-3 sm:p-5 lg:p-6 bg-slate-50/70">
+    <div className="min-h-[calc(100vh-65px)] flex items-center justify-center p-3 sm:p-5 lg:p-6 bg-slate-50/70">
       <div className="max-w-4xl lg:max-w-[960px] w-full bg-white rounded-[32px] sm:rounded-[36px] shadow-2xl border border-slate-200/80 overflow-hidden grid grid-cols-1 lg:grid-cols-12 p-3 sm:p-3.5 gap-4 lg:gap-6 my-auto">
         
         {/* =====================================================================
@@ -249,6 +228,5 @@ export default function LoginForm({ redirectParam = '', errorParam = '' }: Props
 
       </div>
     </div>
-    </>
   );
 }

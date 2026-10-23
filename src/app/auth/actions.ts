@@ -32,7 +32,7 @@ export async function loginAction(formData: FormData) {
   // Ambil profil untuk menentukan redirect sesuai peran
   const { data: profile } = await supabase
     .from('profiles')
-    .select('peran, aktif, nama_lengkap')
+    .select('peran, aktif')
     .eq('id', data.user.id)
     .single();
 
@@ -40,6 +40,9 @@ export async function loginAction(formData: FormData) {
     await supabase.auth.signOut();
     return { error: 'Akun Anda dinonaktifkan. Silakan hubungi admin.' };
   }
+
+  // Bersihkan cache layout agar antarmuka terautentikasi langsung aktif tanpa menampilkan layout publik
+  revalidatePath('/', 'layout');
 
   // Arahkan langsung ke halaman utama sesuai peran pengguna tanpa singgah ke /profil
   let targetUrl = '/kursus-saya';
@@ -62,12 +65,7 @@ export async function loginAction(formData: FormData) {
     }
   }
 
-  return { 
-    success: true, 
-    redirectTo: targetUrl,
-    peran: profile.peran,
-    nama: profile.nama_lengkap || ''
-  };
+  return { success: true, redirectTo: targetUrl };
 }
 
 export async function registerAction(formData: FormData) {
@@ -159,12 +157,7 @@ export async function registerAction(formData: FormData) {
   revalidatePath('/', 'layout');
 
   const targetUrl = redirectTo && redirectTo.startsWith('/') ? redirectTo : '/kursus-saya';
-  return { 
-    success: true, 
-    redirectTo: targetUrl,
-    peran: 'peserta',
-    nama: namaLengkap
-  };
+  return { success: true, redirectTo: targetUrl };
 }
 
 export async function logoutAction() {
