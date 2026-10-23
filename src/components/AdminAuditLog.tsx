@@ -157,6 +157,12 @@ export default function AdminAuditLog({ logs }: Props) {
             Ubah Kuota
           </span>
         );
+      case 'ubah_harga_kursus':
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+            Ubah Harga
+          </span>
+        );
       case 'konfirmasi_pembayaran':
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">

@@ -45,6 +45,46 @@ CREATE TRIGGER trg_prevent_audit_log_mutation
   EXECUTE FUNCTION public.prevent_audit_log_mutation();
 
 
+-- 1.5 Trigger Audit Log Perubahan Harga Kursus (BR-12)
+CREATE OR REPLACE FUNCTION public.fn_audit_harga_kursus()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+  IF OLD.harga IS NOT DISTINCT FROM NEW.harga THEN
+    RETURN NEW;
+  END IF;
+
+  INSERT INTO public.audit_log (
+    pelaku_id,
+    aksi,
+    nama_tabel,
+    id_data,
+    data_sebelum,
+    data_sesudah,
+    dibuat_pada
+  ) VALUES (
+    auth.uid(),
+    'ubah_harga_kursus',
+    'kursus',
+    NEW.id,
+    jsonb_build_object('harga', OLD.harga, 'judul', OLD.judul, 'status', OLD.status),
+    jsonb_build_object('harga', NEW.harga, 'judul', NEW.judul, 'status', NEW.status),
+    now()
+  );
+
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trg_audit_harga_kursus ON public.kursus;
+CREATE TRIGGER trg_audit_harga_kursus
+  AFTER UPDATE OF harga ON public.kursus
+  FOR EACH ROW
+  EXECUTE FUNCTION public.fn_audit_harga_kursus();
+
+
 -- ------------------------------------------------------------------------------
 -- 2. PENYEMPURNAAN RPC GET_ADMIN_DASHBOARD_ANALYTICS (PRD Bagian 9)
 -- ------------------------------------------------------------------------------
