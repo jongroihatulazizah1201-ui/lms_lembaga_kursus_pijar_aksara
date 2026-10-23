@@ -36,3 +36,6 @@ test_*.mjs
 scratch/
 opencode.json
 
+
+# Local Netlify folder
+.netlify
