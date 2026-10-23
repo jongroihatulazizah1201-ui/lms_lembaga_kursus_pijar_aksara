@@ -20,6 +20,7 @@ import {
   Code,
   Layers,
   Activity,
+  Settings,
 } from 'lucide-react';
 
 export interface AuditLogItem {
@@ -204,7 +205,7 @@ export default function AdminAuditLog({ logs }: Props) {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-xl bg-purple-100 text-[#843bab] flex items-center justify-center shrink-0 shadow-2xs">
-              <FileText size={18} />
+              <Settings size={18} />
             </div>
             <div className="flex items-center gap-2 flex-wrap">
               <h1 className="text-lg sm:text-2xl font-black text-slate-900 tracking-tight">

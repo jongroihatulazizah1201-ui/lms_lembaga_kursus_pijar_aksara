@@ -18,6 +18,7 @@ import {
   Users,
   FileText,
   BarChart3,
+  Settings,
   LogOut,
   LogIn,
   UserPlus,
@@ -134,7 +135,7 @@ export default function Sidebar({ user, profile }: SidebarProps) {
           {
             label: 'Audit Log Sistem',
             href: '/admin?tab=audit',
-            icon: FileText
+            icon: Settings
           },
           {
             label: 'Buku Nilai (Semua Kursus)',
