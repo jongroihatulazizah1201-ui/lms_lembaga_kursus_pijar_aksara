@@ -65,6 +65,30 @@ export async function daftarKursusAction(kursusId: string, metodeBayar: string =
     }
   }
 
+  // 4. Pengiriman Email Otomatis jika kursus gratis (langsung aktif) (BR-07)
+  if (pendaftaran.status === 'aktif') {
+    try {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('nama_lengkap, email')
+        .eq('id', user.id)
+        .single();
+
+      const recipientEmail = profile?.email || user.email;
+      if (recipientEmail) {
+        const { sendEnrollmentActivatedEmail } = await import('@/lib/email');
+        await sendEnrollmentActivatedEmail({
+          to: recipientEmail,
+          studentName: profile?.nama_lengkap || 'Peserta',
+          courseTitle: kursus.judul,
+          courseSlug: kursus.slug,
+        });
+      }
+    } catch (emailErr) {
+      console.error('Gagal mengirimkan email aktivasi pendaftaran kursus gratis:', emailErr);
+    }
+  }
+
   revalidatePath('/kursus-saya');
   revalidatePath(`/kursus/${kursus.slug}`);
 

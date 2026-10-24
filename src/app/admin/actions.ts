@@ -101,6 +101,30 @@ export async function konfirmasiPembayaranAction(pendaftaranId: string) {
     return { error: error.message };
   }
 
+  // Pengiriman Email Otomatis: Notifikasi Pendaftaran Berhasil Diaktifkan (BR-07, BR-12)
+  try {
+    const { data: regInfo } = await supabase
+      .from('pendaftaran')
+      .select('kursus:kursus_id(judul, slug), peserta:peserta_id(nama_lengkap, email)')
+      .eq('id', pendaftaranId)
+      .maybeSingle();
+
+    const peserta = regInfo?.peserta as any;
+    const kursus = regInfo?.kursus as any;
+
+    if (peserta?.email) {
+      const { sendEnrollmentActivatedEmail } = await import('@/lib/email');
+      await sendEnrollmentActivatedEmail({
+        to: peserta.email,
+        studentName: peserta.nama_lengkap || 'Peserta',
+        courseTitle: kursus?.judul || 'Kursus Pijar Aksara',
+        courseSlug: kursus?.slug,
+      });
+    }
+  } catch (emailErr) {
+    console.error('Gagal mengirimkan email aktivasi pendaftaran:', emailErr);
+  }
+
   revalidatePath('/admin');
   return { success: true, pendaftaran: data };
 }

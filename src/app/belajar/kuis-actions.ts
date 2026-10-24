@@ -47,6 +47,30 @@ export async function submitKuisAction(
     return { error: error.message };
   }
 
+  // Pengiriman Email Otomatis: Notifikasi Sertifikat Kelulusan Terbit (BR-07, BR-11)
+  if (data?.semua_modul_selesai && data?.nomor_sertifikat) {
+    try {
+      const { data: cert } = await supabase
+        .from('sertifikat')
+        .select('nama_peserta, judul_kursus, nomor_sertifikat')
+        .eq('nomor_sertifikat', data.nomor_sertifikat)
+        .maybeSingle();
+
+      const recipientEmail = user.email;
+      if (recipientEmail && cert) {
+        const { sendCertificateIssuedEmail } = await import('@/lib/email');
+        await sendCertificateIssuedEmail({
+          to: recipientEmail,
+          studentName: cert.nama_peserta || 'Peserta',
+          courseTitle: cert.judul_kursus,
+          certificateNumber: cert.nomor_sertifikat,
+        });
+      }
+    } catch (emailErr) {
+      console.error('Gagal mengirimkan email notifikasi sertifikat:', emailErr);
+    }
+  }
+
   revalidatePath(`/belajar/${slug}`);
   revalidatePath(`/belajar/${slug}/kuis`);
   revalidatePath('/kursus-saya');
