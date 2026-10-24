@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   ChevronRight,
   BookOpen,
@@ -6,11 +7,6 @@ import {
   CheckCircle2,
   Laptop,
   TrendingUp,
-  FileSpreadsheet,
-  Palette,
-  Calculator,
-  Mic,
-  Languages,
 } from 'lucide-react';
 import { getPublishedCourses } from '@/lib/courses';
 import PopularCoursesCarousel from '@/components/PopularCoursesCarousel';
@@ -99,15 +95,15 @@ export default async function HomePage() {
               </div>
             </div>
 
-            {/* ================= KOLOM KANAN: Mockup iPhone 16 Ramping (19.5:9) + Bubble Chat iPhone ================= */}
-            <div className="lg:col-span-5 flex items-center justify-center relative">
-              {/* Cincin Geometris Kuning Lembut di Belakang Smartphone */}
-              <div className="absolute -bottom-8 -right-8 w-60 h-60 rounded-full border-[20px] border-[#ffdf0f]/20 pointer-events-none select-none z-0 hidden sm:block" />
+            {/* ================= KOLOM KANAN: Talent Asli Memegang Smartphone + Bubble Chat Badges ================= */}
+            <div className="lg:col-span-5 flex items-end justify-center relative">
+              {/* Cincin Geometris Kuning Lembut di Belakang Talent */}
+              <div className="absolute -bottom-10 -right-6 w-72 h-72 rounded-full border-[22px] border-[#ffdf0f]/20 pointer-events-none select-none z-0 hidden sm:block" />
 
-              {/* Wrapper Smartphone & Bubble Chat Badges */}
+              {/* Wrapper Talent & Bubble Chat Badges */}
               <div className="relative inline-block z-10">
-                {/* Bubble Chat iPhone 1: Akses LMS 24 Jam (Menyenggol Sisi Kiri iPhone 16 dengan Ekor Pesan iMessage) */}
-                <div className="hidden xl:flex absolute right-[calc(100%-14px)] top-12 z-30 bg-white/95 backdrop-blur-md rounded-2xl rounded-tr-xs p-2.5 sm:p-3 shadow-[0_12px_30px_rgba(0,0,0,0.18)] border border-purple-100/90 items-center gap-2.5 sm:gap-3 w-[185px] hover:scale-105 transition-transform duration-200 group">
+                {/* Bubble Chat iPhone 1: Akses LMS 24 Jam (Menyenggol Sisi Kiri Smartphone yang Dipegang Talent) */}
+                <div className="flex absolute -left-4 sm:-left-10 lg:-left-16 top-10 sm:top-14 z-30 bg-white/95 backdrop-blur-md rounded-2xl rounded-tr-xs p-2.5 sm:p-3 shadow-[0_12px_30px_rgba(0,0,0,0.22)] border border-purple-100/90 items-center gap-2.5 sm:gap-3 w-[170px] sm:w-[190px] hover:scale-105 transition-transform duration-200 group">
                   <div className="w-8 h-8 rounded-full bg-purple-100 text-[#843bab] flex items-center justify-center shrink-0 shadow-xs">
                     <Laptop size={15} />
                   </div>
@@ -118,12 +114,12 @@ export default async function HomePage() {
                     </div>
                     <p className="text-[9.5px] text-slate-500 font-medium leading-snug">Belajar mandiri fleksibel</p>
                   </div>
-                  {/* Ekor Bubble Chat iMessage mengarah ke bodi iPhone 16 */}
+                  {/* Ekor Bubble Chat mengarah ke ponsel yang dipegang talent */}
                   <div className="absolute -right-2 top-3 w-0 h-0 border-y-[5px] border-y-transparent border-l-[8px] border-l-white/95 filter drop-shadow-[2px_0_1px_rgba(0,0,0,0.04)]" />
                 </div>
 
-                {/* Bubble Chat iPhone 2: Server Kuis Otomatis (Menyenggol Sisi Kiri iPhone 16 dengan Ekor Pesan iMessage) */}
-                <div className="hidden xl:flex absolute right-[calc(100%-10px)] bottom-20 z-30 bg-white/95 backdrop-blur-md rounded-2xl rounded-tr-xs p-2.5 sm:p-3 shadow-[0_12px_30px_rgba(0,0,0,0.18)] border border-purple-100/90 items-center gap-2.5 sm:gap-3 w-[190px] hover:scale-105 transition-transform duration-200 group">
+                {/* Bubble Chat iPhone 2: Server Kuis Otomatis (Menyenggol Sisi Kiri Bawah Smartphone yang Dipegang Talent) */}
+                <div className="flex absolute -left-2 sm:-left-8 lg:-left-14 bottom-14 sm:bottom-20 z-30 bg-white/95 backdrop-blur-md rounded-2xl rounded-tr-xs p-2.5 sm:p-3 shadow-[0_12px_30px_rgba(0,0,0,0.22)] border border-purple-100/90 items-center gap-2.5 sm:gap-3 w-[175px] sm:w-[195px] hover:scale-105 transition-transform duration-200 group">
                   <div className="w-8 h-8 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center shrink-0 shadow-xs">
                     <CheckCircle2 size={15} />
                   </div>
@@ -134,182 +130,20 @@ export default async function HomePage() {
                     </div>
                     <p className="text-[9.5px] text-slate-500 font-medium leading-snug">Evaluasi kelulusan instan</p>
                   </div>
-                  {/* Ekor Bubble Chat iMessage mengarah ke bodi iPhone 16 */}
+                  {/* Ekor Bubble Chat mengarah ke ponsel yang dipegang talent */}
                   <div className="absolute -right-2 top-3 w-0 h-0 border-y-[5px] border-y-transparent border-l-[8px] border-l-white/95 filter drop-shadow-[2px_0_1px_rgba(0,0,0,0.04)]" />
                 </div>
 
-                {/* Mockup iPhone 16 Asli (Ramping, Jenjang 19.5:9, Dynamic Island, Bodi Mulus Tanpa Tonjolan Tombol) */}
-                <div className="relative w-[230px] sm:w-[240px] h-[465px] sm:h-[480px] rounded-[48px] p-[6px] bg-gradient-to-b from-slate-600 via-slate-800 to-slate-950 shadow-[0_25px_60px_-12px_rgba(0,0,0,0.7),0_0_0_1px_rgba(255,255,255,0.22)]">
-                  {/* Bezel Hitam & Layar Kaca iPhone 16 */}
-                  <div className="relative h-full rounded-[42px] overflow-hidden bg-slate-50 border-[2.5px] border-slate-950 shadow-inner flex flex-col justify-between select-none text-left">
-                    {/* Dynamic Island Khas iPhone 16 */}
-                    <div className="absolute top-2.5 left-1/2 -translate-x-1/2 w-20 h-4 bg-black rounded-full z-30 flex items-center justify-between px-2">
-                      <div className="w-1.5 h-1.5 rounded-full bg-[#0e1726] border border-slate-700" />
-                      <div className="w-1 h-1 rounded-full bg-[#1e293b]" />
-                    </div>
-
-                    {/* Pantulan Kaca Mengkilap (Glass Sheen iOS) */}
-                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.04] to-white/[0.08] z-20" />
-
-                    {/* Bagian Atas Layar: Status Bar & Header */}
-                    <div className="pt-7 px-3.5">
-                      {/* iOS Status Bar */}
-                      <div className="flex items-center justify-between text-[10px] font-semibold text-slate-600 px-1 mb-2">
-                        <span>09:41</span>
-                        <div className="flex items-center gap-1.5">
-                          {/* Sinyal Bar iOS */}
-                          <div className="flex items-end gap-[1px] h-2">
-                            <span className="w-[1.5px] h-1 bg-slate-700 rounded-xs" />
-                            <span className="w-[1.5px] h-1.5 bg-slate-700 rounded-xs" />
-                            <span className="w-[1.5px] h-2 bg-slate-700 rounded-xs" />
-                            <span className="w-[1.5px] h-2.5 bg-slate-700 rounded-xs" />
-                          </div>
-                          <span className="text-[9px] font-bold">5G</span>
-                          {/* Indikator Baterai iOS */}
-                          <div className="w-4 h-2 rounded-[3px] border border-slate-600 p-[0.5px] flex items-center">
-                            <div className="h-full w-4/5 bg-emerald-500 rounded-[1.5px]" />
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Header Aplikasi Kursus */}
-                      <div className="pb-2 mb-2 border-b border-slate-200">
-                        <div className="flex items-center justify-between mb-0.5">
-                          <p className="text-xs font-black text-slate-900 tracking-tight">
-                            ✕ &nbsp; Pilih Kursus Vokasi
-                          </p>
-                          <span className="text-[8.5px] font-extrabold text-[#843bab] bg-purple-50 border border-purple-200 px-1.5 py-0.5 rounded-full">
-                            Resmi
-                          </span>
-                        </div>
-                        <p className="text-[9px] text-slate-500">
-                          Pilihan modul keahlian siap kerja
-                        </p>
-                      </div>
-
-                      {/* Section 1: Administrasi & Kreatif */}
-                      <div className="mb-2">
-                        <div className="flex items-center justify-between mb-1 px-0.5">
-                          <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">
-                            Program Vokasi
-                          </p>
-                          <span className="text-[8px] text-slate-400 font-medium">Resmi</span>
-                        </div>
-
-                        <div className="space-y-1.5">
-                          {/* Item 1 - Perkantoran */}
-                          <div className="bg-purple-50/80 p-1.5 rounded-xl border border-purple-200 shadow-2xs flex items-center justify-between">
-                            <div className="flex items-center gap-1.5">
-                              <div className="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0">
-                                <FileSpreadsheet size={13} />
-                              </div>
-                              <div>
-                                <p className="text-[10px] font-bold text-slate-900 leading-tight">
-                                  Administrasi &amp; Excel
-                                </p>
-                                <p className="text-[8px] text-slate-500">12 Modul • Formula Laporan</p>
-                              </div>
-                            </div>
-                            <span className="text-[8px] font-extrabold text-purple-700 bg-purple-100 px-1.5 py-0.5 rounded-sm">
-                              Perkantoran
-                            </span>
-                          </div>
-
-                          {/* Item 2 - Desain */}
-                          <div className="bg-white p-1.5 rounded-xl border border-slate-200/80 shadow-2xs flex items-center justify-between">
-                            <div className="flex items-center gap-1.5">
-                              <div className="w-6 h-6 rounded-lg bg-purple-100 text-[#843bab] flex items-center justify-center shrink-0">
-                                <Palette size={13} />
-                              </div>
-                              <div>
-                                <p className="text-[10px] font-bold text-slate-900 leading-tight">
-                                  Desain Konten Canva
-                                </p>
-                                <p className="text-[8px] text-slate-500">8 Modul • Feed &amp; Banner</p>
-                              </div>
-                            </div>
-                            <span className="text-[8px] font-extrabold text-[#843bab] bg-purple-50 px-1.5 py-0.5 rounded-sm">
-                              Desain
-                            </span>
-                          </div>
-
-                          {/* Item 3 - Pengembangan Diri */}
-                          <div className="bg-white p-1.5 rounded-xl border border-slate-200/80 shadow-2xs flex items-center justify-between">
-                            <div className="flex items-center gap-1.5">
-                              <div className="w-6 h-6 rounded-lg bg-blue-100 text-blue-800 flex items-center justify-center shrink-0">
-                                <Mic size={13} />
-                              </div>
-                              <div>
-                                <p className="text-[10px] font-bold text-slate-900 leading-tight">
-                                  Public Speaking Kerja
-                                </p>
-                                <p className="text-[8px] text-slate-500">6 Modul • Presentasi</p>
-                              </div>
-                            </div>
-                            <span className="text-[8px] font-extrabold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded-sm">
-                              Pengembangan Diri
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Section 2: Keuangan & Bahasa */}
-                      <div className="mb-2">
-                        <div className="flex items-center justify-between mb-1 px-0.5">
-                          <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">
-                            Keahlian Terapan
-                          </p>
-                          <span className="text-[8px] text-slate-400 font-medium">Praktis</span>
-                        </div>
-
-                        <div className="space-y-1.5">
-                          {/* Item 4 - Keuangan */}
-                          <div className="bg-white p-1.5 rounded-xl border border-slate-200/80 shadow-2xs flex items-center justify-between">
-                            <div className="flex items-center gap-1.5">
-                              <div className="w-6 h-6 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center shrink-0">
-                                <Calculator size={13} />
-                              </div>
-                              <div>
-                                <p className="text-[10px] font-bold text-slate-900 leading-tight">
-                                  Pembukuan UMKM
-                                </p>
-                                <p className="text-[8px] text-slate-500">6 Modul • Laba Rugi Kas</p>
-                              </div>
-                            </div>
-                            <span className="text-[8px] font-extrabold text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded-sm">
-                              Keuangan
-                            </span>
-                          </div>
-
-                          {/* Item 5 - Bahasa */}
-                          <div className="bg-white p-1.5 rounded-xl border border-slate-200/80 shadow-2xs flex items-center justify-between">
-                            <div className="flex items-center gap-1.5">
-                              <div className="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0">
-                                <Languages size={13} />
-                              </div>
-                              <div>
-                                <p className="text-[10px] font-bold text-slate-900 leading-tight">
-                                  Bahasa Inggris Kerja
-                                </p>
-                                <p className="text-[8px] text-slate-500">10 Modul • Komunikasi</p>
-                              </div>
-                            </div>
-                            <span className="text-[8px] font-extrabold text-emerald-800 bg-emerald-50 px-1.5 py-0.5 rounded-sm">
-                              Bahasa
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Bagian Bawah Layar: Tombol Aksi & Home Bar */}
-                    <div className="px-3.5 pb-2 pt-1">
-                      <div className="w-full py-2.5 rounded-xl bg-[#ffdf0f] text-slate-950 font-black text-[11px] text-center shadow-xs">
-                        Mulai Belajar Sekarang →
-                      </div>
-                      <div className="w-20 h-1 bg-slate-300 rounded-full mx-auto mt-2" />
-                    </div>
-                  </div>
+                {/* Foto Talent Asli Memegang Smartphone (Transparan, Presisi, Beresolusi Tinggi) */}
+                <div className="relative flex justify-center items-end">
+                  <Image
+                    src="/hero-talent.png"
+                    alt="Talent Lembaga Kursus Pijar Aksara Menunjukkan Aplikasi Kursus di Smartphone"
+                    width={553}
+                    height={665}
+                    priority
+                    className="w-auto h-[380px] sm:h-[450px] lg:h-[500px] xl:h-[530px] max-w-full object-contain object-bottom drop-shadow-[0_20px_35px_rgba(0,0,0,0.45)] pointer-events-none select-none transition-transform duration-300 hover:scale-[1.02]"
+                  />
                 </div>
               </div>
             </div>
