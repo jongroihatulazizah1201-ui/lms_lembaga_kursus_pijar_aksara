@@ -100,14 +100,15 @@ export default async function HomePage() {
               <div className="absolute -bottom-8 -right-4 w-72 h-72 rounded-full border-[22px] border-[#ffdf0f]/20 pointer-events-none select-none z-0 hidden sm:block" />
 
               {/* Foto Talent Asli Memegang Smartphone (Rata Pas Menempel di Batas Bawah Section Ungu, Proporsi Utuh) */}
-              <div className="relative flex justify-center items-end pb-0 mb-0 z-10">
+              <div className="relative flex justify-center items-end pb-0 mb-0 z-10 w-full max-w-[500px] sm:max-w-[540px] lg:max-w-[600px] xl:max-w-[640px]">
                 <Image
                   src="/hero-talent.png"
                   alt="Talent Lembaga Kursus Pijar Aksara Menunjukkan Aplikasi Kursus di Smartphone"
                   width={739}
                   height={564}
                   priority
-                  className="w-auto h-[320px] sm:h-[380px] lg:h-[450px] xl:h-[480px] max-w-full object-contain object-bottom block align-bottom drop-shadow-[0_20px_35px_rgba(0,0,0,0.45)] pointer-events-none select-none transition-transform duration-300 hover:scale-[1.02]"
+                  loading="eager"
+                  className="w-full h-auto aspect-[739/564] object-contain object-bottom block align-bottom drop-shadow-[0_20px_35px_rgba(0,0,0,0.45)] pointer-events-none select-none transition-transform duration-300 hover:scale-[1.02]"
                 />
               </div>
             </div>
