@@ -24,7 +24,7 @@ export default async function HomePage() {
           - Floating badges (Akses LMS 24 Jam & Server Kuis Otomatis) melayang rapi di samping HP
           - Call to Action Pill kuning ala Cakap dengan panah melingkar
          ========================================================================= */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#4a136b] via-[#6d2797] to-[#380a52] text-white lg:h-[calc(100vh-80px)] lg:max-h-[580px] lg:min-h-[480px] flex items-center border-b border-purple-950/30 py-8 lg:py-0">
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#4a136b] via-[#6d2797] to-[#380a52] text-white lg:h-[calc(100vh-80px)] lg:max-h-[620px] lg:min-h-[500px] flex items-center border-b border-purple-950/30 py-8 lg:py-4">
         {/* Ornamen Latar Belakang Geometris ala Cakap (Panah Pertumbuhan & Glow Halus) */}
         <div className="absolute top-0 right-0 w-full h-full overflow-hidden pointer-events-none select-none">
           {/* Panah Pertumbuhan Kompetensi di Kanan Atas */}
@@ -96,14 +96,14 @@ export default async function HomePage() {
             </div>
 
             {/* ================= KOLOM KANAN: Talent Asli Memegang Smartphone + Bubble Chat Badges ================= */}
-            <div className="lg:col-span-5 flex items-end justify-center relative">
+            <div className="lg:col-span-5 flex items-end justify-center relative lg:self-end">
               {/* Cincin Geometris Kuning Lembut di Belakang Talent */}
               <div className="absolute -bottom-10 -right-6 w-72 h-72 rounded-full border-[22px] border-[#ffdf0f]/20 pointer-events-none select-none z-0 hidden sm:block" />
 
               {/* Wrapper Talent & Bubble Chat Badges */}
               <div className="relative inline-block z-10">
                 {/* Bubble Chat iPhone 1: Akses LMS 24 Jam (Menyenggol Sisi Kiri Smartphone yang Dipegang Talent) */}
-                <div className="flex absolute -left-4 sm:-left-10 lg:-left-16 top-10 sm:top-14 z-30 bg-white/95 backdrop-blur-md rounded-2xl rounded-tr-xs p-2.5 sm:p-3 shadow-[0_12px_30px_rgba(0,0,0,0.22)] border border-purple-100/90 items-center gap-2.5 sm:gap-3 w-[170px] sm:w-[190px] hover:scale-105 transition-transform duration-200 group">
+                <div className="flex absolute -left-4 sm:-left-8 lg:-left-12 top-14 sm:top-16 lg:top-20 z-30 bg-white/95 backdrop-blur-md rounded-2xl rounded-tr-xs p-2.5 sm:p-3 shadow-[0_12px_30px_rgba(0,0,0,0.22)] border border-purple-100/90 items-center gap-2.5 sm:gap-3 w-[170px] sm:w-[190px] hover:scale-105 transition-transform duration-200 group">
                   <div className="w-8 h-8 rounded-full bg-purple-100 text-[#843bab] flex items-center justify-center shrink-0 shadow-xs">
                     <Laptop size={15} />
                   </div>
@@ -119,7 +119,7 @@ export default async function HomePage() {
                 </div>
 
                 {/* Bubble Chat iPhone 2: Server Kuis Otomatis (Menyenggol Sisi Kiri Bawah Smartphone yang Dipegang Talent) */}
-                <div className="flex absolute -left-2 sm:-left-8 lg:-left-14 bottom-14 sm:bottom-20 z-30 bg-white/95 backdrop-blur-md rounded-2xl rounded-tr-xs p-2.5 sm:p-3 shadow-[0_12px_30px_rgba(0,0,0,0.22)] border border-purple-100/90 items-center gap-2.5 sm:gap-3 w-[175px] sm:w-[195px] hover:scale-105 transition-transform duration-200 group">
+                <div className="flex absolute -left-2 sm:-left-6 lg:-left-10 bottom-10 sm:bottom-14 lg:bottom-16 z-30 bg-white/95 backdrop-blur-md rounded-2xl rounded-tr-xs p-2.5 sm:p-3 shadow-[0_12px_30px_rgba(0,0,0,0.22)] border border-purple-100/90 items-center gap-2.5 sm:gap-3 w-[175px] sm:w-[195px] hover:scale-105 transition-transform duration-200 group">
                   <div className="w-8 h-8 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center shrink-0 shadow-xs">
                     <CheckCircle2 size={15} />
                   </div>
@@ -139,10 +139,10 @@ export default async function HomePage() {
                   <Image
                     src="/hero-talent.png"
                     alt="Talent Lembaga Kursus Pijar Aksara Menunjukkan Aplikasi Kursus di Smartphone"
-                    width={553}
-                    height={665}
+                    width={560}
+                    height={694}
                     priority
-                    className="w-auto h-[380px] sm:h-[450px] lg:h-[500px] xl:h-[530px] max-w-full object-contain object-bottom drop-shadow-[0_20px_35px_rgba(0,0,0,0.45)] pointer-events-none select-none transition-transform duration-300 hover:scale-[1.02]"
+                    className="w-auto h-[310px] sm:h-[370px] lg:h-[420px] xl:h-[450px] max-w-full object-contain object-bottom drop-shadow-[0_20px_35px_rgba(0,0,0,0.45)] pointer-events-none select-none transition-transform duration-300 hover:scale-[1.02]"
                   />
                 </div>
               </div>
