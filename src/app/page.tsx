@@ -38,7 +38,7 @@ export default async function HomePage() {
         <div className="max-w-7xl mx-auto px-6 w-full relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-end">
             {/* ================= KOLOM KIRI: Jargon & Tipografi Terstruktur Rapi ================= */}
-            <div className="lg:col-span-7 text-center lg:text-left max-w-2xl mx-auto lg:mx-0 pb-8 lg:pb-12 pt-4">
+            <div className="lg:col-span-6 text-center lg:text-left max-w-xl mx-auto lg:mx-0 pb-8 lg:pb-12 pt-4">
               {/* Sub-heading Institusional Bersih (Ukuran Selaras: 13px, Bernapas & Elegan) */}
               <p className="text-xs sm:text-[13px] font-semibold tracking-wider uppercase text-purple-200/90 mb-4 sm:mb-4.5">
                 Lembaga Kursus &amp; Pelatihan Vokasi Resmi di Kota Depok
@@ -95,7 +95,7 @@ export default async function HomePage() {
             </div>
 
             {/* ================= KOLOM KANAN: Talent Asli Memegang Smartphone ================= */}
-            <div className="lg:col-span-5 flex items-end justify-center lg:justify-end relative pb-0 mb-0">
+            <div className="lg:col-span-6 flex items-end justify-center lg:justify-end relative pb-0 mb-0">
               {/* Cincin Geometris Kuning Lembut di Belakang Talent */}
               <div className="absolute -bottom-8 -right-4 w-72 h-72 rounded-full border-[22px] border-[#ffdf0f]/20 pointer-events-none select-none z-0 hidden sm:block" />
 
@@ -104,10 +104,10 @@ export default async function HomePage() {
                 <Image
                   src="/hero-talent.png"
                   alt="Talent Lembaga Kursus Pijar Aksara Menunjukkan Aplikasi Kursus di Smartphone"
-                  width={560}
-                  height={694}
+                  width={739}
+                  height={564}
                   priority
-                  className="w-auto h-[320px] sm:h-[380px] lg:h-[460px] xl:h-[490px] max-w-full object-contain object-bottom block align-bottom drop-shadow-[0_20px_35px_rgba(0,0,0,0.45)] pointer-events-none select-none transition-transform duration-300 hover:scale-[1.02]"
+                  className="w-auto h-[320px] sm:h-[380px] lg:h-[450px] xl:h-[480px] max-w-full object-contain object-bottom block align-bottom drop-shadow-[0_20px_35px_rgba(0,0,0,0.45)] pointer-events-none select-none transition-transform duration-300 hover:scale-[1.02]"
                 />
               </div>
             </div>
