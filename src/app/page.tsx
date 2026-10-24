@@ -102,36 +102,39 @@ export default async function HomePage() {
 
               {/* Wrapper Talent & Bubble Chat Badges */}
               <div className="relative inline-flex items-end z-10">
-                {/* Bubble Chat iPhone 1: Akses LMS 24 Jam (Digeser ke sisi luar kiri agar ponsel dan talent terlihat utuh tanpa tertutup) */}
-                <div className="flex absolute -top-4 left-0 sm:-top-6 sm:left-2 lg:top-14 lg:left-auto lg:right-[calc(100%+20px)] z-30 bg-white/95 backdrop-blur-md rounded-2xl rounded-tr-xs p-2.5 sm:p-3 shadow-[0_12px_30px_rgba(0,0,0,0.22)] border border-purple-100/90 items-center gap-2.5 sm:gap-3 w-[170px] sm:w-[190px] hover:scale-105 transition-transform duration-200 group">
-                  <div className="w-8 h-8 rounded-full bg-purple-100 text-[#843bab] flex items-center justify-center shrink-0 shadow-xs">
-                    <Laptop size={15} />
+                {/* Bubble Chat iPhone 1: Akses LMS 24 Jam (Kompak pada ponsel agar tidak menutupi wajah atau layar HP) */}
+                <div className="flex absolute -top-3 -left-1 sm:-top-5 sm:-left-3 lg:top-14 lg:left-auto lg:right-[calc(100%+20px)] z-30 bg-white/95 backdrop-blur-md rounded-xl lg:rounded-2xl rounded-tr-xs p-1.5 sm:p-2 lg:p-3 shadow-[0_12px_30px_rgba(0,0,0,0.22)] border border-purple-100/90 items-center gap-1.5 sm:gap-2 lg:gap-3 w-auto max-w-[125px] sm:max-w-[145px] lg:w-[190px] hover:scale-105 transition-transform duration-200 group">
+                  <div className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 rounded-full bg-purple-100 text-[#843bab] flex items-center justify-center shrink-0 shadow-xs">
+                    <Laptop className="w-3 h-3 sm:w-3.5 sm:h-3.5 lg:w-[15px] lg:h-[15px]" />
                   </div>
                   <div className="text-left flex-1 min-w-0">
-                    <div className="flex items-center justify-between mb-0.5">
-                      <p className="text-[11px] font-black text-slate-900 leading-tight truncate">Akses LMS 24 Jam</p>
-                      <span className="text-[8px] text-slate-400 font-medium">09:41</span>
+                    <div className="flex items-center justify-between gap-1 mb-0 sm:mb-0.5">
+                      <p className="text-[9px] sm:text-[10px] lg:text-[11px] font-black text-slate-900 leading-tight truncate">Akses LMS 24 Jam</p>
+                      <span className="hidden sm:inline text-[7.5px] lg:text-[8px] text-slate-400 font-medium">09:41</span>
                     </div>
-                    <p className="text-[9.5px] text-slate-500 font-medium leading-snug">Belajar mandiri fleksibel</p>
+                    <p className="hidden sm:block text-[8.5px] lg:text-[9.5px] text-slate-500 font-medium leading-snug truncate">Belajar mandiri fleksibel</p>
                   </div>
                   {/* Ekor Bubble Chat mengarah ke ponsel yang dipegang talent */}
-                  <div className="absolute -right-2 top-3 w-0 h-0 border-y-[5px] border-y-transparent border-l-[8px] border-l-white/95 filter drop-shadow-[2px_0_1px_rgba(0,0,0,0.04)]" />
+                  <div className="absolute -right-1.5 lg:-right-2 top-2 lg:top-3 w-0 h-0 border-y-[4px] lg:border-y-[5px] border-y-transparent border-l-[6px] lg:border-l-[8px] border-l-white/95 filter drop-shadow-[2px_0_1px_rgba(0,0,0,0.04)]" />
                 </div>
 
-                {/* Bubble Chat iPhone 2: Server Kuis Otomatis (Digeser ke sisi luar kiri bawah dengan jarak aman dari tangan & layar) */}
-                <div className="flex absolute -bottom-2 -left-3 sm:bottom-2 sm:-left-4 lg:bottom-16 lg:left-auto lg:right-[calc(100%+14px)] z-30 bg-white/95 backdrop-blur-md rounded-2xl rounded-tr-xs p-2.5 sm:p-3 shadow-[0_12px_30px_rgba(0,0,0,0.22)] border border-purple-100/90 items-center gap-2.5 sm:gap-3 w-[175px] sm:w-[195px] hover:scale-105 transition-transform duration-200 group">
-                  <div className="w-8 h-8 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center shrink-0 shadow-xs">
-                    <CheckCircle2 size={15} />
+                {/* Bubble Chat iPhone 2: Server Kuis Otomatis (Kompak pada ponsel dan diberi jarak agar tidak menutupi tangan & HP) */}
+                <div className="flex absolute bottom-5 -left-1 sm:bottom-8 sm:-left-3 lg:bottom-16 lg:left-auto lg:right-[calc(100%+14px)] z-30 bg-white/95 backdrop-blur-md rounded-xl lg:rounded-2xl rounded-tr-xs p-1.5 sm:p-2 lg:p-3 shadow-[0_12px_30px_rgba(0,0,0,0.22)] border border-purple-100/90 items-center gap-1.5 sm:gap-2 lg:gap-3 w-auto max-w-[125px] sm:max-w-[145px] lg:w-[195px] hover:scale-105 transition-transform duration-200 group">
+                  <div className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center shrink-0 shadow-xs">
+                    <CheckCircle2 className="w-3 h-3 sm:w-3.5 sm:h-3.5 lg:w-[15px] lg:h-[15px]" />
                   </div>
                   <div className="text-left flex-1 min-w-0">
-                    <div className="flex items-center justify-between mb-0.5">
-                      <p className="text-[11px] font-black text-slate-900 leading-tight truncate">Server Kuis Otomatis</p>
-                      <span className="text-[8px] font-bold text-amber-700 bg-amber-100 px-1 rounded">Baru</span>
+                    <div className="flex items-center justify-between gap-1 mb-0 sm:mb-0.5">
+                      <p className="text-[9px] sm:text-[10px] lg:text-[11px] font-black text-slate-900 leading-tight truncate">
+                        <span className="sm:hidden">Server Kuis</span>
+                        <span className="hidden sm:inline">Server Kuis Otomatis</span>
+                      </p>
+                      <span className="text-[7px] sm:text-[8px] font-bold text-amber-700 bg-amber-100 px-1 py-0.2 rounded">Baru</span>
                     </div>
-                    <p className="text-[9.5px] text-slate-500 font-medium leading-snug">Evaluasi kelulusan instan</p>
+                    <p className="hidden sm:block text-[8.5px] lg:text-[9.5px] text-slate-500 font-medium leading-snug truncate">Evaluasi kelulusan instan</p>
                   </div>
                   {/* Ekor Bubble Chat mengarah ke ponsel yang dipegang talent */}
-                  <div className="absolute -right-2 top-3 w-0 h-0 border-y-[5px] border-y-transparent border-l-[8px] border-l-white/95 filter drop-shadow-[2px_0_1px_rgba(0,0,0,0.04)]" />
+                  <div className="absolute -right-1.5 lg:-right-2 top-2 lg:top-3 w-0 h-0 border-y-[4px] lg:border-y-[5px] border-y-transparent border-l-[6px] lg:border-l-[8px] border-l-white/95 filter drop-shadow-[2px_0_1px_rgba(0,0,0,0.04)]" />
                 </div>
 
                 {/* Foto Talent Asli Memegang Smartphone (Rata Pas Menempel di Batas Bawah Section Ungu, Proporsi Utuh) */}
@@ -142,7 +145,7 @@ export default async function HomePage() {
                     width={560}
                     height={694}
                     priority
-                    className="w-auto h-[320px] sm:h-[380px] lg:h-[450px] xl:h-[480px] max-w-full object-contain object-bottom block align-bottom drop-shadow-[0_20px_35px_rgba(0,0,0,0.45)] pointer-events-none select-none transition-transform duration-300 hover:scale-[1.02]"
+                    className="w-auto h-[290px] sm:h-[360px] lg:h-[450px] xl:h-[480px] max-w-full object-contain object-bottom block align-bottom drop-shadow-[0_20px_35px_rgba(0,0,0,0.45)] pointer-events-none select-none transition-transform duration-300 hover:scale-[1.02]"
                   />
                 </div>
               </div>
