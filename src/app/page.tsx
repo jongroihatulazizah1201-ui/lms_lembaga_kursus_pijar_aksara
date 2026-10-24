@@ -24,7 +24,7 @@ export default async function HomePage() {
           - Floating badges (Akses LMS 24 Jam & Server Kuis Otomatis) melayang rapi di samping HP
           - Call to Action Pill kuning ala Cakap dengan panah melingkar
          ========================================================================= */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#4a136b] via-[#6d2797] to-[#380a52] text-white lg:h-[calc(100vh-80px)] lg:max-h-[620px] lg:min-h-[500px] flex items-center border-b border-purple-950/30 py-8 lg:py-4">
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#4a136b] via-[#6d2797] to-[#380a52] text-white lg:h-[calc(100vh-80px)] lg:min-h-[520px] lg:max-h-[640px] flex flex-col justify-end border-b border-purple-950/30 pt-8 lg:pt-6 pb-0">
         {/* Ornamen Latar Belakang Geometris ala Cakap (Panah Pertumbuhan & Glow Halus) */}
         <div className="absolute top-0 right-0 w-full h-full overflow-hidden pointer-events-none select-none">
           {/* Panah Pertumbuhan Kompetensi di Kanan Atas */}
@@ -37,9 +37,9 @@ export default async function HomePage() {
         </div>
 
         <div className="max-w-7xl mx-auto px-6 w-full relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-end">
             {/* ================= KOLOM KIRI: Jargon & Tipografi Terstruktur Rapi ================= */}
-            <div className="lg:col-span-7 text-center lg:text-left max-w-2xl mx-auto lg:mx-0">
+            <div className="lg:col-span-7 text-center lg:text-left max-w-2xl mx-auto lg:mx-0 pb-8 lg:pb-12 pt-4">
               {/* Sub-heading Institusional Bersih (Ukuran Selaras: 13px, Bernapas & Elegan) */}
               <p className="text-xs sm:text-[13px] font-semibold tracking-wider uppercase text-purple-200/90 mb-4 sm:mb-4.5">
                 Lembaga Kursus &amp; Pelatihan Vokasi Resmi di Kota Depok
@@ -96,14 +96,14 @@ export default async function HomePage() {
             </div>
 
             {/* ================= KOLOM KANAN: Talent Asli Memegang Smartphone + Bubble Chat Badges ================= */}
-            <div className="lg:col-span-5 flex items-end justify-center relative lg:self-end">
+            <div className="lg:col-span-5 flex items-end justify-center lg:justify-end relative pb-0 mb-0">
               {/* Cincin Geometris Kuning Lembut di Belakang Talent */}
-              <div className="absolute -bottom-10 -right-6 w-72 h-72 rounded-full border-[22px] border-[#ffdf0f]/20 pointer-events-none select-none z-0 hidden sm:block" />
+              <div className="absolute -bottom-8 -right-4 w-72 h-72 rounded-full border-[22px] border-[#ffdf0f]/20 pointer-events-none select-none z-0 hidden sm:block" />
 
               {/* Wrapper Talent & Bubble Chat Badges */}
-              <div className="relative inline-block z-10">
-                {/* Bubble Chat iPhone 1: Akses LMS 24 Jam (Menyenggol Sisi Kiri Smartphone yang Dipegang Talent) */}
-                <div className="flex absolute -left-4 sm:-left-8 lg:-left-12 top-14 sm:top-16 lg:top-20 z-30 bg-white/95 backdrop-blur-md rounded-2xl rounded-tr-xs p-2.5 sm:p-3 shadow-[0_12px_30px_rgba(0,0,0,0.22)] border border-purple-100/90 items-center gap-2.5 sm:gap-3 w-[170px] sm:w-[190px] hover:scale-105 transition-transform duration-200 group">
+              <div className="relative inline-flex items-end z-10">
+                {/* Bubble Chat iPhone 1: Akses LMS 24 Jam (Digeser ke sisi luar kiri agar ponsel dan talent terlihat utuh tanpa tertutup) */}
+                <div className="flex absolute -top-4 left-0 sm:-top-6 sm:left-2 lg:top-14 lg:left-auto lg:right-[calc(100%+20px)] z-30 bg-white/95 backdrop-blur-md rounded-2xl rounded-tr-xs p-2.5 sm:p-3 shadow-[0_12px_30px_rgba(0,0,0,0.22)] border border-purple-100/90 items-center gap-2.5 sm:gap-3 w-[170px] sm:w-[190px] hover:scale-105 transition-transform duration-200 group">
                   <div className="w-8 h-8 rounded-full bg-purple-100 text-[#843bab] flex items-center justify-center shrink-0 shadow-xs">
                     <Laptop size={15} />
                   </div>
@@ -118,8 +118,8 @@ export default async function HomePage() {
                   <div className="absolute -right-2 top-3 w-0 h-0 border-y-[5px] border-y-transparent border-l-[8px] border-l-white/95 filter drop-shadow-[2px_0_1px_rgba(0,0,0,0.04)]" />
                 </div>
 
-                {/* Bubble Chat iPhone 2: Server Kuis Otomatis (Menyenggol Sisi Kiri Bawah Smartphone yang Dipegang Talent) */}
-                <div className="flex absolute -left-2 sm:-left-6 lg:-left-10 bottom-10 sm:bottom-14 lg:bottom-16 z-30 bg-white/95 backdrop-blur-md rounded-2xl rounded-tr-xs p-2.5 sm:p-3 shadow-[0_12px_30px_rgba(0,0,0,0.22)] border border-purple-100/90 items-center gap-2.5 sm:gap-3 w-[175px] sm:w-[195px] hover:scale-105 transition-transform duration-200 group">
+                {/* Bubble Chat iPhone 2: Server Kuis Otomatis (Digeser ke sisi luar kiri bawah dengan jarak aman dari tangan & layar) */}
+                <div className="flex absolute -bottom-2 -left-3 sm:bottom-2 sm:-left-4 lg:bottom-16 lg:left-auto lg:right-[calc(100%+14px)] z-30 bg-white/95 backdrop-blur-md rounded-2xl rounded-tr-xs p-2.5 sm:p-3 shadow-[0_12px_30px_rgba(0,0,0,0.22)] border border-purple-100/90 items-center gap-2.5 sm:gap-3 w-[175px] sm:w-[195px] hover:scale-105 transition-transform duration-200 group">
                   <div className="w-8 h-8 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center shrink-0 shadow-xs">
                     <CheckCircle2 size={15} />
                   </div>
@@ -134,15 +134,15 @@ export default async function HomePage() {
                   <div className="absolute -right-2 top-3 w-0 h-0 border-y-[5px] border-y-transparent border-l-[8px] border-l-white/95 filter drop-shadow-[2px_0_1px_rgba(0,0,0,0.04)]" />
                 </div>
 
-                {/* Foto Talent Asli Memegang Smartphone (Transparan, Presisi, Beresolusi Tinggi) */}
-                <div className="relative flex justify-center items-end">
+                {/* Foto Talent Asli Memegang Smartphone (Rata Pas Menempel di Batas Bawah Section Ungu, Proporsi Utuh) */}
+                <div className="relative flex justify-center items-end pb-0 mb-0">
                   <Image
                     src="/hero-talent.png"
                     alt="Talent Lembaga Kursus Pijar Aksara Menunjukkan Aplikasi Kursus di Smartphone"
                     width={560}
                     height={694}
                     priority
-                    className="w-auto h-[310px] sm:h-[370px] lg:h-[420px] xl:h-[450px] max-w-full object-contain object-bottom drop-shadow-[0_20px_35px_rgba(0,0,0,0.45)] pointer-events-none select-none transition-transform duration-300 hover:scale-[1.02]"
+                    className="w-auto h-[320px] sm:h-[380px] lg:h-[450px] xl:h-[480px] max-w-full object-contain object-bottom block align-bottom drop-shadow-[0_20px_35px_rgba(0,0,0,0.45)] pointer-events-none select-none transition-transform duration-300 hover:scale-[1.02]"
                   />
                 </div>
               </div>
