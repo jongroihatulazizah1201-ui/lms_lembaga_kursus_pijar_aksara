@@ -56,7 +56,7 @@ export default function CourseBrochureUploader({ value, onChange, disabled }: Pr
       </div>
 
       <p className="text-[11px] text-slate-500 leading-relaxed">
-        Unggah media brosur promosi kursus. Resolusi standar adalah <strong>1920 x 1080 piksel</strong> (Format PNG, JPG, atau WebP, maks. 10MB). Gambar otomatis dioptimasi dan disimpan ke Supabase Storage.
+        Unggah media brosur promosi kursus. Resolusi standar adalah <strong>1920 x 1080 piksel</strong> (Format PNG, JPG, atau WebP, maks. 1MB). Gambar otomatis dioptimasi dan disimpan ke Supabase Storage.
       </p>
 
       {errorMsg && (

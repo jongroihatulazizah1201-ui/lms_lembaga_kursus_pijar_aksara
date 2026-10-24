@@ -4,18 +4,18 @@
 -- serta memperbarui get_kursus_katalog RPC untuk menyertakan gambar_url
 -- ========================================================
 
--- 1. Buat bucket storage publik untuk media brosur / pamflet kursus (10MB limit)
+-- 1. Buat bucket storage publik untuk media brosur / pamflet kursus (1MB limit)
 INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 VALUES (
   'kursus_brosur',
   'kursus_brosur',
   true,
-  10485760,
+  1048576,
   ARRAY['image/jpeg', 'image/png', 'image/webp']
 )
 ON CONFLICT (id) DO UPDATE SET
   public = true,
-  file_size_limit = 10485760,
+  file_size_limit = 1048576,
   allowed_mime_types = ARRAY['image/jpeg', 'image/png', 'image/webp'];
 
 -- 2. Kebijakan RLS Storage Objects

@@ -35,9 +35,9 @@ export async function uploadBrosurKursusAction(formData: FormData) {
     return { error: 'Format file tidak didukung. Harap gunakan format PNG, JPG, atau WebP.' };
   }
 
-  // Maksimal 10MB
-  if (file.size > 10 * 1024 * 1024) {
-    return { error: 'Ukuran file terlalu besar. Maksimal 10MB.' };
+  // Maksimal 1MB
+  if (file.size > 1 * 1024 * 1024) {
+    return { error: 'Ukuran file terlalu besar. Maksimal 1MB.' };
   }
 
   try {
