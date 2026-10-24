@@ -9,7 +9,7 @@ interface CourseIllustrationProps {
 }
 
 const DEFAULT_PAMPHLET_MAP: Record<string, string> = {
-  'excel-administrasi-perkantoran': 'https://soszunleqyzfubbrwlsz.supabase.co/storage/v1/object/public/kursus_brosur/excel-administrasi-perkantoran.png',
+  'excel-administrasi-perkantoran': 'https://soszunleqyzfubbrwlsz.supabase.co/storage/v1/object/public/kursus_brosur/excel-administrasi-perkantoran-v2.png',
   'desain-konten-canva': 'https://soszunleqyzfubbrwlsz.supabase.co/storage/v1/object/public/kursus_brosur/desain-konten-canva.png',
   'bahasa-inggris-percakapan-kerja': 'https://soszunleqyzfubbrwlsz.supabase.co/storage/v1/object/public/kursus_brosur/bahasa-inggris-percakapan-kerja.png',
   'dasar-pembukuan-umkm': 'https://soszunleqyzfubbrwlsz.supabase.co/storage/v1/object/public/kursus_brosur/dasar-pembukuan-umkm.png',
