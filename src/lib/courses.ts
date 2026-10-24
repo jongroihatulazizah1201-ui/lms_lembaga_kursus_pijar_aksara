@@ -14,6 +14,7 @@ export interface CourseDetailData {
   kursi_terpakai: number;
   sisa_kursi: number;
   instruktur_nama: string;
+  gambar_url?: string | null;
   modul: Array<{
     id: string;
     urutan: number;
@@ -62,6 +63,7 @@ export async function getPublishedCourses(
     instruktur_nama: string;
     kursi_terpakai: number;
     sisa_kursi: number;
+    gambar_url?: string | null;
   }>;
 
   if (category && category !== 'Semua') {
@@ -125,6 +127,7 @@ export async function getCourseBySlug(slug: string): Promise<CourseDetailData | 
     kursi_terpakai: Number(course.kursi_terpakai),
     sisa_kursi: Number(course.sisa_kursi),
     instruktur_nama: course.instruktur_nama || 'Instruktur Pijar Aksara',
+    gambar_url: course.gambar_url || null,
     modul: (modulList || []) as any[],
   };
 }

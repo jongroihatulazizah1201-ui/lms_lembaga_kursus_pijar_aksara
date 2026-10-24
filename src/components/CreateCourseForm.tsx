@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createKursusAction } from '@/app/instruktur/actions';
 import { Plus, AlertCircle, CheckCircle2, Loader2, BookOpen } from 'lucide-react';
+import CourseBrochureUploader from '@/components/CourseBrochureUploader';
 
 export default function CreateCourseForm() {
   const router = useRouter();
@@ -19,6 +20,7 @@ export default function CreateCourseForm() {
   const [harga, setHarga] = useState<number>(0);
   const [kuota, setKuota] = useState<number>(20);
   const [nilaiLulus, setNilaiLulus] = useState<number>(70);
+  const [gambarUrl, setGambarUrl] = useState<string | null>(null);
 
   const handleJudulChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
@@ -64,6 +66,7 @@ export default function CreateCourseForm() {
       harga,
       kuota,
       nilai_lulus: nilaiLulus,
+      gambar_url: gambarUrl,
     });
     setLoading(false);
 
@@ -197,6 +200,15 @@ export default function CreateCourseForm() {
             />
             <span className="text-[11px] text-slate-500">Standar kelulusan: 70 poin</span>
           </div>
+        </div>
+
+        {/* Media Brosur / Pamflet Kursus (Ukuran standar 1920x1080) */}
+        <div className="pt-2 pb-1 border-t border-slate-100">
+          <CourseBrochureUploader
+            value={gambarUrl}
+            onChange={setGambarUrl}
+            disabled={loading}
+          />
         </div>
 
         {/* Ringkasan Singkat */}

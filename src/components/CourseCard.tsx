@@ -15,6 +15,7 @@ export interface CourseData {
   kursi_terpakai: number;
   instruktur_nama: string;
   jumlah_modul?: number;
+  gambar_url?: string | null;
 }
 
 export function formatRupiah(amount: number): string {
@@ -37,12 +38,12 @@ export default function CourseCard({ course }: { course: CourseData }) {
       className="bg-white rounded-2xl border border-slate-200 hover:border-[#843bab]/40 shadow-xs hover:shadow-lg transition-all duration-200 flex flex-col justify-between overflow-hidden group h-full"
     >
       <div className="p-4 sm:p-5 space-y-3.5">
-        {/* Banner Ilustrasi Top (Sesuai Referensi Gambar Pengguna) */}
+        {/* Banner Media Brosur / Ilustrasi Top */}
         <Link
           href={`/kursus/${course.slug}`}
           className="block overflow-hidden rounded-xl bg-slate-50 border border-slate-100 hover:opacity-95 transition-all group-hover:scale-[1.01]"
         >
-          <CourseIllustration slug={course.slug} title={course.judul} />
+          <CourseIllustration slug={course.slug} title={course.judul} imageUrl={course.gambar_url} />
         </Link>
 
         {/* Top Badges (Category, Free Label, Seats) */}

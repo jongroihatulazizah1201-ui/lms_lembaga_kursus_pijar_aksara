@@ -3,6 +3,81 @@
 import { createClient } from '@/lib/supabase/server';
 import { revalidatePath } from 'next/cache';
 
+import sharp from 'sharp';
+
+// 0. Unggah Media Brosur / Pamflet Kursus (Ukuran standar 1920x1080 piksel)
+export async function uploadBrosurKursusAction(formData: FormData) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { error: 'Pengguna belum terautentikasi.' };
+  }
+
+  // Verifikasi peran instruktur atau admin
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('peran')
+    .eq('id', user.id)
+    .single();
+
+  if (!profile || (profile.peran !== 'instruktur' && profile.peran !== 'admin')) {
+    return { error: 'Hanya instruktur atau admin yang berhak mengunggah media brosur kursus.' };
+  }
+
+  const file = formData.get('file') as File | null;
+  if (!file) {
+    return { error: 'File gambar brosur tidak ditemukan.' };
+  }
+
+  const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+  if (!allowedTypes.includes(file.type)) {
+    return { error: 'Format file tidak didukung. Harap gunakan format PNG, JPG, atau WebP.' };
+  }
+
+  // Maksimal 10MB
+  if (file.size > 10 * 1024 * 1024) {
+    return { error: 'Ukuran file terlalu besar. Maksimal 10MB.' };
+  }
+
+  try {
+    const arrayBuffer = await file.arrayBuffer();
+    const inputBuffer = Buffer.from(arrayBuffer);
+
+    // Otomatis normalisasi format gambar ke resolusi standar 1920x1080 piksel (16:9)
+    const normalizedBuffer = await sharp(inputBuffer)
+      .resize(1920, 1080, { fit: 'cover' })
+      .png({ quality: 90 })
+      .toBuffer();
+
+    const timestamp = Date.now();
+    const cleanName = file.name
+      .toLowerCase()
+      .replace(/[^a-z0-9.]+/g, '-')
+      .replace(/-+/g, '-');
+    const storagePath = `brosur-${timestamp}-${cleanName.endsWith('.png') ? cleanName : `${cleanName}.png`}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('kursus_brosur')
+      .upload(storagePath, normalizedBuffer, {
+        contentType: 'image/png',
+        upsert: true,
+      });
+
+    if (uploadError) {
+      return { error: `Gagal mengunggah ke penyimpanan: ${uploadError.message}` };
+    }
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('kursus_brosur')
+      .getPublicUrl(storagePath);
+
+    return { success: true, url: publicUrl };
+  } catch (err: any) {
+    return { error: `Gagal memproses gambar brosur: ${err.message}` };
+  }
+}
+
 // 1. Buat Kursus Baru (Otomatis Draf, BR-02)
 export async function createKursusAction(formData: {
   judul: string;
@@ -13,6 +88,7 @@ export async function createKursusAction(formData: {
   harga: number;
   kuota: number;
   nilai_lulus?: number;
+  gambar_url?: string | null;
 }) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -53,6 +129,7 @@ export async function createKursusAction(formData: {
       harga: formData.harga,
       kuota: formData.kuota,
       nilai_lulus: formData.nilai_lulus || 70,
+      gambar_url: formData.gambar_url || null,
       status: 'draf', // Selalu draf saat baru dibuat (BR-02, Tabel 6.1)
     })
     .select()
@@ -75,6 +152,7 @@ export async function updateKursusAction(id: string, formData: {
   harga: number;
   kuota: number;
   nilai_lulus: number;
+  gambar_url?: string | null;
 }) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -83,18 +161,24 @@ export async function updateKursusAction(id: string, formData: {
     return { error: 'Pengguna belum terautentikasi.' };
   }
 
+  const updatePayload: Record<string, any> = {
+    judul: formData.judul,
+    kategori: formData.kategori,
+    ringkasan: formData.ringkasan,
+    deskripsi: formData.deskripsi,
+    harga: formData.harga,
+    kuota: formData.kuota,
+    nilai_lulus: formData.nilai_lulus,
+    diubah_pada: new Date().toISOString(),
+  };
+
+  if (formData.gambar_url !== undefined) {
+    updatePayload.gambar_url = formData.gambar_url;
+  }
+
   const { data, error } = await supabase
     .from('kursus')
-    .update({
-      judul: formData.judul,
-      kategori: formData.kategori,
-      ringkasan: formData.ringkasan,
-      deskripsi: formData.deskripsi,
-      harga: formData.harga,
-      kuota: formData.kuota,
-      nilai_lulus: formData.nilai_lulus,
-      diubah_pada: new Date().toISOString(),
-    })
+    .update(updatePayload)
     .eq('id', id)
     .select()
     .single();
@@ -105,6 +189,10 @@ export async function updateKursusAction(id: string, formData: {
 
   revalidatePath('/instruktur');
   revalidatePath(`/instruktur/kursus/${id}`);
+  revalidatePath('/kursus');
+  if (data?.slug) {
+    revalidatePath(`/kursus/${data.slug}`);
+  }
   return { success: true, kursus: data };
 }
 

@@ -160,7 +160,7 @@ export default function PopularCoursesCarousel({ courses }: Props) {
                   href={`/kursus/${course.slug}`}
                   className="block overflow-hidden rounded-xl bg-slate-50 border border-slate-100 hover:opacity-95 transition-all group-hover:scale-[1.01]"
                 >
-                  <CourseIllustration slug={course.slug} title={course.judul} className="h-32 sm:h-36" />
+                  <CourseIllustration slug={course.slug} title={course.judul} imageUrl={course.gambar_url} className="h-32 sm:h-36" />
                 </Link>
 
                 {/* Badge Kategori & Jumlah Modul */}

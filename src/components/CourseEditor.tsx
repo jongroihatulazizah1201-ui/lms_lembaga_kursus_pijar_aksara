@@ -12,6 +12,7 @@ import {
 } from '@/app/instruktur/actions';
 import CourseStatusBadge from '@/components/CourseStatusBadge';
 import InstructorCourseSubmitModal from '@/components/InstructorCourseSubmitModal';
+import CourseBrochureUploader from '@/components/CourseBrochureUploader';
 import {
   ArrowLeft,
   BookOpen,
@@ -65,6 +66,7 @@ interface CourseData {
   nilai_lulus: number;
   status: string;
   catatan_tinjauan: string | null;
+  gambar_url?: string | null;
   modul: Module[];
 }
 
@@ -104,6 +106,7 @@ export default function CourseEditor({ course }: Props) {
   const [editHarga, setEditHarga] = useState<number>(course.harga);
   const [editKuota, setEditKuota] = useState<number>(course.kuota);
   const [editNilaiLulus, setEditNilaiLulus] = useState<number>(course.nilai_lulus);
+  const [editGambarUrl, setEditGambarUrl] = useState<string | null>(course.gambar_url || null);
 
   const sortedModules = [...(course.modul || [])].sort((a, b) => a.urutan - b.urutan);
   const totalModul = sortedModules.length;
@@ -222,6 +225,7 @@ export default function CourseEditor({ course }: Props) {
       harga: editHarga,
       kuota: editKuota,
       nilai_lulus: editNilaiLulus,
+      gambar_url: editGambarUrl,
     });
     setSubmittingAction(false);
 
@@ -760,6 +764,15 @@ export default function CourseEditor({ course }: Props) {
                 />
                 <span className="text-[10px] text-slate-400">1 s/d 100 peserta</span>
               </div>
+            </div>
+
+            {/* Media Brosur / Pamflet Kursus (Ukuran standar 1920x1080) */}
+            <div className="pt-2 pb-1 border-t border-slate-100">
+              <CourseBrochureUploader
+                value={editGambarUrl}
+                onChange={setEditGambarUrl}
+                disabled={isLocked || submittingAction}
+              />
             </div>
 
             <div className="space-y-1">

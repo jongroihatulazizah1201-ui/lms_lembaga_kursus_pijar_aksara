@@ -54,6 +54,7 @@ export default async function CourseDetailPage({ params }: Props) {
       nilai_lulus,
       status,
       catatan_tinjauan,
+      gambar_url,
       modul (
         id,
         urutan,

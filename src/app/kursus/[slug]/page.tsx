@@ -269,6 +269,7 @@ export default async function CourseDetailPage({ params }: Props) {
                   <CourseIllustration
                     slug={course.slug}
                     title={course.judul}
+                    imageUrl={course.gambar_url}
                     className="h-52 sm:h-64 shadow-xs"
                   />
                   <div className="px-3 py-2 text-center text-xs font-semibold text-slate-500 border-t border-slate-100 mt-2">

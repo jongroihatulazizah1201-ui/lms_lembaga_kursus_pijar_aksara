@@ -1,17 +1,46 @@
 import React from 'react';
+import Image from 'next/image';
 
 interface CourseIllustrationProps {
   slug: string;
   title: string;
+  imageUrl?: string | null;
   className?: string;
 }
+
+const DEFAULT_PAMPHLET_MAP: Record<string, string> = {
+  'excel-administrasi-perkantoran': 'https://soszunleqyzfubbrwlsz.supabase.co/storage/v1/object/public/kursus_brosur/excel-administrasi-perkantoran.png',
+  'desain-konten-canva': 'https://soszunleqyzfubbrwlsz.supabase.co/storage/v1/object/public/kursus_brosur/desain-konten-canva.png',
+  'bahasa-inggris-percakapan-kerja': 'https://soszunleqyzfubbrwlsz.supabase.co/storage/v1/object/public/kursus_brosur/bahasa-inggris-percakapan-kerja.png',
+  'dasar-pembukuan-umkm': 'https://soszunleqyzfubbrwlsz.supabase.co/storage/v1/object/public/kursus_brosur/dasar-pembukuan-umkm.png',
+  'public-speaking-presentasi-kantor': 'https://soszunleqyzfubbrwlsz.supabase.co/storage/v1/object/public/kursus_brosur/public-speaking-presentasi-kantor.png',
+  'word-surat-dinas': 'https://soszunleqyzfubbrwlsz.supabase.co/storage/v1/object/public/kursus_brosur/word-surat-dinas.png',
+};
 
 export default function CourseIllustration({
   slug,
   title,
+  imageUrl,
   className = '',
 }: CourseIllustrationProps) {
-  // Container styling matches Mekari University reference: rounded-xl, soft tinted background, centered illustration
+  const photoUrl = imageUrl || DEFAULT_PAMPHLET_MAP[slug];
+
+  if (photoUrl) {
+    return (
+      <div
+        className={`relative w-full aspect-video overflow-hidden rounded-xl bg-slate-100 flex items-center justify-center select-none ${className}`}
+      >
+        <img
+          src={photoUrl}
+          alt={`Media Brosur Kursus: ${title}`}
+          loading="lazy"
+          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+        />
+      </div>
+    );
+  }
+
+  // Fallback vector illustration jika belum ada pamflet yang diunggah
   return (
     <div
       className={`relative w-full h-40 sm:h-44 overflow-hidden rounded-xl flex items-center justify-center p-3 select-none ${className}`}
