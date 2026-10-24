@@ -96,14 +96,14 @@ export default async function HomePage() {
             </div>
 
             {/* ================= KOLOM KANAN: Talent Asli Memegang Smartphone + Bubble Chat Badges Kiri & Kanan ================= */}
-            <div className="lg:col-span-6 flex items-end justify-center relative pb-0 mb-0">
+            <div className="lg:col-span-6 flex items-end justify-center lg:justify-start lg:pl-4 xl:pl-8 relative pb-0 mb-0">
               {/* Cincin Geometris Kuning Lembut di Belakang Talent */}
               <div className="absolute -bottom-8 -right-4 w-72 h-72 rounded-full border-[22px] border-[#ffdf0f]/20 pointer-events-none select-none z-0 hidden sm:block" />
 
               {/* Wrapper Talent & Bubble Chat Badges */}
               <div className="relative inline-flex items-end z-10">
                 {/* Bubble Chat Kiri: Akses LMS 24 Jam (Menunjuk ke arah smartphone di sebelah kiri) */}
-                <div className="flex absolute -left-3 sm:-left-6 top-3 sm:top-6 lg:top-20 xl:top-24 lg:left-auto lg:right-[calc(100%+14px)] z-30 bg-white/95 backdrop-blur-md rounded-2xl rounded-tr-xs p-2.5 sm:p-3 shadow-[0_12px_30px_rgba(0,0,0,0.22)] border border-purple-100/90 items-center gap-2 sm:gap-3 w-auto whitespace-nowrap hover:scale-105 transition-transform duration-200 group">
+                <div className="flex absolute -left-3 sm:-left-6 top-3 sm:top-6 lg:top-20 xl:top-24 lg:left-auto lg:right-[calc(100%+10px)] z-30 bg-white/95 backdrop-blur-md rounded-2xl rounded-tr-xs p-2.5 sm:p-3 shadow-[0_12px_30px_rgba(0,0,0,0.22)] border border-purple-100/90 items-center gap-2 sm:gap-3 w-auto whitespace-nowrap hover:scale-105 transition-transform duration-200 group">
                   <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-purple-100 text-[#843bab] flex items-center justify-center shrink-0 shadow-xs">
                     <Laptop size={14} className="sm:w-[15px] sm:h-[15px]" />
                   </div>
@@ -119,7 +119,7 @@ export default async function HomePage() {
                 </div>
 
                 {/* Bubble Chat Kanan: Server Kuis Otomatis (Menunjuk ke arah talent di sebelah kanan) */}
-                <div className="flex absolute -right-3 sm:-right-6 bottom-8 sm:bottom-12 lg:bottom-auto lg:top-28 xl:top-32 lg:right-auto lg:left-[calc(100%+14px)] z-30 bg-white/95 backdrop-blur-md rounded-2xl rounded-tl-xs p-2.5 sm:p-3 shadow-[0_12px_30px_rgba(0,0,0,0.22)] border border-purple-100/90 items-center gap-2 sm:gap-3 w-auto whitespace-nowrap hover:scale-105 transition-transform duration-200 group">
+                <div className="flex absolute -right-3 sm:-right-6 bottom-8 sm:bottom-12 lg:bottom-auto lg:top-28 xl:top-32 lg:right-auto lg:left-[calc(100%+10px)] z-30 bg-white/95 backdrop-blur-md rounded-2xl rounded-tl-xs p-2.5 sm:p-3 shadow-[0_12px_30px_rgba(0,0,0,0.22)] border border-purple-100/90 items-center gap-2 sm:gap-3 w-auto whitespace-nowrap hover:scale-105 transition-transform duration-200 group">
                   {/* Ekor Bubble Chat Kanan mengarah ke talent */}
                   <div className="absolute -left-2 top-3.5 sm:top-4 w-0 h-0 border-y-[5px] border-y-transparent border-r-[8px] border-r-white/95 filter drop-shadow-[-2px_0_1px_rgba(0,0,0,0.04)]" />
                   <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center shrink-0 shadow-xs">
