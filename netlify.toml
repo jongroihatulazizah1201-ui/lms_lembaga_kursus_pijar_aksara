@@ -1,3 +1,15 @@
+# Konfigurasi Netlify untuk Next.js (dipakai Netlify Next.js Runtime / OpenNext)
+# Lihat: https://docs.netlify.com/frameworks/next-js/overview/
+
 [build]
   command = "npm run build"
   publish = ".next"
+
+[build.environment]
+  # Node LTS yang stabil untuk build (local CLI memakai Node sistem)
+  NODE_VERSION = "22"
+
+# Runtime resmi Netlify untuk Next.js: menyediakan Netlify Functions
+# untuk SSR, route handlers, server actions, dan middleware/proxy.
+[[plugins]]
+  package = "@netlify/plugin-nextjs"

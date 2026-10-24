@@ -1,7 +1,7 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname;
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set('x-pathname', path);
@@ -106,7 +106,7 @@ export async function middleware(request: NextRequest) {
         }
       }
     } catch {
-      // Jika terjadi kendala jaringan sementara di middleware, izinkan request lolos
+      // Jika terjadi kendala jaringan sementara di proxy, izinkan request lolos
       // ke Server Component untuk diverifikasi ulang tanpa membuang sesi user secara keliru
     }
   }
