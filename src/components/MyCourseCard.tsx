@@ -25,6 +25,7 @@ import {
   Zap,
   Sparkles,
   QrCode,
+  HelpCircle,
 } from 'lucide-react';
 import { getOrCreateMayarPaymentUrlAction } from '@/app/kursus-saya/actions';
 import LoadingSpinner from '@/components/LoadingSpinner';
@@ -560,6 +561,19 @@ export default function MyCourseCard({ enrollment, onCancelRequest }: Props) {
                       </span>
                     </div>
 
+                    {/* Langkah Singkat Bayar via Mayar */}
+                    <div className="pt-2 border-t border-purple-200/60 space-y-1.5 text-[11px] text-slate-700">
+                      <div className="font-bold text-slate-800 text-[11px] flex items-center gap-1">
+                        <HelpCircle size={12} className="text-[#843bab]" />
+                        <span>Langkah Pembayaran Otomatis:</span>
+                      </div>
+                      <ol className="list-decimal list-inside space-y-1 text-slate-600 pl-0.5 leading-relaxed">
+                        <li>Klik tombol <strong>"Bayar Sekarang via Mayar"</strong> di bawah.</li>
+                        <li>Pilih <strong>QRIS</strong> untuk scan via m-Banking/e-wallet, atau pilih <strong>Virtual Account</strong> bank Anda.</li>
+                        <li>Selesaikan transfer. Akses belajar langsung <strong>aktif otomatis</strong> tanpa kirim bukti bayar!</li>
+                      </ol>
+                    </div>
+
                     {mayarError && (
                       <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700 flex items-start gap-1.5">
                         <AlertCircle size={14} className="text-rose-600 shrink-0 mt-0.5" />
@@ -680,6 +694,19 @@ export default function MyCourseCard({ enrollment, onCancelRequest }: Props) {
                           </>
                         )}
                       </button>
+                    </div>
+
+                    {/* Langkah Petunjuk Transfer Manual */}
+                    <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5 text-[11px] text-slate-600">
+                      <div className="font-bold text-slate-800 flex items-center gap-1">
+                        <HelpCircle size={12} className="text-slate-600" />
+                        <span>Langkah Transfer Manual:</span>
+                      </div>
+                      <ol className="list-decimal list-inside space-y-1 pl-0.5 leading-relaxed">
+                        <li>Transfer tepat sesuai nominal tagihan ke salah satu rekening resmi di atas.</li>
+                        <li>Simpan struk / tangkap layar (*screenshot*) bukti transfer berhasil.</li>
+                        <li>Buka tautan di bawah dan unggah struk transfer Anda agar diverifikasi admin.</li>
+                      </ol>
                     </div>
 
                     <div className="pt-1">

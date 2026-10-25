@@ -584,6 +584,52 @@ export default function ManualPaymentClient({
                 </span>
               </div>
 
+              {/* Petunjuk Langkah demi Langkah Bayar via Mayar */}
+              <div className="pt-2 border-t border-slate-100 space-y-2.5">
+                <div className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                  <HelpCircle size={14} className="text-[#843bab]" />
+                  <span>Panduan Langkah Pembayaran Otomatis Mayar:</span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-0.5">
+                  <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="w-5 h-5 rounded-full bg-[#843bab] text-white text-[10px] font-black flex items-center justify-center shrink-0">
+                        1
+                      </span>
+                      <span className="text-xs font-bold text-slate-900">Buka Mayar</span>
+                    </div>
+                    <p className="text-[11px] text-slate-600 leading-relaxed">
+                      Klik tombol <strong>"Bayar Sekarang"</strong> di bawah untuk membuka halaman tagihan resmi.
+                    </p>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="w-5 h-5 rounded-full bg-[#843bab] text-white text-[10px] font-black flex items-center justify-center shrink-0">
+                        2
+                      </span>
+                      <span className="text-xs font-bold text-slate-900">Pilih Metode</span>
+                    </div>
+                    <p className="text-[11px] text-slate-600 leading-relaxed">
+                      Scan kode <strong>QRIS</strong> (GoPay, OVO, Dana, m-Banking) atau salin kode <strong>Virtual Account</strong>.
+                    </p>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-emerald-50/60 border border-emerald-200/80 space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="w-5 h-5 rounded-full bg-emerald-600 text-white text-[10px] font-black flex items-center justify-center shrink-0">
+                        ✓
+                      </span>
+                      <span className="text-xs font-bold text-emerald-900">Aktivasi Instan</span>
+                    </div>
+                    <p className="text-[11px] text-emerald-700 leading-relaxed">
+                      Begitu bayar, kelas langsung aktif otomatis! <strong>Tidak perlu upload bukti bayar</strong>.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
               {mayarError && (
                 <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-800 flex items-start gap-2">
                   <AlertCircle size={15} className="text-rose-600 shrink-0 mt-0.5" />
@@ -679,13 +725,16 @@ export default function ManualPaymentClient({
 
             {/* Langkah Instruksi */}
             <div className="pt-2 space-y-2 text-xs text-slate-600">
-              <div className="font-bold text-slate-800">Petunjuk Pembayaran:</div>
-              <ol className="list-decimal list-inside space-y-1 text-slate-600 pl-1 leading-relaxed">
+              <div className="font-bold text-slate-800 flex items-center gap-1.5">
+                <HelpCircle size={14} className="text-slate-600" />
+                <span>Panduan Langkah Transfer Manual Antarbank:</span>
+              </div>
+              <ol className="list-decimal list-inside space-y-1.5 text-slate-600 pl-0.5 leading-relaxed">
                 <li>Buka aplikasi mobile banking / internet banking / ATM Anda.</li>
-                <li>Transfer nominal yang tertera ke nomor rekening resmi di atas.</li>
-                <li>Simpan bukti transfer dalam format JPG, PNG, WebP, atau PDF (maksimal 2 MB).</li>
-                <li>Unggah berkas bukti pada form di sebelah kanan halaman ini.</li>
-                <li>Administrator akan memeriksa bukti dan mengaktifkan akses kelas Anda.</li>
+                <li>Transfer sejumlah nominal tagihan tepat ke nomor rekening resmi di atas.</li>
+                <li>Simpan struk / tangkap layar (*screenshot*) bukti transfer (JPG, PNG, WebP, atau PDF maks. 2 MB).</li>
+                <li>Unggah berkas bukti pada formulir <strong>"Unggah Bukti Bayar"</strong> di kolom sebelah kanan.</li>
+                <li>Admin Lembaga Kursus Pijar Aksara akan memeriksa bukti Anda dan mengaktifkan akses kelas.</li>
               </ol>
             </div>
           </div>
