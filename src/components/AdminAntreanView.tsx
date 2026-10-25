@@ -334,269 +334,321 @@ export default function AdminAntreanView({ initialData }: Props) {
   });
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-      {/* 1. HEADER SECTION */}
-      <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950 rounded-2xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
-        <div className="absolute right-0 top-0 -mt-10 -mr-10 w-72 h-72 bg-[#843bab]/20 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute left-1/3 bottom-0 -mb-10 w-56 h-56 bg-rose-500/10 rounded-full blur-2xl pointer-events-none" />
-
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-xs font-semibold tracking-wide text-rose-300 border border-white/10">
-              <Clock size={13} className="text-rose-400" />
-              <span>Pusat Antrean Operasional & Tindakan Cepat</span>
+    <div className="min-h-screen bg-slate-50/60 text-slate-900 pb-24">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 sm:space-y-8">
+        {/* 1. HEADER SECTION (TEMA RESMI PIJAR AKSARA) */}
+        <div className="bg-white rounded-2xl p-5 sm:p-7 border border-slate-200/90 shadow-xs">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+            <div className="space-y-2">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-50 text-xs font-bold text-[#843bab] border border-purple-200/70">
+                <Clock size={13} className="text-[#843bab]" />
+                <span>Pusat Antrean Operasional &amp; Tindakan Cepat</span>
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                Antrean Operasional Admin
+              </h1>
+              <p className="text-xs sm:text-sm text-slate-600 max-w-2xl leading-relaxed">
+                Pantau pendaftaran yang menunggu konfirmasi batas waktu, tinjauan kursus baru, kapasitas kuota kritis, serta audit arsip pendaftaran kedaluwarsa.
+              </p>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-              Antrean Operasional Admin
-            </h1>
-            <p className="text-sm text-slate-300 max-w-2xl">
-              Pantau pendaftaran yang menunggu konfirmasi batas waktu, tinjauan kursus baru, kapasitas kuota kritis, serta audit arsip pendaftaran kedaluwarsa.
-            </p>
+
+            <div className="flex items-center gap-2.5 self-start md:self-center shrink-0">
+              <button
+                type="button"
+                onClick={() => {
+                  startTransition(() => {
+                    router.refresh();
+                  });
+                }}
+                disabled={isPending}
+                className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 active:bg-slate-200 text-slate-700 text-xs font-bold transition-all border border-slate-200 disabled:opacity-50 cursor-pointer shadow-2xs"
+              >
+                <RefreshCw size={14} className={isPending ? 'animate-spin text-[#843bab]' : 'text-slate-500'} />
+                <span>Segarkan Antrean</span>
+              </button>
+
+              <Link
+                href="/admin?tab=pendaftaran"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#843bab] hover:bg-[#722f96] text-white text-xs font-bold transition-all shadow-xs cursor-pointer"
+              >
+                <span>Panel Utama Admin</span>
+                <ArrowUpRight size={14} />
+              </Link>
+            </div>
           </div>
 
-          <div className="flex items-center gap-3 self-start md:self-center">
+          {/* METRICS SUMMARY STATS (4 KARTU KPI TERANG) */}
+          <div className="mt-6 pt-6 border-t border-slate-100 grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            {/* Card 1: Pembayaran Menunggu */}
+            <div
+              onClick={() => setActiveTab('pembayaran')}
+              className={`p-4 sm:p-5 rounded-2xl border transition-all cursor-pointer ${
+                activeTab === 'pembayaran'
+                  ? 'bg-purple-50/50 border-[#843bab] ring-2 ring-[#843bab]/30 shadow-xs'
+                  : 'bg-slate-50/60 hover:bg-white border-slate-200/90 hover:border-slate-300 hover:shadow-2xs'
+              }`}
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider">
+                  Menunggu Bayar
+                </span>
+                <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-700 border border-amber-200/60 flex items-center justify-center">
+                  <CreditCard size={16} />
+                </div>
+              </div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-2xl sm:text-3xl font-black text-slate-900">
+                  {data.summary.totalPendingPayments}
+                </span>
+                {data.summary.urgentPaymentsCount > 0 && (
+                  <span className="text-[10px] sm:text-[11px] font-black px-2 py-0.5 rounded-full bg-rose-100 text-rose-800 border border-rose-200 animate-pulse">
+                    {data.summary.urgentPaymentsCount} mendesak
+                  </span>
+                )}
+              </div>
+              <p className="text-[11px] text-slate-500 mt-1.5 truncate">
+                {data.summary.urgentPaymentsCount > 0
+                  ? 'Sisa waktu < 3 jam'
+                  : 'Diurutkan batas bayar terdekat'}
+              </p>
+            </div>
+
+            {/* Card 2: Kursus Ditinjau */}
+            <div
+              onClick={() => setActiveTab('tinjauan')}
+              className={`p-4 sm:p-5 rounded-2xl border transition-all cursor-pointer ${
+                activeTab === 'tinjauan'
+                  ? 'bg-purple-50/50 border-[#843bab] ring-2 ring-[#843bab]/30 shadow-xs'
+                  : 'bg-slate-50/60 hover:bg-white border-slate-200/90 hover:border-slate-300 hover:shadow-2xs'
+              }`}
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider">
+                  Menunggu Tinjauan
+                </span>
+                <div className="w-8 h-8 rounded-xl bg-sky-50 text-sky-700 border border-sky-200/60 flex items-center justify-center">
+                  <BookOpen size={16} />
+                </div>
+              </div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-2xl sm:text-3xl font-black text-slate-900">
+                  {data.summary.reviewCoursesCount}
+                </span>
+                {data.summary.reviewCoursesCount > 0 && (
+                  <span className="text-[10px] sm:text-[11px] font-bold px-2 py-0.5 rounded-full bg-sky-100 text-sky-800 border border-sky-200">
+                    Perlu Persetujuan
+                  </span>
+                )}
+              </div>
+              <p className="text-[11px] text-slate-500 mt-1.5 truncate">
+                Kursus diajukan instruktur
+              </p>
+            </div>
+
+            {/* Card 3: Kursus Hampir Penuh */}
+            <div
+              onClick={() => setActiveTab('kursi')}
+              className={`p-4 sm:p-5 rounded-2xl border transition-all cursor-pointer ${
+                activeTab === 'kursi'
+                  ? 'bg-purple-50/50 border-[#843bab] ring-2 ring-[#843bab]/30 shadow-xs'
+                  : 'bg-slate-50/60 hover:bg-white border-slate-200/90 hover:border-slate-300 hover:shadow-2xs'
+              }`}
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider">
+                  Kursus Hampir Penuh
+                </span>
+                <div className="w-8 h-8 rounded-xl bg-orange-50 text-orange-700 border border-orange-200/60 flex items-center justify-center">
+                  <Users size={16} />
+                </div>
+              </div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-2xl sm:text-3xl font-black text-slate-900">
+                  {data.summary.almostFullCoursesCount}
+                </span>
+                {data.summary.almostFullCoursesCount > 0 && (
+                  <span className="text-[10px] sm:text-[11px] font-bold px-2 py-0.5 rounded-full bg-orange-100 text-orange-800 border border-orange-200">
+                    Sisa &le; 2 Kursi
+                  </span>
+                )}
+              </div>
+              <p className="text-[11px] text-slate-500 mt-1.5 truncate">
+                Perlu penambahan kuota
+              </p>
+            </div>
+
+            {/* Card 4: Kedaluwarsa 7 Hari */}
+            <div
+              onClick={() => setActiveTab('kedaluwarsa')}
+              className={`p-4 sm:p-5 rounded-2xl border transition-all cursor-pointer ${
+                activeTab === 'kedaluwarsa'
+                  ? 'bg-purple-50/50 border-[#843bab] ring-2 ring-[#843bab]/30 shadow-xs'
+                  : 'bg-slate-50/60 hover:bg-white border-slate-200/90 hover:border-slate-300 hover:shadow-2xs'
+              }`}
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider">
+                  Kedaluwarsa (7 Hari)
+                </span>
+                <div className="w-8 h-8 rounded-xl bg-slate-100 text-slate-700 border border-slate-200 flex items-center justify-center">
+                  <ShieldAlert size={16} />
+                </div>
+              </div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-2xl sm:text-3xl font-black text-slate-900">
+                  {data.summary.expiredCount}
+                </span>
+                <span className="text-[10px] sm:text-[11px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
+                  Hanya Baca
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-500 mt-1.5 truncate">
+                Audit log otomatis sistem
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* FEEDBACK ALERT */}
+        {feedback && (
+          <div
+            className={`p-4 rounded-xl flex items-center justify-between gap-3 text-sm font-semibold transition-all ${
+              feedback.type === 'success'
+                ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                : 'bg-rose-50 text-rose-800 border border-rose-200'
+            }`}
+          >
+            <div className="flex items-center gap-2.5">
+              {feedback.type === 'success' ? (
+                <CheckCircle2 size={18} className="text-emerald-600 shrink-0" />
+              ) : (
+                <AlertCircle size={18} className="text-rose-600 shrink-0" />
+              )}
+              <span>{feedback.message}</span>
+            </div>
             <button
               type="button"
-              onClick={() => {
-                startTransition(() => {
-                  router.refresh();
-                });
-              }}
-              disabled={isPending}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 active:bg-white/30 text-white text-xs font-bold transition-all border border-white/10 disabled:opacity-50"
+              onClick={() => setFeedback(null)}
+              className="text-slate-400 hover:text-slate-700 p-1"
             >
-              <RefreshCw size={14} className={isPending ? 'animate-spin' : ''} />
-              <span>Segarkan Antrean</span>
+              <X size={16} />
+            </button>
+          </div>
+        )}
+
+        {/* 2. NAVIGATION BAR & FILTER TABS */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
+          {/* Tab Pills */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
+            <button
+              type="button"
+              onClick={() => setActiveTab('semua')}
+              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
+                activeTab === 'semua'
+                  ? 'bg-slate-900 text-white shadow-xs'
+                  : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200'
+              }`}
+            >
+              Semua Bagian
             </button>
 
-            <Link
-              href="/admin?tab=pendaftaran"
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#843bab] hover:bg-[#723294] text-white text-xs font-bold transition-all shadow-md"
+            <button
+              type="button"
+              onClick={() => setActiveTab('pembayaran')}
+              className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
+                activeTab === 'pembayaran'
+                  ? 'bg-[#843bab] text-white shadow-xs'
+                  : 'bg-white text-slate-700 hover:bg-purple-50 hover:text-[#843bab] border border-slate-200'
+              }`}
             >
-              <span>Panel Utama Admin</span>
-              <ArrowUpRight size={14} />
-            </Link>
-          </div>
-        </div>
-
-        {/* METRICS SUMMARY STATS */}
-        <div className="mt-8 grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 relative z-10">
-          {/* Card 1: Pembayaran Menunggu */}
-          <div
-            onClick={() => setActiveTab('pembayaran')}
-            className={`p-4 rounded-xl border cursor-pointer transition-all ${
-              activeTab === 'pembayaran'
-                ? 'bg-white/20 border-white/40 ring-2 ring-white/30'
-                : 'bg-white/5 border-white/10 hover:bg-white/10'
-            }`}
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-slate-300">Menunggu Bayar</span>
-              <CreditCard size={16} className="text-amber-400" />
-            </div>
-            <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-2xl font-black">{data.summary.totalPendingPayments}</span>
-              {data.summary.urgentPaymentsCount > 0 && (
-                <span className="text-[11px] font-bold px-1.5 py-0.5 rounded bg-rose-500/80 text-white">
-                  {data.summary.urgentPaymentsCount} mendesak
-                </span>
-              )}
-            </div>
-            <p className="text-[11px] text-slate-400 mt-1">
-              {data.summary.urgentPaymentsCount > 0
-                ? 'Sisa waktu kurang dari 3 jam'
-                : 'Diurutkan batas bayar terdekat'}
-            </p>
-          </div>
-
-          {/* Card 2: Kursus Ditinjau */}
-          <div
-            onClick={() => setActiveTab('tinjauan')}
-            className={`p-4 rounded-xl border cursor-pointer transition-all ${
-              activeTab === 'tinjauan'
-                ? 'bg-white/20 border-white/40 ring-2 ring-white/30'
-                : 'bg-white/5 border-white/10 hover:bg-white/10'
-            }`}
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-slate-300">Menunggu Tinjauan</span>
-              <BookOpen size={16} className="text-sky-400" />
-            </div>
-            <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-2xl font-black">{data.summary.reviewCoursesCount}</span>
-              {data.summary.reviewCoursesCount > 0 && (
-                <span className="text-[11px] font-bold px-1.5 py-0.5 rounded bg-sky-500/80 text-white">
-                  Perlu Persetujuan
-                </span>
-              )}
-            </div>
-            <p className="text-[11px] text-slate-400 mt-1">Kursus diajukan instruktur</p>
-          </div>
-
-          {/* Card 3: Kursus Hampir Penuh */}
-          <div
-            onClick={() => setActiveTab('kursi')}
-            className={`p-4 rounded-xl border cursor-pointer transition-all ${
-              activeTab === 'kursi'
-                ? 'bg-white/20 border-white/40 ring-2 ring-white/30'
-                : 'bg-white/5 border-white/10 hover:bg-white/10'
-            }`}
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-slate-300">Kursus Hampir Penuh</span>
-              <Users size={16} className="text-orange-400" />
-            </div>
-            <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-2xl font-black">{data.summary.almostFullCoursesCount}</span>
-              {data.summary.almostFullCoursesCount > 0 && (
-                <span className="text-[11px] font-bold px-1.5 py-0.5 rounded bg-orange-500/80 text-white">
-                  Sisa &le; 2 Kursi
-                </span>
-              )}
-            </div>
-            <p className="text-[11px] text-slate-400 mt-1">Perlu penambahan kuota</p>
-          </div>
-
-          {/* Card 4: Kedaluwarsa 7 Hari */}
-          <div
-            onClick={() => setActiveTab('kedaluwarsa')}
-            className={`p-4 rounded-xl border cursor-pointer transition-all ${
-              activeTab === 'kedaluwarsa'
-                ? 'bg-white/20 border-white/40 ring-2 ring-white/30'
-                : 'bg-white/5 border-white/10 hover:bg-white/10'
-            }`}
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-slate-300">Kedaluwarsa (7 Hari)</span>
-              <ShieldAlert size={16} className="text-slate-400" />
-            </div>
-            <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-2xl font-black">{data.summary.expiredCount}</span>
-              <span className="text-[11px] font-bold px-1.5 py-0.5 rounded bg-slate-700 text-slate-300">
-                Hanya Baca
+              <span>Pembayaran Menunggu</span>
+              <span
+                className={`px-1.5 py-0.2 rounded-full text-[10px] font-extrabold ${
+                  activeTab === 'pembayaran'
+                    ? 'bg-white/20 text-white'
+                    : 'bg-amber-100 text-amber-800'
+                }`}
+              >
+                {data.summary.totalPendingPayments}
               </span>
-            </div>
-            <p className="text-[11px] text-slate-400 mt-1">Audit log otomatis sistem</p>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveTab('tinjauan')}
+              className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
+                activeTab === 'tinjauan'
+                  ? 'bg-[#843bab] text-white shadow-xs'
+                  : 'bg-white text-slate-700 hover:bg-sky-50 hover:text-sky-900 border border-slate-200'
+              }`}
+            >
+              <span>Tinjauan Kursus</span>
+              <span
+                className={`px-1.5 py-0.2 rounded-full text-[10px] font-extrabold ${
+                  activeTab === 'tinjauan'
+                    ? 'bg-white/20 text-white'
+                    : 'bg-sky-100 text-sky-800'
+                }`}
+              >
+                {data.summary.reviewCoursesCount}
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveTab('kursi')}
+              className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
+                activeTab === 'kursi'
+                  ? 'bg-[#843bab] text-white shadow-xs'
+                  : 'bg-white text-slate-700 hover:bg-orange-50 hover:text-orange-900 border border-slate-200'
+              }`}
+            >
+              <span>Kursus Hampir Penuh</span>
+              <span
+                className={`px-1.5 py-0.2 rounded-full text-[10px] font-extrabold ${
+                  activeTab === 'kursi'
+                    ? 'bg-white/20 text-white'
+                    : 'bg-orange-100 text-orange-800'
+                }`}
+              >
+                {data.summary.almostFullCoursesCount}
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveTab('kedaluwarsa')}
+              className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
+                activeTab === 'kedaluwarsa'
+                  ? 'bg-slate-800 text-white shadow-xs'
+                  : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200'
+              }`}
+            >
+              <span>Kedaluwarsa (7 Hari)</span>
+              <span
+                className={`px-1.5 py-0.2 rounded-full text-[10px] font-extrabold ${
+                  activeTab === 'kedaluwarsa'
+                    ? 'bg-white/20 text-white'
+                    : 'bg-slate-100 text-slate-700'
+                }`}
+              >
+                {data.summary.expiredCount}
+              </span>
+            </button>
+          </div>
+
+          {/* Search Input */}
+          <div className="relative min-w-[240px]">
+            <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Cari peserta, kursus, metode..."
+              className="w-full pl-9 pr-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-medium placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#843bab]/20 focus:border-[#843bab] transition-all"
+            />
           </div>
         </div>
-      </div>
-
-      {/* FEEDBACK ALERT */}
-      {feedback && (
-        <div
-          className={`p-4 rounded-xl flex items-center justify-between gap-3 text-sm font-semibold transition-all ${
-            feedback.type === 'success'
-              ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
-              : 'bg-rose-50 text-rose-800 border border-rose-200'
-          }`}
-        >
-          <div className="flex items-center gap-2.5">
-            {feedback.type === 'success' ? (
-              <CheckCircle2 size={18} className="text-emerald-600 shrink-0" />
-            ) : (
-              <AlertCircle size={18} className="text-rose-600 shrink-0" />
-            )}
-            <span>{feedback.message}</span>
-          </div>
-          <button
-            type="button"
-            onClick={() => setFeedback(null)}
-            className="text-slate-400 hover:text-slate-700 p-1"
-          >
-            <X size={16} />
-          </button>
-        </div>
-      )}
-
-      {/* 2. NAVIGATION BAR & FILTER TABS */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
-        {/* Tab Pills */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
-          <button
-            type="button"
-            onClick={() => setActiveTab('semua')}
-            className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
-              activeTab === 'semua'
-                ? 'bg-slate-900 text-white shadow-sm'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-            }`}
-          >
-            Semua Bagian
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('pembayaran')}
-            className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
-              activeTab === 'pembayaran'
-                ? 'bg-amber-600 text-white shadow-sm'
-                : 'bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200'
-            }`}
-          >
-            <span>Pembayaran Menunggu</span>
-            <span className="px-1.5 py-0.2 rounded-full bg-black/20 text-[10px]">
-              {data.summary.totalPendingPayments}
-            </span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('tinjauan')}
-            className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
-              activeTab === 'tinjauan'
-                ? 'bg-sky-600 text-white shadow-sm'
-                : 'bg-sky-50 text-sky-800 hover:bg-sky-100 border border-sky-200'
-            }`}
-          >
-            <span>Tinjauan Kursus</span>
-            <span className="px-1.5 py-0.2 rounded-full bg-black/20 text-[10px]">
-              {data.summary.reviewCoursesCount}
-            </span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('kursi')}
-            className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
-              activeTab === 'kursi'
-                ? 'bg-orange-600 text-white shadow-sm'
-                : 'bg-orange-50 text-orange-800 hover:bg-orange-100 border border-orange-200'
-            }`}
-          >
-            <span>Kursus Hampir Penuh</span>
-            <span className="px-1.5 py-0.2 rounded-full bg-black/20 text-[10px]">
-              {data.summary.almostFullCoursesCount}
-            </span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('kedaluwarsa')}
-            className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
-              activeTab === 'kedaluwarsa'
-                ? 'bg-slate-700 text-white shadow-sm'
-                : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200'
-            }`}
-          >
-            <span>Kedaluwarsa (7 Hari)</span>
-            <span className="px-1.5 py-0.2 rounded-full bg-black/20 text-[10px]">
-              {data.summary.expiredCount}
-            </span>
-          </button>
-        </div>
-
-        {/* Search Input */}
-        <div className="relative min-w-[240px]">
-          <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Cari peserta, kursus, metode..."
-            className="w-full pl-9 pr-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-medium placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#843bab] focus:border-transparent"
-          />
-        </div>
-      </div>
 
       {/* 3. FOUR SECTIONS */}
 
@@ -1004,7 +1056,7 @@ export default function AdminAntreanView({ initialData }: Props) {
                             error: null,
                           });
                         }}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all cursor-pointer"
+                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#843bab] hover:bg-[#722f96] text-white text-xs font-bold transition-all shadow-xs cursor-pointer"
                       >
                         <SlidersHorizontal size={13} />
                         <span>Tambah Kuota</span>
@@ -1404,6 +1456,7 @@ export default function AdminAntreanView({ initialData }: Props) {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 }
