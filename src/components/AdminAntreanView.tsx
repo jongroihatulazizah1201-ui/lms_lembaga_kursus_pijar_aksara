@@ -335,9 +335,11 @@ export default function AdminAntreanView({ initialData }: Props) {
 
   return (
     <div className="min-h-screen bg-slate-50/60 text-slate-900 pb-24">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 sm:space-y-8">
-        {/* 1. STICKY TOP HEADER: Judul Halaman & Toolbar Pencarian/Filter Antrean (TETAP STAY DI ATAS SAAT DI-SCROLL) */}
-        <div className="sticky top-[57px] lg:top-0 z-20 bg-white/95 backdrop-blur-md rounded-2xl border border-slate-200/90 p-4 sm:p-5 shadow-sm space-y-4 transition-all">
+      {/* =========================================================================
+          STICKY TOP ACTION & FILTER BAR (LANGSUNG MENEMPEL DI ATAS TANPA DELAY / CELAH)
+         ========================================================================= */}
+      <header className="sticky top-[57px] lg:top-0 z-30 w-full bg-white/95 backdrop-blur-md border-b border-slate-200/90 shadow-xs transition-all">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4 space-y-3.5">
           {/* Baris 1: Judul Halaman & Tombol Aksi Cepat */}
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2.5">
@@ -510,6 +512,10 @@ export default function AdminAntreanView({ initialData }: Props) {
             </div>
           </div>
         </div>
+      </header>
+
+      {/* KONTEN UTAMA HALAMAN */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 sm:space-y-8">
 
         {/* FEEDBACK ALERT */}
         {feedback && (
