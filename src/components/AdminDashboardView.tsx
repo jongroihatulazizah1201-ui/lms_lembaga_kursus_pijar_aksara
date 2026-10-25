@@ -116,7 +116,7 @@ export default function AdminDashboardView({
   // Range options
   const rangePresets = [
     { id: '4w', label: '4 Minggu', description: 'Sebulan terakhir' },
-    { id: '8w', label: '8 Minggu (Bawaan)', description: '2 bulan terakhir (PRD)' },
+    { id: '8w', label: '8 Minggu (Bawaan)', description: '2 bulan terakhir' },
     { id: '12w', label: '12 Minggu', description: 'Satu triwulan' },
     { id: 'all', label: 'Semua (1 Tahun)', description: 'Data historis lengkap' },
   ];
@@ -206,7 +206,7 @@ export default function AdminDashboardView({
               Dashboard Statistik &amp; Laporan
             </h1>
             <p className="text-sm text-slate-600 leading-relaxed mt-2 max-w-3xl">
-              Pantau metrik pendaftaran mingguan, pendapatan terverifikasi, rasio kelulusan kursus, modul evaluasi, dan ketersediaan kursi secara real-time (PRD Bagian 9).
+              Pantau metrik pendaftaran mingguan, pendapatan terverifikasi, rasio kelulusan kursus, modul evaluasi, dan ketersediaan kursi secara real-time.
             </p>
           </div>
 
@@ -224,7 +224,7 @@ export default function AdminDashboardView({
                   {currentRange === '4w'
                     ? '4 Minggu Terakhir (1 Bulan)'
                     : currentRange === '8w'
-                    ? '8 Minggu Terakhir (Bawaan PRD Bagian 9)'
+                    ? '8 Minggu Terakhir (Bawaan)'
                     : currentRange === '12w'
                     ? '12 Minggu Terakhir (1 Triwulan)'
                     : 'Semua Data Historis (1 Tahun)'}
@@ -513,7 +513,7 @@ export default function AdminDashboardView({
                     <span>Pendapatan per Minggu</span>
                   </h3>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    Grafik garis omzet pendaftaran aktif &amp; selesai terbayar (PRD Poin 3)
+                    Grafik garis omzet pendaftaran aktif &amp; selesai terbayar
                   </p>
                 </div>
 
@@ -673,7 +673,7 @@ export default function AdminDashboardView({
                 <span>Tingkat Penyelesaian per Kursus</span>
               </h3>
               <p className="text-xs text-slate-500 mt-0.5">
-                Rasio kelulusan peserta: <strong>Selesai &divide; (Aktif + Selesai) &times; 100%</strong> (PRD Bagian 9 Poin 4)
+                Rasio kelulusan peserta: <strong>Selesai &divide; (Aktif + Selesai) &times; 100%</strong>
               </p>
             </div>
 
@@ -777,7 +777,7 @@ export default function AdminDashboardView({
                     Evaluasi Modul &amp; Kuis
                   </h3>
                   <p className="text-xs text-slate-500">
-                    Modul dengan tingkat lulus percobaan pertama terendah (PRD Bagian 9 Poin 5)
+                    Modul dengan tingkat lulus percobaan pertama terendah
                   </p>
                 </div>
               </div>

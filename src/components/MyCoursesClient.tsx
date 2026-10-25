@@ -277,7 +277,7 @@ export default function MyCoursesClient({ initialCourses, userProfile }: Props) 
                     </span>
                   </h3>
                   <p className="text-xs sm:text-sm text-amber-900 leading-relaxed mt-0.5">
-                    Anda memiliki {urgentPayments.length} kursus (&quot;{urgentPayments.map((p) => p.kursus.judul).join(', ')}&quot;) dengan batas waktu pembayaran kurang dari 6 jam. Harap selesaikan pembayaran sebelum kuota kursi dibatalkan secara otomatis (BR-07).
+                    Anda memiliki {urgentPayments.length} kursus (&quot;{urgentPayments.map((p) => p.kursus.judul).join(', ')}&quot;) dengan batas waktu pembayaran kurang dari 6 jam. Harap selesaikan pembayaran sebelum kuota kursi dibatalkan secara otomatis.
                   </p>
                 </div>
               </div>
