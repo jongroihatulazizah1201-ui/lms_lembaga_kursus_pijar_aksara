@@ -6,6 +6,7 @@ export interface PendingPaymentItem {
   nominal: number;
   metode_bayar: string;
   batas_bayar: string | null;
+  mayar_invoice_id?: string | null;
   bukti_bayar_path: string | null;
   didaftarkan_pada: string;
   isUrgent: boolean;
@@ -182,6 +183,7 @@ export async function getAntreanData(supabase: SupabaseClient): Promise<AntreanD
       status,
       nominal,
       metode_bayar,
+      mayar_invoice_id,
       batas_bayar,
       bukti_bayar_path,
       didaftarkan_pada,
@@ -225,6 +227,7 @@ export async function getAntreanData(supabase: SupabaseClient): Promise<AntreanD
       status: r.status,
       nominal: r.nominal,
       metode_bayar: r.metode_bayar,
+      mayar_invoice_id: r.mayar_invoice_id || null,
       batas_bayar: r.batas_bayar,
       bukti_bayar_path: r.bukti_bayar_path || null,
       didaftarkan_pada: r.didaftarkan_pada,

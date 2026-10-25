@@ -219,3 +219,127 @@ export async function ubahStatusPenggunaAction(
   revalidatePath('/admin');
   return { success: true, profil: data };
 }
+
+// 7. Cek dan Sinkronisasi Status Invoice Mayar (Otomasi BR-07, BR-12)
+export async function cekStatusMayarAction(pendaftaranId: string) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { error: 'Pengguna belum terautentikasi.' };
+  }
+
+  // Verifikasi peran admin
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('peran')
+    .eq('id', user.id)
+    .single();
+
+  if (!profile || profile.peran !== 'admin') {
+    return { error: 'Akses ditolak: Hanya admin yang berhak memeriksa status gateway Mayar.' };
+  }
+
+  // Ambil detail pendaftaran
+  const { data: reg, error: regErr } = await supabase
+    .from('pendaftaran')
+    .select(`
+      id,
+      status,
+      nominal,
+      metode_bayar,
+      mayar_invoice_id,
+      kursus:kursus_id(judul, slug),
+      peserta:peserta_id(nama_lengkap, email)
+    `)
+    .eq('id', pendaftaranId)
+    .maybeSingle();
+
+  if (regErr || !reg) {
+    return { error: 'Data pendaftaran tidak ditemukan.' };
+  }
+
+  if (reg.metode_bayar !== 'mayar') {
+    return { error: 'Pendaftaran ini bukan transaksi metode Mayar.' };
+  }
+
+  if (!reg.mayar_invoice_id) {
+    return { error: 'ID invoice Mayar tidak tercatat pada pendaftaran ini.' };
+  }
+
+  const peserta = reg.peserta as any;
+  const kursus = reg.kursus as any;
+
+  // Jika pendaftaran sudah aktif di database
+  if (reg.status === 'aktif' || reg.status === 'selesai') {
+    return {
+      success: true,
+      isPaid: true,
+      statusMayar: 'PAID',
+      message: `Pendaftaran untuk ${peserta?.nama_lengkap || 'peserta'} sudah berstatus AKTIF (Lunas).`,
+    };
+  }
+
+  // Query status invoice ke API Mayar
+  const { getMayarInvoice } = await import('@/lib/mayar');
+  const invoice = await getMayarInvoice(reg.mayar_invoice_id, reg.nominal);
+
+  if (!invoice) {
+    return {
+      error: `Gagal mengambil status invoice "${reg.mayar_invoice_id}" dari gateway Mayar. Periksa koneksi atau konfigurasi MAYAR_API_KEY.`,
+    };
+  }
+
+  // Jika Mayar menyatakan invoice SUDAH dibayar (isPaid = true)
+  if (invoice.isPaid) {
+    // Validasi kecocokan nominal
+    if (invoice.amount !== null && invoice.amount !== reg.nominal) {
+      return {
+        error: `Nominal tidak cocok! Invoice Mayar mencatat Rp ${invoice.amount.toLocaleString('id-ID')}, namun tagihan LMS adalah Rp ${reg.nominal.toLocaleString('id-ID')}. Konfirmasi ditahan demi keamanan (BR-07).`,
+      };
+    }
+
+    // Eksekusi aktivasi pendaftaran via RPC
+    const { data: updatedReg, error: rpcErr } = await supabase.rpc('admin_konfirmasi_pembayaran', {
+      p_pendaftaran_id: pendaftaranId,
+    });
+
+    if (rpcErr) {
+      return { error: `Invoice Mayar lunas, namun gagal mengaktifkan di database: ${rpcErr.message}` };
+    }
+
+    // Kirim email aktivasi peserta
+    if (peserta?.email) {
+      try {
+        const { sendEnrollmentActivatedEmail } = await import('@/lib/email');
+        await sendEnrollmentActivatedEmail({
+          to: peserta.email,
+          studentName: peserta.nama_lengkap || 'Peserta',
+          courseTitle: kursus?.judul || 'Kursus Pijar Aksara',
+          courseSlug: kursus?.slug,
+        });
+      } catch (emailErr) {
+        console.error('Gagal mengirimkan email aktivasi pendaftaran:', emailErr);
+      }
+    }
+
+    revalidatePath('/admin');
+    revalidatePath('/admin/antrean');
+
+    return {
+      success: true,
+      isPaid: true,
+      statusMayar: invoice.status,
+      message: `Terverifikasi LUNAS di Mayar (${invoice.status.toUpperCase()})! Pendaftaran ${peserta?.nama_lengkap || 'peserta'} telah otomatis diaktifkan.`,
+    };
+  }
+
+  // Jika invoice BELUM dibayar di Mayar
+  return {
+    success: true,
+    isPaid: false,
+    statusMayar: invoice.status,
+    invoiceId: reg.mayar_invoice_id,
+    message: `Tagihan di Mayar masih berstatus "${(invoice.status || 'UNPAID').toUpperCase()}". Peserta belum melakukan pembayaran di Mayar.`,
+  };
+}

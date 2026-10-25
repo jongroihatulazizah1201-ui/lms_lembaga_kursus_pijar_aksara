@@ -24,8 +24,10 @@ import {
   ArrowRight,
   ShieldCheck,
   ExternalLink,
+  CreditCardCheck,
+  RefreshCw,
 } from 'lucide-react';
-import { konfirmasiPembayaranAction, batalkanPendaftaranAction } from '@/app/admin/actions';
+import { konfirmasiPembayaranAction, batalkanPendaftaranAction, cekStatusMayarAction } from '@/app/admin/actions';
 import { getSignedBuktiBayarUrlAction } from '@/app/kursus-saya/actions';
 
 export interface RegistrationItem {
@@ -33,6 +35,7 @@ export interface RegistrationItem {
   status: 'menunggu_bayar' | 'aktif' | 'selesai' | 'kedaluwarsa' | 'dibatalkan';
   nominal: number;
   metode_bayar: 'gratis' | 'transfer_manual' | 'mayar';
+  mayar_invoice_id?: string | null;
   batas_bayar: string | null;
   bukti_bayar_path?: string | null;
   dibayar_pada: string | null;
@@ -62,6 +65,7 @@ export default function AdminRegistrations({ registrations }: Props) {
   const [filterStatus, setFilterStatus] = useState<string>('semua');
   const [searchQuery, setSearchQuery] = useState('');
   const [loadingId, setLoadingId] = useState<string | null>(null);
+  const [loadingMayarId, setLoadingMayarId] = useState<string | null>(null);
   const [feedbackMsg, setFeedbackMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   // Modal Konfirmasi Pembayaran State
@@ -168,6 +172,34 @@ export default function AdminRegistrations({ registrations }: Props) {
       });
       setConfirmModalReg(null);
       router.refresh();
+    }
+  };
+
+  // Action: Cek Status Mayar Otomatis
+  const handleCekStatusMayar = async (reg: RegistrationItem) => {
+    setLoadingMayarId(reg.id);
+    setFeedbackMsg(null);
+    try {
+      const res = await cekStatusMayarAction(reg.id);
+      if (res.error) {
+        setFeedbackMsg({ type: 'error', text: res.error });
+      } else if (res.isPaid) {
+        setFeedbackMsg({
+          type: 'success',
+          text: res.message || 'Pembayaran terverifikasi lunas di Mayar dan pendaftaran telah diaktifkan.',
+        });
+        setConfirmModalReg(null);
+        router.refresh();
+      } else {
+        setFeedbackMsg({
+          type: 'error',
+          text: res.message || 'Tagihan Mayar masih berstatus BELUM DIBAYAR (UNPAID).',
+        });
+      }
+    } catch (err: any) {
+      setFeedbackMsg({ type: 'error', text: err?.message || 'Gagal memeriksa status gateway Mayar.' });
+    } finally {
+      setLoadingMayarId(null);
     }
   };
 
@@ -525,9 +557,16 @@ export default function AdminRegistrations({ registrations }: Props) {
                           {reg.nominal === 0 ? 'Gratis' : formatRupiah(reg.nominal)}
                         </div>
                         <div className="flex flex-wrap items-center gap-1.5 mt-1">
-                          <span className="inline-block px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-100 text-slate-600 uppercase tracking-wider">
-                            {reg.metode_bayar.replace('_', ' ')}
-                          </span>
+                          {reg.metode_bayar === 'mayar' ? (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-purple-50 text-purple-700 border border-purple-200 uppercase tracking-wider">
+                              <CreditCardCheck size={10} className="text-[#843bab]" />
+                              <span>Mayar (Otomatis)</span>
+                            </span>
+                          ) : (
+                            <span className="inline-block px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-100 text-slate-600 uppercase tracking-wider">
+                              {reg.metode_bayar.replace('_', ' ')}
+                            </span>
+                          )}
 
                           {reg.bukti_bayar_path ? (
                             <button
@@ -582,11 +621,24 @@ export default function AdminRegistrations({ registrations }: Props) {
                       {/* Aksi Admin (Konfirmasi / Batal) */}
                       <td className="py-4 px-4 text-right">
                         <div className="flex items-center justify-end gap-2">
+                          {/* Tombol Cek Status Mayar */}
+                          {isMenungguBayar && reg.metode_bayar === 'mayar' && (
+                            <button
+                              onClick={() => handleCekStatusMayar(reg)}
+                              disabled={loadingMayarId === reg.id || loadingId === reg.id}
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-[#843bab] border border-purple-200 font-bold text-xs shadow-2xs transition-all cursor-pointer disabled:opacity-50"
+                              title="Periksa apakah invoice di server Mayar sudah lunas"
+                            >
+                              <RefreshCw size={12} className={loadingMayarId === reg.id ? 'animate-spin' : ''} />
+                              <span>{loadingMayarId === reg.id ? 'Memeriksa...' : 'Cek Mayar'}</span>
+                            </button>
+                          )}
+
                           {/* Tombol Konfirmasi Pembayaran */}
                           {isMenungguBayar && (
                             <button
                               onClick={() => setConfirmModalReg(reg)}
-                              disabled={loadingId === reg.id}
+                              disabled={loadingId === reg.id || loadingMayarId === reg.id}
                               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-2xs hover:shadow-xs transition-all cursor-pointer disabled:opacity-50"
                               title="Konfirmasi Pembayaran Manual"
                             >
@@ -672,9 +724,32 @@ export default function AdminRegistrations({ registrations }: Props) {
               </div>
             </div>
 
-            <p className="text-xs text-slate-500 leading-relaxed">
-              Setelah dikonfirmasi, status pendaftaran berubah menjadi <strong>Aktif Belajar</strong> dan peserta dapat segera mengakses modul, video, dan kuis.
-            </p>
+            {confirmModalReg.metode_bayar === 'mayar' ? (
+              <div className="bg-amber-50 rounded-2xl p-4 border border-amber-200 text-xs text-amber-900 space-y-2">
+                <div className="flex items-center gap-1.5 font-bold text-amber-800">
+                  <AlertTriangle size={15} className="text-amber-600 shrink-0" />
+                  <span>Peringatan Transaksi Gateway Mayar</span>
+                </div>
+                <p className="leading-relaxed text-[11px] text-amber-800">
+                  Pendaftaran ini seharusnya <strong>otomatis aktif via Webhook</strong> saat peserta membayar QRIS/VA. Jika peserta belum membayar di Mayar dan Anda mengonfirmasi manual sekarang, peserta akan mendapatkan akses gratis tanpa membayar.
+                </p>
+                <div className="pt-1">
+                  <button
+                    type="button"
+                    onClick={() => handleCekStatusMayar(confirmModalReg)}
+                    disabled={loadingMayarId === confirmModalReg.id}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-amber-300 text-amber-900 hover:bg-amber-100 font-bold text-xs transition-colors cursor-pointer"
+                  >
+                    <RefreshCw size={12} className={loadingMayarId === confirmModalReg.id ? 'animate-spin' : ''} />
+                    <span>{loadingMayarId === confirmModalReg.id ? 'Memeriksa status di Mayar...' : 'Cek Status ke Server Mayar Terlebih Dahulu'}</span>
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <p className="text-xs text-slate-500 leading-relaxed">
+                Setelah dikonfirmasi, status pendaftaran berubah menjadi <strong>Aktif Belajar</strong> dan peserta dapat segera mengakses modul, video, dan kuis.
+              </p>
+            )}
 
             <div className="flex items-center justify-end gap-2.5 pt-2">
               <button

@@ -23,7 +23,8 @@ import {
   Calendar,
   Check,
   X,
-  FileText
+  FileText,
+  CreditCardCheck
 } from 'lucide-react';
 import {
   AntreanData,
@@ -34,6 +35,7 @@ import {
 } from '@/lib/antrean';
 import {
   konfirmasiPembayaranAction,
+  cekStatusMayarAction,
   batalkanPendaftaranAction,
   ubahStatusKursusAction,
   ubahKuotaKursusAction,
@@ -133,25 +135,82 @@ export default function AdminAntreanView({ initialData }: Props) {
     }
   };
 
-  // Action: Konfirmasi Pembayaran
-  const handleKonfirmasiPembayaran = async (item: PendingPaymentItem) => {
-    if (!confirm(`Konfirmasi pembayaran peserta "${item.peserta.nama_lengkap}" untuk kursus "${item.kursus.judul}"?`)) {
-      return;
-    }
+  // 5. Modal Peringatan Khusus Mayar
+  const [checkingMayarId, setCheckingMayarId] = useState<string | null>(null);
+  const [mayarWarningModal, setMayarWarningModal] = useState<{
+    isOpen: boolean;
+    item: PendingPaymentItem | null;
+    loading: boolean;
+  }>({
+    isOpen: false,
+    item: null,
+    loading: false,
+  });
 
+  // Action: Cek Status Mayar Otomatis via API Gateway Mayar
+  const handleCekStatusMayar = async (item: PendingPaymentItem) => {
+    setCheckingMayarId(item.id);
+    setFeedback(null);
+    try {
+      const res = await cekStatusMayarAction(item.id);
+      if (res.error) {
+        setFeedback({ type: 'error', message: res.error });
+      } else if (res.isPaid) {
+        setFeedback({
+          type: 'success',
+          message: res.message || 'Pembayaran terverifikasi lunas di Mayar dan pendaftaran telah diaktifkan.',
+        });
+        setMayarWarningModal({ isOpen: false, item: null, loading: false });
+        router.refresh();
+      } else {
+        setFeedback({
+          type: 'error',
+          message: res.message || 'Tagihan Mayar masih berstatus BELUM DIBAYAR (UNPAID).',
+        });
+      }
+    } catch (err: any) {
+      setFeedback({ type: 'error', message: err?.message || 'Gagal memeriksa status gateway Mayar.' });
+    } finally {
+      setCheckingMayarId(null);
+    }
+  };
+
+  // Action: Eksekusi Konfirmasi Pembayaran
+  const executeKonfirmasi = (pendaftaranId: string, studentName: string) => {
     setFeedback(null);
     startTransition(async () => {
-      const res = await konfirmasiPembayaranAction(item.id);
+      const res = await konfirmasiPembayaranAction(pendaftaranId);
       if (res.error) {
         setFeedback({ type: 'error', message: res.error });
       } else {
         setFeedback({
           type: 'success',
-          message: `Pembayaran ${item.peserta.nama_lengkap} berhasil dikonfirmasi dan pendaftaran diaktifkan.`,
+          message: `Pembayaran ${studentName} berhasil dikonfirmasi dan pendaftaran diaktifkan.`,
         });
+        setMayarWarningModal({ isOpen: false, item: null, loading: false });
         router.refresh();
       }
     });
+  };
+
+  // Action: Trigger Konfirmasi Pembayaran (Dengan proteksi khusus Mayar)
+  const handleKonfirmasiPembayaran = async (item: PendingPaymentItem) => {
+    // Jika metode pembayaran adalah Mayar, buka modal peringatan khusus agar tidak kecolongan
+    if (item.metode_bayar === 'mayar') {
+      setMayarWarningModal({
+        isOpen: true,
+        item,
+        loading: false,
+      });
+      return;
+    }
+
+    // Untuk transfer manual
+    if (!confirm(`Konfirmasi pembayaran peserta "${item.peserta.nama_lengkap}" untuk kursus "${item.kursus.judul}"?`)) {
+      return;
+    }
+
+    executeKonfirmasi(item.id, item.peserta.nama_lengkap);
   };
 
   // Action: Submit Pembatalan Pendaftaran
@@ -781,9 +840,23 @@ export default function AdminAntreanView({ initialData }: Props) {
                           <span className="font-bold text-slate-900 bg-slate-100 px-2.5 py-1 rounded-md border border-slate-200">
                             Nominal: {formatRupiah(item.nominal)}
                           </span>
-                          <span className="uppercase text-[11px] font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
-                            Metode: {item.metode_bayar}
-                          </span>
+
+                          {item.metode_bayar === 'mayar' ? (
+                            <>
+                              <span className="inline-flex items-center gap-1 uppercase text-[11px] font-bold text-purple-700 bg-purple-50 px-2.5 py-1 rounded-md border border-purple-200">
+                                <CreditCardCheck size={12} className="text-[#843bab]" />
+                                <span>Metode: Mayar</span>
+                              </span>
+                              <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 flex items-center gap-1">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                <span>Otomatis via Webhook</span>
+                              </span>
+                            </>
+                          ) : (
+                            <span className="uppercase text-[11px] font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                              Metode: {item.metode_bayar.replace('_', ' ')}
+                            </span>
+                          )}
 
                           {item.bukti_bayar_path ? (
                             <button
@@ -809,11 +882,24 @@ export default function AdminAntreanView({ initialData }: Props) {
                       </div>
 
                       {/* Right: Tombol Aksi Admin */}
-                      <div className="flex items-center gap-2.5 shrink-0 self-end lg:self-center pt-2 lg:pt-0 border-t lg:border-t-0 border-slate-200 w-full lg:w-auto justify-end">
+                      <div className="flex flex-wrap items-center gap-2 shrink-0 self-end lg:self-center pt-2 lg:pt-0 border-t lg:border-t-0 border-slate-200 w-full lg:w-auto justify-end">
+                        {item.metode_bayar === 'mayar' && (
+                          <button
+                            type="button"
+                            onClick={() => handleCekStatusMayar(item)}
+                            disabled={checkingMayarId === item.id || isPending}
+                            className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-purple-50 hover:bg-purple-100 text-[#843bab] border border-purple-200 text-xs font-bold transition-all disabled:opacity-50 cursor-pointer shadow-2xs"
+                            title="Periksa apakah invoice di gateway Mayar sudah lunas"
+                          >
+                            <RefreshCw size={13} className={checkingMayarId === item.id ? 'animate-spin' : ''} />
+                            <span>{checkingMayarId === item.id ? 'Memeriksa...' : 'Cek Status Mayar'}</span>
+                          </button>
+                        )}
+
                         <button
                           type="button"
                           onClick={() => handleKonfirmasiPembayaran(item)}
-                          disabled={isPending}
+                          disabled={isPending || checkingMayarId === item.id}
                           className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-bold transition-all shadow-xs disabled:opacity-50 cursor-pointer"
                         >
                           <Check size={14} />
@@ -831,7 +917,7 @@ export default function AdminAntreanView({ initialData }: Props) {
                               error: null,
                             });
                           }}
-                          disabled={isPending}
+                          disabled={isPending || checkingMayarId === item.id}
                           className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-white hover:bg-rose-50 text-rose-700 border border-rose-300 text-xs font-bold transition-all disabled:opacity-50 cursor-pointer"
                         >
                           <X size={14} />
@@ -1476,6 +1562,100 @@ export default function AdminAntreanView({ initialData }: Props) {
                 className="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-colors cursor-pointer"
               >
                 Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal 5: Peringatan Konfirmasi Manual Transaksi Mayar (Otomasi BR-07, BR-12) */}
+      {mayarWarningModal.isOpen && mayarWarningModal.item && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-fadeIn">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-amber-200 space-y-5">
+            <div className="flex items-start gap-3.5">
+              <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 border border-amber-100">
+                <AlertTriangle size={24} />
+              </div>
+              <div>
+                <h3 className="text-lg font-black text-slate-900">
+                  Konfirmasi Manual Transaksi Mayar
+                </h3>
+                <p className="text-xs text-slate-600 mt-1">
+                  Peringatan keamanan aktivasi pendaftaran peserta gateway otomatis.
+                </p>
+              </div>
+            </div>
+
+            {/* Detail Transaksi */}
+            <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200 text-xs space-y-2">
+              <div className="flex justify-between">
+                <span className="text-slate-500">Nama Peserta:</span>
+                <strong className="text-slate-900">{mayarWarningModal.item.peserta.nama_lengkap}</strong>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Kursus:</span>
+                <strong className="text-slate-900 line-clamp-1">{mayarWarningModal.item.kursus.judul}</strong>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Tagihan:</span>
+                <strong className="text-purple-700 text-sm">{formatRupiah(mayarWarningModal.item.nominal)}</strong>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Metode:</span>
+                <span className="inline-flex items-center gap-1 font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded border border-purple-200">
+                  <CreditCardCheck size={11} />
+                  <span>MAYAR (QRIS / VA)</span>
+                </span>
+              </div>
+              {mayarWarningModal.item.mayar_invoice_id && (
+                <div className="flex justify-between pt-1 border-t border-slate-200">
+                  <span className="text-slate-500">Invoice ID:</span>
+                  <code className="font-mono text-[11px] text-slate-700">{mayarWarningModal.item.mayar_invoice_id}</code>
+                </div>
+              )}
+            </div>
+
+            {/* Kotak Peringatan Kritis */}
+            <div className="bg-amber-50/80 rounded-2xl p-4 border border-amber-200 text-xs text-amber-900 space-y-2">
+              <div className="font-extrabold text-amber-800 flex items-center gap-1.5">
+                <ShieldAlert size={16} className="text-amber-600 shrink-0" />
+                <span>Peringatan Kebocoran Pembayaran</span>
+              </div>
+              <p className="leading-relaxed text-[11px] text-amber-800">
+                Pendaftaran Mayar <strong>otomatis aktif begitu peserta membayar</strong> via Webhook. Jika Anda mengonfirmasi manual sekarang padahal peserta <strong>belum membayar di Mayar</strong>, peserta akan mendapatkan akses gratis tanpa terverifikasi.
+              </p>
+              <p className="leading-relaxed text-[11px] text-amber-800">
+                Silakan klik tombol <strong>&ldquo;Cek Status di Mayar&rdquo;</strong> terlebih dahulu untuk memastikan apakah uang sudah masuk ke sistem Mayar.
+              </p>
+            </div>
+
+            {/* Aksi Tombol */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setMayarWarningModal({ isOpen: false, item: null, loading: false })}
+                className="order-3 sm:order-1 px-4 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold text-xs transition-colors cursor-pointer text-center"
+              >
+                Batal
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleCekStatusMayar(mayarWarningModal.item!)}
+                disabled={checkingMayarId === mayarWarningModal.item.id}
+                className="order-1 sm:order-2 px-4 py-2.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-[#843bab] border border-purple-200 font-bold text-xs transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+              >
+                <RefreshCw size={13} className={checkingMayarId === mayarWarningModal.item.id ? 'animate-spin' : ''} />
+                <span>{checkingMayarId === mayarWarningModal.item.id ? 'Memeriksa ke Mayar...' : 'Cek Status di Mayar'}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => executeKonfirmasi(mayarWarningModal.item!.id, mayarWarningModal.item!.peserta.nama_lengkap)}
+                disabled={isPending || checkingMayarId === mayarWarningModal.item.id}
+                className="order-2 sm:order-3 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition-all cursor-pointer shadow-xs disabled:opacity-50 text-center"
+              >
+                Tetap Konfirmasi Lunas (Manual)
               </button>
             </div>
           </div>

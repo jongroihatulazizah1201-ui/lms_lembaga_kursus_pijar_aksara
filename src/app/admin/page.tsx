@@ -101,6 +101,7 @@ export default async function AdminPanelPage({ searchParams }: Props) {
       status,
       nominal,
       metode_bayar,
+      mayar_invoice_id,
       batas_bayar,
       bukti_bayar_path,
       dibayar_pada,
