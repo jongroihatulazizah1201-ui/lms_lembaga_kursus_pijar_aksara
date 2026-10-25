@@ -16,8 +16,8 @@ CREATE POLICY "profiles_update" ON public.profiles
 
 -- 3. Siapkan storage bucket avatars
 INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
-VALUES ('avatars', 'avatars', true, 5242880, ARRAY['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
-ON CONFLICT (id) DO UPDATE SET public = true;
+VALUES ('avatars', 'avatars', true, 1048576, ARRAY['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
+ON CONFLICT (id) DO UPDATE SET public = true, file_size_limit = 1048576;
 
 -- 4. Storage policies untuk avatars
 DROP POLICY IF EXISTS "avatars_public_select" ON storage.objects;

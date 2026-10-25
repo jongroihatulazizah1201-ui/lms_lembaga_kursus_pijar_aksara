@@ -54,9 +54,9 @@ export default function ProfileClient({ profile }: Props) {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validasi Ukuran (Maks 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      setMessage({ type: 'error', text: 'Ukuran foto profil maksimal 5 MB.' });
+    // Validasi Ukuran (Maks 1MB)
+    if (file.size > 1 * 1024 * 1024) {
+      setMessage({ type: 'error', text: 'Ukuran foto profil maksimal 1 MB.' });
       return;
     }
 
@@ -334,7 +334,7 @@ export default function ProfileClient({ profile }: Props) {
                 </div>
 
                 <div className="text-[11px] text-slate-400 leading-relaxed">
-                  Format gambar yang didukung: JPG, PNG, atau WebP. Ukuran berkas maksimal 5 MB.
+                  Format gambar yang didukung: JPG, PNG, atau WebP. Ukuran berkas maksimal 1 MB.
                 </div>
               </div>
             </div>

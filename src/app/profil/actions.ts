@@ -49,10 +49,10 @@ export async function updateProfileAction(formData: FormData) {
   if (removeAvatar) {
     newAvatarUrl = null;
   } else if (avatarFile && avatarFile.size > 0) {
-    // Validasi Ukuran File (Maksimal 5MB)
-    const MAX_SIZE = 5 * 1024 * 1024;
+    // Validasi Ukuran File (Maksimal 1MB)
+    const MAX_SIZE = 1 * 1024 * 1024;
     if (avatarFile.size > MAX_SIZE) {
-      return { error: 'Ukuran foto profil maksimal 5 MB.' };
+      return { error: 'Ukuran foto profil maksimal 1 MB.' };
     }
 
     // Validasi Tipe File
