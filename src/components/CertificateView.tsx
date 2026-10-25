@@ -1,8 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { Printer, ArrowLeft, Award, ShieldCheck, CheckCircle2, Download } from 'lucide-react';
+import { Printer, ArrowLeft, Award, ShieldCheck, CheckCircle2, Download, Copy, Check, Share2 } from 'lucide-react';
 
 interface CertificateData {
   id: string;
@@ -21,8 +21,29 @@ interface Props {
 }
 
 export default function CertificateView({ certificate }: Props) {
+  const [copiedLink, setCopiedLink] = useState(false);
+
   const handlePrint = () => {
     window.print();
+  };
+
+  const handleCopyLink = () => {
+    if (typeof window !== 'undefined') {
+      navigator.clipboard.writeText(window.location.href);
+      setCopiedLink(true);
+      setTimeout(() => setCopiedLink(false), 3000);
+    }
+  };
+
+  const handleShareWhatsApp = () => {
+    if (typeof window === 'undefined') return;
+    const shareText = `Saya telah berhasil menyelesaikan kursus "${certificate.judul_kursus}" di Lembaga Kursus Pijar Aksara dengan nomor sertifikat resmi: ${certificate.nomor_sertifikat}.\nLihat sertifikat saya: ${window.location.href}`;
+    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`, '_blank');
+  };
+
+  const handleShareLinkedIn = () => {
+    if (typeof window === 'undefined') return;
+    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`, '_blank');
   };
 
   const formattedDate = new Date(certificate.diterbitkan_pada).toLocaleDateString('id-ID', {
@@ -44,13 +65,53 @@ export default function CertificateView({ certificate }: Props) {
             <span>Kembali ke Kursus Saya</span>
           </Link>
 
-          <div className="flex items-center gap-4">
-            <span className="text-xs sm:text-sm text-slate-500">
+          <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+            <span className="text-xs sm:text-sm text-slate-500 hidden md:inline">
               Nomor: <strong className="text-slate-900 font-mono">{certificate.nomor_sertifikat}</strong>
             </span>
+
+            {/* Tombol Salin Tautan Sertifikat */}
             <button
+              type="button"
+              onClick={handleCopyLink}
+              className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+                copiedLink
+                  ? 'bg-emerald-50 border-emerald-300 text-emerald-700 shadow-2xs'
+                  : 'bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700'
+              }`}
+              title="Salin Tautan Sertifikat"
+            >
+              {copiedLink ? <Check size={15} className="text-emerald-600" /> : <Copy size={15} />}
+              <span>{copiedLink ? 'Tersalin' : 'Salin Tautan'}</span>
+            </button>
+
+            {/* Tombol Bagikan ke WhatsApp */}
+            <button
+              type="button"
+              onClick={handleShareWhatsApp}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-800 text-xs sm:text-sm font-bold transition-all cursor-pointer"
+              title="Bagikan ke WhatsApp"
+            >
+              <Share2 size={15} />
+              <span>WhatsApp</span>
+            </button>
+
+            {/* Tombol Bagikan ke LinkedIn */}
+            <button
+              type="button"
+              onClick={handleShareLinkedIn}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-800 text-xs sm:text-sm font-bold transition-all cursor-pointer"
+              title="Bagikan ke LinkedIn"
+            >
+              <Share2 size={15} />
+              <span>LinkedIn</span>
+            </button>
+
+            {/* Tombol Cetak / Unduh PDF */}
+            <button
+              type="button"
               onClick={handlePrint}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#843bab] hover:bg-[#722f96] text-white text-xs sm:text-sm font-bold shadow-xs hover:shadow-md transition-all cursor-pointer active:scale-[0.99]"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#843bab] hover:bg-[#722f96] text-white text-xs sm:text-sm font-bold shadow-xs hover:shadow-md transition-all cursor-pointer active:scale-[0.99]"
             >
               <Printer size={16} />
               <span>Cetak / Unduh PDF</span>

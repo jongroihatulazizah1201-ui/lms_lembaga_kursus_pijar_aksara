@@ -32,6 +32,7 @@ export interface EnrollmentCourseData {
   harga: number;
   instruktur_nama: string;
   total_modul: number;
+  total_durasi_menit?: number;
 }
 
 export interface EnrollmentItem {
@@ -44,6 +45,7 @@ export interface EnrollmentItem {
   mayar_invoice_id: string | null;
   kursus: EnrollmentCourseData;
   modul_lulus: number;
+  durasi_selesai_menit?: number;
   sertifikat?: {
     id: string;
     nomor_sertifikat: string;
@@ -253,6 +255,11 @@ export default function MyCourseCard({ enrollment, onCancelRequest }: Props) {
               <div className="flex items-center justify-between text-[11px] text-slate-500 pt-0.5">
                 <span>
                   {modul_lulus} dari {totalModul} modul selesai
+                  {kursus.total_durasi_menit ? (
+                    <strong className="text-slate-700 ml-1">
+                      ({enrollment.durasi_selesai_menit || 0}/{kursus.total_durasi_menit} mnt)
+                    </strong>
+                  ) : ''}
                 </span>
                 {status === 'selesai' && (
                   <span className="font-bold text-emerald-600 flex items-center gap-1">

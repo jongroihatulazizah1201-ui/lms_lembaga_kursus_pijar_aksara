@@ -109,6 +109,13 @@ export default function MyCoursesClient({ initialCourses, userProfile }: Props) 
     });
   };
 
+  // Filter kursus dengan batas bayar mendesak (< 6 jam)
+  const urgentPayments = initialCourses.filter((item) => {
+    if (item.status !== 'menunggu_bayar' || !item.batas_bayar) return false;
+    const diff = new Date(item.batas_bayar).getTime() - Date.now();
+    return diff > 0 && diff <= 6 * 60 * 60 * 1000;
+  });
+
   return (
     <div className="min-h-screen bg-slate-50/50 pb-20">
       {/* =========================================================
@@ -254,6 +261,39 @@ export default function MyCoursesClient({ initialCourses, userProfile }: Props) 
               </Link>
             </div>
           </div>
+
+          {/* Banner Pengingat Batas Bayar Mendesak (< 6 Jam) */}
+          {urgentPayments.length > 0 && (
+            <div className="mt-6 p-4 rounded-2xl bg-amber-500/10 border-2 border-amber-500/40 text-amber-950 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
+              <div className="flex items-start gap-3">
+                <div className="p-2.5 rounded-xl bg-amber-500 text-slate-950 shrink-0 mt-0.5">
+                  <Clock size={20} className="animate-pulse" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-sm sm:text-base text-slate-900 flex items-center gap-2">
+                    <span>Batas Waktu Pembayaran Segera Berakhir</span>
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-200 text-amber-900 border border-amber-300">
+                      Penting
+                    </span>
+                  </h3>
+                  <p className="text-xs sm:text-sm text-amber-900 leading-relaxed mt-0.5">
+                    Anda memiliki {urgentPayments.length} kursus (&quot;{urgentPayments.map((p) => p.kursus.judul).join(', ')}&quot;) dengan batas waktu pembayaran kurang dari 6 jam. Harap selesaikan pembayaran sebelum kuota kursi dibatalkan secara otomatis (BR-07).
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTab('menunggu_bayar');
+                  setSearchQuery('');
+                }}
+                className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs whitespace-nowrap shadow-xs transition-all cursor-pointer shrink-0"
+              >
+                <span>Bayar Sekarang</span>
+                <ArrowRight size={14} />
+              </button>
+            </div>
+          )}
 
           {/* Quick Stats Grid (Clickable to switch tab) */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-8">

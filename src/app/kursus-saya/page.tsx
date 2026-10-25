@@ -54,11 +54,13 @@ export default async function KursusSayaPage() {
           nama_lengkap
         ),
         modul (
-          id
+          id,
+          durasi_menit
         )
       ),
       progres_modul (
         id,
+        modul_id,
         lulus_pada
       ),
       sertifikat (
@@ -78,9 +80,21 @@ export default async function KursusSayaPage() {
   const coursesList: EnrollmentItem[] = (enrollments || []).map((e: any) => {
     const k = e.kursus || {};
     const instruktur = Array.isArray(k.instruktur) ? k.instruktur[0] : k.instruktur;
-    const totalModul = Array.isArray(k.modul) ? k.modul.length : 0;
+    const modulList = Array.isArray(k.modul) ? k.modul : [];
+    const totalModul = modulList.length;
     const modulLulus = (e.progres_modul || []).filter((pm: any) => pm.lulus_pada !== null).length;
     const sertifikatItem = Array.isArray(e.sertifikat) ? e.sertifikat[0] : e.sertifikat;
+
+    // Kalkulasi total durasi menit dan durasi menit yang sudah diselesaikan peserta
+    const totalDurasiMenit = modulList.reduce((acc: number, m: any) => acc + (Number(m.durasi_menit) || 0), 0);
+    const passedModulIds = new Set(
+      (e.progres_modul || [])
+        .filter((pm: any) => pm.lulus_pada !== null)
+        .map((pm: any) => pm.modul_id)
+    );
+    const durasiSelesaiMenit = modulList.reduce((acc: number, m: any) => {
+      return passedModulIds.has(m.id) ? acc + (Number(m.durasi_menit) || 0) : acc;
+    }, 0);
 
     return {
       id: e.id,
@@ -98,8 +112,10 @@ export default async function KursusSayaPage() {
         harga: k.harga || 0,
         instruktur_nama: instruktur?.nama_lengkap || 'Instruktur Pijar Aksara',
         total_modul: totalModul,
+        total_durasi_menit: totalDurasiMenit,
       },
       modul_lulus: modulLulus,
+      durasi_selesai_menit: durasiSelesaiMenit,
       sertifikat: sertifikatItem
         ? {
             id: sertifikatItem.id,

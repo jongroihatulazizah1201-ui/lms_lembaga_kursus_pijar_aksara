@@ -25,6 +25,7 @@ import {
   Printer,
   XCircle,
   GraduationCap,
+  Search,
 } from 'lucide-react';
 
 export interface ModulItem {
@@ -129,9 +130,17 @@ export default function LearningRoom({
   const highestScore = moduleAttempts.length > 0 ? Math.max(...moduleAttempts.map((a) => a.nilai)) : null;
   const sisaPercobaan = Math.max(0, 3 - totalAttemptsMade);
 
-  // Ringkasan progres kursus
+  // Ringkasan progres kursus dan waktu pembelajaran
   const totalLulus = modules.filter((m) => m.status_akses === 'lulus').length;
   const progressPercent = Math.min(100, Math.round((totalLulus / modules.length) * 100));
+
+  const totalCourseMinutes = modules.reduce((acc, m) => acc + (m.durasi_menit || 0), 0);
+  const completedCourseMinutes = modules
+    .filter((m) => m.status_akses === 'lulus')
+    .reduce((acc, m) => acc + (m.durasi_menit || 0), 0);
+
+  // State pencarian cepat judul modul di sidebar
+  const [moduleSearch, setModuleSearch] = useState('');
 
   // Ambil soal kuis ketika user berpindah ke tab 'kuis'
   useEffect(() => {
@@ -300,7 +309,7 @@ export default function LearningRoom({
                   {totalLulus} dari {modules.length} Modul Lulus
                 </div>
                 <div className="text-[11px] font-semibold text-slate-500 mt-0.5">
-                  Progres: <span className="text-[#843bab] font-bold">{progressPercent}%</span> Selesai
+                  Progres: <span className="text-[#843bab] font-bold">{progressPercent}%</span> ({completedCourseMinutes}/{totalCourseMinutes} mnt)
                 </div>
               </div>
 
@@ -343,18 +352,60 @@ export default function LearningRoom({
                   <BookOpen size={16} className="text-[#843bab]" />
                   <span>Daftar Modul</span>
                 </h2>
-                <span className="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-purple-50 text-[#843bab] border border-purple-200">
-                  {totalLulus}/{modules.length} Lulus
-                </span>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
+                    {completedCourseMinutes}/{totalCourseMinutes} mnt
+                  </span>
+                  <span className="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-purple-50 text-[#843bab] border border-purple-200">
+                    {totalLulus}/{modules.length} Lulus
+                  </span>
+                </div>
               </div>
 
-              <p className="text-xs text-slate-500 leading-relaxed mb-4">
+              {/* Kotak Pencarian Judul Modul */}
+              <div className="relative mb-3">
+                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Cari judul modul..."
+                  value={moduleSearch}
+                  onChange={(e) => setModuleSearch(e.target.value)}
+                  className="w-full pl-8 pr-7 py-1.5 rounded-xl text-xs bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-[#843bab] focus:bg-white transition-all shadow-2xs"
+                />
+                {moduleSearch && (
+                  <button
+                    type="button"
+                    onClick={() => setModuleSearch('')}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 text-xs font-bold p-0.5 cursor-pointer"
+                    title="Hapus pencarian"
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+
+              <p className="text-xs text-slate-500 leading-relaxed mb-3">
                 Modul terbuka berurutan. Selesaikan materi &amp; kuis untuk membuka modul berikutnya.
               </p>
 
               {/* List of Modules */}
               <div className="space-y-2">
-                {modules.map((m) => {
+                {(() => {
+                  const filtered = modules.filter((m) => {
+                    if (!moduleSearch.trim()) return true;
+                    const q = moduleSearch.toLowerCase().trim();
+                    return m.judul.toLowerCase().includes(q) || `modul ${m.urutan}`.toLowerCase().includes(q);
+                  });
+
+                  if (filtered.length === 0) {
+                    return (
+                      <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 text-center text-xs text-slate-500">
+                        Tidak ada modul yang cocok dengan kata kunci &quot;{moduleSearch}&quot;.
+                      </div>
+                    );
+                  }
+
+                  return filtered.map((m) => {
                   const isActive = m.urutan === activeUrutan;
                   const mLocked = m.status_akses === 'terkunci';
                   const mPassed = m.status_akses === 'lulus';
@@ -432,7 +483,8 @@ export default function LearningRoom({
                       </div>
                     </button>
                   );
-                })}
+                });
+              })()}
               </div>
             </div>
           </aside>
