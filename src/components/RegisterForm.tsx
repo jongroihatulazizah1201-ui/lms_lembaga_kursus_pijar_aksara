@@ -16,8 +16,8 @@ import {
   Eye, 
   EyeOff,
   Check,
-  Loader2,
 } from 'lucide-react';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 interface Props {
   redirectParam?: string;
@@ -377,7 +377,7 @@ export default function RegisterForm({ redirectParam = '' }: Props) {
             >
               {loading ? (
                 <span className="flex items-center gap-2">
-                  <Loader2 size={16} className="animate-spin" />
+                  <LoadingSpinner size="xs" variant="white" />
                   <span>Mendaftarkan Akun...</span>
                 </span>
               ) : (

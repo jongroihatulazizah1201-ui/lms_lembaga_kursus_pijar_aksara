@@ -12,8 +12,8 @@ import {
   AlertCircle, 
   Eye, 
   EyeOff,
-  Loader2,
 } from 'lucide-react';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 interface Props {
   redirectParam?: string;
@@ -202,7 +202,7 @@ export default function LoginForm({ redirectParam = '', errorParam = '' }: Props
             >
               {loading ? (
                 <span className="flex items-center gap-2">
-                  <Loader2 size={16} className="animate-spin" />
+                  <LoadingSpinner size="xs" variant="white" />
                   <span>Masuk ke Akun...</span>
                 </span>
               ) : (

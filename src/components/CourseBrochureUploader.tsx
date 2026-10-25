@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { Upload, X, Loader2, Image as ImageIcon, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Upload, X, Image as ImageIcon, CheckCircle2, AlertCircle } from 'lucide-react';
 import { uploadBrosurKursusAction } from '@/app/instruktur/actions';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 interface Props {
   value?: string | null;
@@ -112,10 +113,15 @@ export default function CourseBrochureUploader({ value, onChange, disabled }: Pr
           }`}
         >
           {uploading ? (
-            <div className="flex flex-col items-center justify-center py-4 space-y-2">
-              <Loader2 size={28} className="animate-spin text-[#843bab]" />
-              <p className="text-xs font-bold text-slate-700">Mengoptimasi & Mengunggah ke Storage...</p>
-              <p className="text-[10px] text-slate-400">Menyesuaikan ke resolusi 1920x1080 px</p>
+            <div className="py-2">
+              <LoadingSpinner
+                size="md"
+                variant="primary"
+                label="Mengoptimasi & Mengunggah ke Storage..."
+                sublabel="Menyesuaikan ke resolusi 1920x1080 px"
+                timeoutMs={25000}
+                onCancel={() => setUploading(false)}
+              />
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center space-y-2.5">

@@ -4,8 +4,9 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createKursusAction } from '@/app/instruktur/actions';
-import { Plus, AlertCircle, CheckCircle2, Loader2, BookOpen } from 'lucide-react';
+import { Plus, AlertCircle, CheckCircle2, BookOpen } from 'lucide-react';
 import CourseBrochureUploader from '@/components/CourseBrochureUploader';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 export default function CreateCourseForm() {
   const router = useRouter();
@@ -259,7 +260,7 @@ export default function CreateCourseForm() {
         >
           {loading ? (
             <>
-              <Loader2 size={16} className="animate-spin" />
+              <LoadingSpinner size="xs" variant="white" />
               <span>Menyimpan Kursus...</span>
             </>
           ) : (

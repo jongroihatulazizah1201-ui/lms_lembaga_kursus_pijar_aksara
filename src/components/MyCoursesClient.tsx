@@ -15,9 +15,9 @@ import {
   Filter,
   ArrowRight,
   AlertTriangle,
-  Loader2,
   GraduationCap,
 } from 'lucide-react';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 interface Props {
   initialCourses: EnrollmentItem[];
@@ -524,7 +524,7 @@ export default function MyCoursesClient({ initialCourses, userProfile }: Props) 
               >
                 {isPending ? (
                   <>
-                    <Loader2 size={14} className="animate-spin" />
+                    <LoadingSpinner size="xs" variant="white" />
                     <span>Membatalkan...</span>
                   </>
                 ) : (

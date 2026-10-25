@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { tandaiMateriDibacaAction, getSignedPdfUrlAction } from '@/app/belajar/actions';
 import { getSoalKuisAction, submitKuisAction } from '@/app/belajar/kuis-actions';
 import DynamicWatermark from '@/components/DynamicWatermark';
+import LoadingSpinner from '@/components/LoadingSpinner';
 import {
   BookOpen,
   CheckCircle2,
@@ -20,7 +21,6 @@ import {
   AlertCircle,
   HelpCircle,
   RotateCcw,
-  Loader2,
   Check,
   ChevronRight,
   Printer,
@@ -693,7 +693,7 @@ export default function LearningRoom({
                         >
                           {downloadingPdf ? (
                             <>
-                              <Loader2 size={14} className="animate-spin" />
+                              <LoadingSpinner size="xs" variant="white" />
                               <span>Mengambil Tautan...</span>
                             </>
                           ) : (
@@ -735,7 +735,7 @@ export default function LearningRoom({
                           >
                             {loadingRead ? (
                               <>
-                                <Loader2 size={15} className="animate-spin" />
+                                <LoadingSpinner size="xs" variant="white" />
                                 <span>Menandai...</span>
                               </>
                             ) : (
@@ -926,9 +926,15 @@ export default function LearningRoom({
 
                         {/* Loading Soal */}
                         {loadingQuestions && (
-                          <div className="p-12 text-center text-slate-500 space-y-3">
-                            <Loader2 size={24} className="animate-spin text-[#843bab] mx-auto" />
-                            <p className="text-xs">Memuat daftar soal kuis modul...</p>
+                          <div className="p-8 text-center">
+                            <LoadingSpinner
+                              size="md"
+                              variant="primary"
+                              label="Memuat Daftar Soal Kuis Modul..."
+                              sublabel="Menyiapkan instrumen evaluasi kompetensi vokasi"
+                              delayMs={150}
+                              timeoutMs={12000}
+                            />
                           </div>
                         )}
 
@@ -1027,7 +1033,7 @@ export default function LearningRoom({
                                   >
                                     {submittingQuiz ? (
                                       <>
-                                        <Loader2 size={16} className="animate-spin" />
+                                        <LoadingSpinner size="xs" variant="white" />
                                         <span>Menilai Kuis Otomatis...</span>
                                       </>
                                     ) : (

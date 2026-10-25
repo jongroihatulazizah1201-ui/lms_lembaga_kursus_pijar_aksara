@@ -14,12 +14,12 @@ import {
   Trash2,
   CheckCircle2,
   AlertCircle,
-  Loader2,
   Calendar,
   Save,
   ArrowLeft,
   GraduationCap,
 } from 'lucide-react';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 interface ProfileData {
   id: string;
@@ -434,7 +434,7 @@ export default function ProfileClient({ profile }: Props) {
             >
               {isPending ? (
                 <>
-                  <Loader2 size={16} className="animate-spin" />
+                  <LoadingSpinner size="xs" variant="primary" />
                   <span>Menyimpan Perubahan...</span>
                 </>
               ) : (

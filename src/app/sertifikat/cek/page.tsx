@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import CertificateVerificationClient from '@/components/CertificateVerificationClient';
-import { Loader2 } from 'lucide-react';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 export const metadata: Metadata = {
   title: 'Verifikasi Sertifikat Resmi | Lembaga Kursus Pijar Aksara',
@@ -17,7 +17,13 @@ export default function CekSertifikatPage() {
     <Suspense
       fallback={
         <div className="min-h-[75vh] flex items-center justify-center p-8">
-          <Loader2 size={32} className="animate-spin text-[#843bab]" />
+          <LoadingSpinner
+            size="lg"
+            variant="primary"
+            label="Menyiapkan Verifikasi Sertifikat..."
+            sublabel="Menghubungkan ke pangkalan data resmi Pijar Aksara"
+            delayMs={150}
+          />
         </div>
       }
     >

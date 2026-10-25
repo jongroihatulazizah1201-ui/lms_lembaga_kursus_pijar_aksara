@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { ShieldCheck, Search, AlertCircle, Award, Calendar, CheckCircle2, Loader2, ArrowRight } from 'lucide-react';
+import { ShieldCheck, Search, AlertCircle, Award, Calendar, CheckCircle2, ArrowRight } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 interface CertificateVerificationResult {
   valid: boolean;
@@ -151,7 +152,7 @@ export default function CertificateVerificationClient() {
             >
               {loading ? (
                 <>
-                  <Loader2 size={18} className="animate-spin" />
+                  <LoadingSpinner size="xs" variant="white" />
                   <span>Memeriksa Sertifikat...</span>
                 </>
               ) : (
@@ -166,9 +167,16 @@ export default function CertificateVerificationClient() {
 
         {/* Verification Result Area */}
         {loading && (
-          <div className="bg-white rounded-3xl border border-slate-200 p-8 text-center shadow-sm space-y-3">
-            <Loader2 size={32} className="animate-spin text-[#843bab] mx-auto" />
-            <p className="text-sm font-semibold text-slate-700">Mencari data sertifikat di database resmi...</p>
+          <div className="bg-white rounded-3xl border border-slate-200 p-8 text-center shadow-sm">
+            <LoadingSpinner
+              size="lg"
+              variant="primary"
+              label="Mencari Data Sertifikat di Database Resmi..."
+              sublabel="Memeriksa keaslian nomor seri pada pangkalan data Pijar Aksara"
+              timeoutMs={10000}
+              onRetry={() => handleVerify(nomorInput)}
+              onCancel={() => setLoading(false)}
+            />
           </div>
         )}
 
