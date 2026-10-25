@@ -22,6 +22,13 @@ interface Props {
 
 export default function CertificateView({ certificate }: Props) {
   const [copiedLink, setCopiedLink] = useState(false);
+  const [siteOrigin, setSiteOrigin] = useState<string>('https://lmslembagakursuspijaraksara.netlify.app');
+
+  React.useEffect(() => {
+    if (typeof window !== 'undefined' && window.location.origin) {
+      setSiteOrigin(window.location.origin);
+    }
+  }, []);
 
   const handlePrint = () => {
     window.print();
@@ -340,7 +347,7 @@ export default function CertificateView({ certificate }: Props) {
                   style={{ textDecoration: 'none', display: 'block', textAlign: 'center' }}
                 >
                   <img
-                    src={`https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(`https://lmslembagakursuspijaraksara.netlify.app/sertifikat/cek?nomor=${certificate.nomor_sertifikat}`)}`}
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(`${siteOrigin}/sertifikat/cek?nomor=${certificate.nomor_sertifikat}`)}`}
                     alt={`QR Verifikasi ${certificate.nomor_sertifikat}`}
                     width={68}
                     height={68}
