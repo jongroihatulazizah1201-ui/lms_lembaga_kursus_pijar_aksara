@@ -22,7 +22,7 @@ import {
   Check,
   X,
   AlertTriangle,
-  Zap,
+  CreditCardCheck,
   Sparkles,
   QrCode,
   HelpCircle,
@@ -381,7 +381,7 @@ export default function MyCourseCard({ enrollment, onCancelRequest }: Props) {
               href={`/kursus-saya/${id}/bayar`}
               className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#843bab] hover:bg-[#722f96] text-white font-bold text-xs shadow-xs hover:shadow-md transition-all cursor-pointer"
             >
-              <Zap size={14} className="text-[#ffdf0f]" />
+              <CreditCardCheck size={14} className="text-[#ffdf0f]" />
               <span>Bayar Kursus (Mayar / Transfer)</span>
               <ArrowRight size={14} />
             </Link>
@@ -535,7 +535,7 @@ export default function MyCourseCard({ enrollment, onCancelRequest }: Props) {
 
                     <div>
                       <h4 className="text-sm font-extrabold text-slate-900 flex items-center gap-1.5">
-                        <Zap size={15} className="text-[#843bab]" />
+                        <CreditCardCheck size={16} className="text-[#843bab]" />
                         <span>Pembayaran Otomatis (QRIS & VA)</span>
                       </h4>
                       <p className="text-xs text-slate-600 mt-1 leading-relaxed">
@@ -595,7 +595,7 @@ export default function MyCourseCard({ enrollment, onCancelRequest }: Props) {
                           </div>
                         ) : (
                           <>
-                            <Zap size={14} className="text-[#ffdf0f]" />
+                            <CreditCardCheck size={14} className="text-[#ffdf0f]" />
                             <span>Bayar Sekarang via Mayar (QRIS / VA)</span>
                             <ArrowRight size={14} />
                           </>

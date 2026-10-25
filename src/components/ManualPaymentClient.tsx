@@ -20,7 +20,7 @@ import {
   ExternalLink,
   RefreshCw,
   AlertCircle,
-  Zap,
+  CreditCardCheck,
   QrCode,
   Sparkles,
   ArrowRight,
@@ -539,7 +539,7 @@ export default function ManualPaymentClient({
               <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
                 <div className="flex items-center gap-2.5">
                   <div className="w-8 h-8 rounded-lg bg-purple-100 text-[#843bab] flex items-center justify-center shrink-0">
-                    <Zap size={16} />
+                    <CreditCardCheck size={16} />
                   </div>
                   <div>
                     <h3 className="text-base font-extrabold text-slate-900">
@@ -651,7 +651,7 @@ export default function ManualPaymentClient({
                     </div>
                   ) : (
                     <>
-                      <Zap size={14} className="text-[#ffdf0f]" />
+                      <CreditCardCheck size={15} className="text-[#ffdf0f]" />
                       <span>Bayar Sekarang via Mayar (QRIS / VA)</span>
                       <ArrowRight size={14} />
                     </>
