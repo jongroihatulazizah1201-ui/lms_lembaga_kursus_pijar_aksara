@@ -8,6 +8,7 @@ import {
   createModulAction,
   deleteModulAction,
   createSoalAction,
+  updateSoalAction,
   deleteSoalAction,
 } from '@/app/instruktur/actions';
 import CourseStatusBadge from '@/components/CourseStatusBadge';
@@ -18,6 +19,8 @@ import {
   BookOpen,
   Plus,
   Trash2,
+  Pencil,
+  X,
   Lock,
   CheckCircle2,
   XCircle,
@@ -97,6 +100,15 @@ export default function CourseEditor({ course }: Props) {
   const [soalC, setSoalC] = useState('');
   const [soalD, setSoalD] = useState('');
   const [soalKunci, setSoalKunci] = useState<'A' | 'B' | 'C' | 'D'>('A');
+
+  // Edit Question Form State
+  const [editingSoalId, setEditingSoalId] = useState<string | null>(null);
+  const [editSoalPertanyaan, setEditSoalPertanyaan] = useState('');
+  const [editSoalA, setEditSoalA] = useState('');
+  const [editSoalB, setEditSoalB] = useState('');
+  const [editSoalC, setEditSoalC] = useState('');
+  const [editSoalD, setEditSoalD] = useState('');
+  const [editSoalKunci, setEditSoalKunci] = useState<'A' | 'B' | 'C' | 'D'>('A');
 
   // Edit Course Info Form State
   const [editJudul, setEditJudul] = useState(course.judul);
@@ -194,7 +206,55 @@ export default function CourseEditor({ course }: Props) {
     }
   };
 
-  // 4. Hapus Soal
+  // 4. Edit Soal
+  const handleStartEditSoal = (q: Question) => {
+    setEditingSoalId(q.id);
+    setEditSoalPertanyaan(q.pertanyaan);
+    setEditSoalA(q.pilihan_a);
+    setEditSoalB(q.pilihan_b);
+    setEditSoalC(q.pilihan_c);
+    setEditSoalD(q.pilihan_d);
+    setEditSoalKunci((q.kunci_jawaban?.toUpperCase() || 'A') as 'A' | 'B' | 'C' | 'D');
+  };
+
+  const handleCancelEditSoal = () => {
+    setEditingSoalId(null);
+    setEditSoalPertanyaan('');
+    setEditSoalA('');
+    setEditSoalB('');
+    setEditSoalC('');
+    setEditSoalD('');
+    setEditSoalKunci('A');
+  };
+
+  const handleSaveEditSoal = async (soalId: string) => {
+    if (isLocked) return;
+    if (!editSoalPertanyaan.trim() || !editSoalA.trim() || !editSoalB.trim() || !editSoalC.trim() || !editSoalD.trim()) {
+      alert('Pertanyaan dan seluruh opsi jawaban A, B, C, D wajib diisi.');
+      return;
+    }
+
+    setSubmittingAction(true);
+    const res = await updateSoalAction(soalId, course.id, {
+      pertanyaan: editSoalPertanyaan,
+      pilihan_a: editSoalA,
+      pilihan_b: editSoalB,
+      pilihan_c: editSoalC,
+      pilihan_d: editSoalD,
+      kunci_jawaban: editSoalKunci,
+    });
+    setSubmittingAction(false);
+
+    if (res?.error) {
+      setFeedbackMsg({ type: 'error', text: res.error });
+    } else {
+      handleCancelEditSoal();
+      setFeedbackMsg({ type: 'success', text: 'Butir soal kuis berhasil diperbarui.' });
+      router.refresh();
+    }
+  };
+
+  // 5. Hapus Soal
   const handleDeleteSoal = async (soalId: string) => {
     if (isLocked) return;
     if (!confirm('Hapus butir soal kuis ini?')) return;
@@ -206,12 +266,15 @@ export default function CourseEditor({ course }: Props) {
     if (res?.error) {
       setFeedbackMsg({ type: 'error', text: res.error });
     } else {
+      if (editingSoalId === soalId) {
+        handleCancelEditSoal();
+      }
       setFeedbackMsg({ type: 'success', text: 'Soal berhasil dihapus.' });
       router.refresh();
     }
   };
 
-  // 5. Simpan Perubahan Info Dasar
+  // 6. Simpan Perubahan Info Dasar
   const handleSaveInfo = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isLocked) return;
@@ -625,45 +688,175 @@ export default function CourseEditor({ course }: Props) {
                     ) : (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
                         {soalList.map((q) => (
-                          <div
-                            key={q.id}
-                            className="bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-1.5 relative group"
-                          >
-                            <div className="flex items-start justify-between gap-2">
-                              <span className="font-semibold text-slate-800">
-                                {q.urutan}. {q.pertanyaan}
-                              </span>
-                              {!isLocked && (
+                          editingSoalId === q.id ? (
+                            <div
+                              key={q.id}
+                              className="col-span-1 md:col-span-2 bg-purple-50/50 border-2 border-[#843bab] rounded-xl p-3.5 space-y-3 shadow-xs"
+                            >
+                              <div className="flex items-center justify-between border-b border-purple-200/60 pb-2">
+                                <span className="font-bold text-xs text-[#843bab] flex items-center gap-1.5">
+                                  <Pencil size={13} /> Edit Butir Soal #{q.urutan}
+                                </span>
                                 <button
                                   type="button"
-                                  onClick={() => handleDeleteSoal(q.id)}
-                                  className="text-slate-400 hover:text-red-600 transition-colors p-1"
-                                  title="Hapus Soal"
+                                  onClick={handleCancelEditSoal}
+                                  className="text-slate-400 hover:text-slate-600 p-1 rounded-md transition-colors"
+                                  title="Batal Edit"
                                 >
-                                  <Trash2 size={13} />
+                                  <X size={14} />
                                 </button>
-                              )}
-                            </div>
+                              </div>
 
-                            <div className="text-[11px] text-slate-600 space-y-0.5 pl-2">
-                              <div className={q.kunci_jawaban === 'A' ? 'font-bold text-emerald-700' : ''}>
-                                A. {q.pilihan_a}
+                              <div className="space-y-1">
+                                <label className="block text-[11px] font-semibold text-slate-700">Pertanyaan *</label>
+                                <textarea
+                                  rows={2}
+                                  value={editSoalPertanyaan}
+                                  onChange={(e) => setEditSoalPertanyaan(e.target.value)}
+                                  className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-slate-900 focus:outline-none focus:ring-1 focus:ring-[#843bab] text-xs"
+                                />
                               </div>
-                              <div className={q.kunci_jawaban === 'B' ? 'font-bold text-emerald-700' : ''}>
-                                B. {q.pilihan_b}
-                              </div>
-                              <div className={q.kunci_jawaban === 'C' ? 'font-bold text-emerald-700' : ''}>
-                                C. {q.pilihan_c}
-                              </div>
-                              <div className={q.kunci_jawaban === 'D' ? 'font-bold text-emerald-700' : ''}>
-                                D. {q.pilihan_d}
-                              </div>
-                            </div>
 
-                            <div className="text-[10px] text-slate-400 pt-1 border-t border-slate-200/60">
-                              Kunci Jawaban: <strong className="text-emerald-700">{q.kunci_jawaban}</strong>
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                <div className="space-y-1">
+                                  <label className="block text-[11px] font-semibold text-slate-600">Pilihan A *</label>
+                                  <input
+                                    type="text"
+                                    value={editSoalA}
+                                    onChange={(e) => setEditSoalA(e.target.value)}
+                                    className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-slate-900 focus:outline-none focus:ring-1 focus:ring-[#843bab] text-xs"
+                                  />
+                                </div>
+                                <div className="space-y-1">
+                                  <label className="block text-[11px] font-semibold text-slate-600">Pilihan B *</label>
+                                  <input
+                                    type="text"
+                                    value={editSoalB}
+                                    onChange={(e) => setEditSoalB(e.target.value)}
+                                    className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-slate-900 focus:outline-none focus:ring-1 focus:ring-[#843bab] text-xs"
+                                  />
+                                </div>
+                                <div className="space-y-1">
+                                  <label className="block text-[11px] font-semibold text-slate-600">Pilihan C *</label>
+                                  <input
+                                    type="text"
+                                    value={editSoalC}
+                                    onChange={(e) => setEditSoalC(e.target.value)}
+                                    className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-slate-900 focus:outline-none focus:ring-1 focus:ring-[#843bab] text-xs"
+                                  />
+                                </div>
+                                <div className="space-y-1">
+                                  <label className="block text-[11px] font-semibold text-slate-600">Pilihan D *</label>
+                                  <input
+                                    type="text"
+                                    value={editSoalD}
+                                    onChange={(e) => setEditSoalD(e.target.value)}
+                                    className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-slate-900 focus:outline-none focus:ring-1 focus:ring-[#843bab] text-xs"
+                                  />
+                                </div>
+                              </div>
+
+                              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+                                <div className="flex items-center gap-2">
+                                  <span className="font-semibold text-slate-700 text-xs">Kunci Jawaban:</span>
+                                  {(['A', 'B', 'C', 'D'] as const).map((opt) => (
+                                    <button
+                                      key={opt}
+                                      type="button"
+                                      onClick={() => setEditSoalKunci(opt)}
+                                      className={`w-7 h-7 rounded-lg font-bold text-xs transition-colors ${
+                                        editSoalKunci === opt
+                                          ? 'bg-[#843bab] text-white shadow-xs'
+                                          : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100'
+                                      }`}
+                                    >
+                                      {opt}
+                                    </button>
+                                  ))}
+                                </div>
+
+                                <div className="flex items-center justify-end gap-2">
+                                  <button
+                                    type="button"
+                                    onClick={handleCancelEditSoal}
+                                    disabled={submittingAction}
+                                    className="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-200/70 transition-colors cursor-pointer"
+                                  >
+                                    Batal
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleSaveEditSoal(q.id)}
+                                    disabled={submittingAction}
+                                    className="px-4 py-1.5 rounded-lg text-xs font-bold bg-[#843bab] hover:bg-[#6f2f91] text-white shadow-sm transition-colors cursor-pointer"
+                                  >
+                                    {submittingAction ? 'Menyimpan...' : 'Simpan Perubahan'}
+                                  </button>
+                                </div>
+                              </div>
                             </div>
-                          </div>
+                          ) : (
+                            <div
+                              key={q.id}
+                              className="bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-1.5 relative group hover:border-slate-300 transition-colors"
+                            >
+                              <div className="flex items-start justify-between gap-2">
+                                <span className="font-semibold text-slate-800">
+                                  {q.urutan}. {q.pertanyaan}
+                                </span>
+                                {!isLocked && (
+                                  <div className="flex items-center gap-1 shrink-0">
+                                    <button
+                                      type="button"
+                                      onClick={() => handleStartEditSoal(q)}
+                                      className="text-slate-400 hover:text-[#843bab] hover:bg-purple-50 rounded-lg p-1 transition-colors"
+                                      title="Edit Soal"
+                                    >
+                                      <Pencil size={13} />
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => handleDeleteSoal(q.id)}
+                                      className="text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg p-1 transition-colors"
+                                      title="Hapus Soal"
+                                    >
+                                      <Trash2 size={13} />
+                                    </button>
+                                  </div>
+                                )}
+                              </div>
+
+                              <div className="text-[11px] text-slate-600 space-y-0.5 pl-2">
+                                <div className={q.kunci_jawaban === 'A' ? 'font-bold text-emerald-700' : ''}>
+                                  A. {q.pilihan_a}
+                                </div>
+                                <div className={q.kunci_jawaban === 'B' ? 'font-bold text-emerald-700' : ''}>
+                                  B. {q.pilihan_b}
+                                </div>
+                                <div className={q.kunci_jawaban === 'C' ? 'font-bold text-emerald-700' : ''}>
+                                  C. {q.pilihan_c}
+                                </div>
+                                <div className={q.kunci_jawaban === 'D' ? 'font-bold text-emerald-700' : ''}>
+                                  D. {q.pilihan_d}
+                                </div>
+                              </div>
+
+                              <div className="text-[10px] text-slate-400 pt-1 border-t border-slate-200/60 flex items-center justify-between">
+                                <span>
+                                  Kunci Jawaban: <strong className="text-emerald-700">{q.kunci_jawaban}</strong>
+                                </span>
+                                {!isLocked && (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleStartEditSoal(q)}
+                                    className="text-[10px] text-[#843bab] font-semibold hover:underline"
+                                  >
+                                    Ubah Soal
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                          )
                         ))}
                       </div>
                     )}

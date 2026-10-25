@@ -333,7 +333,56 @@ export async function createSoalAction(formData: {
   return { success: true, soal: data };
 }
 
-// 7. Hapus Soal (Hanya saat draf, BR-04)
+// 7. Perbarui Soal Kuis (Hanya saat draf, BR-04)
+export async function updateSoalAction(
+  soalId: string,
+  kursusId: string,
+  formData: {
+    urutan?: number;
+    pertanyaan: string;
+    pilihan_a: string;
+    pilihan_b: string;
+    pilihan_c: string;
+    pilihan_d: string;
+    kunci_jawaban: string;
+  }
+) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { error: 'Pengguna belum terautentikasi.' };
+  }
+
+  const updatePayload: Record<string, any> = {
+    pertanyaan: formData.pertanyaan,
+    pilihan_a: formData.pilihan_a,
+    pilihan_b: formData.pilihan_b,
+    pilihan_c: formData.pilihan_c,
+    pilihan_d: formData.pilihan_d,
+    kunci_jawaban: formData.kunci_jawaban.toUpperCase(),
+  };
+
+  if (formData.urutan !== undefined) {
+    updatePayload.urutan = formData.urutan;
+  }
+
+  const { data, error } = await supabase
+    .from('soal')
+    .update(updatePayload)
+    .eq('id', soalId)
+    .select()
+    .single();
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  revalidatePath(`/instruktur/kursus/${kursusId}`);
+  return { success: true, soal: data };
+}
+
+// 8. Hapus Soal (Hanya saat draf, BR-04)
 export async function deleteSoalAction(soalId: string, kursusId: string) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
