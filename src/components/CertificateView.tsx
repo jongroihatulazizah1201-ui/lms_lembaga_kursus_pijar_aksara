@@ -311,26 +311,54 @@ export default function CertificateView({ certificate }: Props) {
               </div>
             </div>
 
-            {/* Official Gold Seal Badge */}
-            <div style={{ textAlign: 'center' }}>
-              <div style={{
-                width: '76px',
-                height: '76px',
-                borderRadius: '50%',
-                backgroundColor: '#fef3c7',
-                border: '4px solid #f59e0b',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                margin: '0 auto 8px auto',
-                boxShadow: '0 4px 10px rgba(217, 119, 6, 0.2)'
-              }}>
-                <ShieldCheck size={28} color="#d97706" />
-                <span style={{ fontSize: '0.55rem', fontWeight: 800, color: '#92400e', textTransform: 'uppercase' }}>
-                  VALID
-                </span>
+            {/* Official Gold Seal Badge & Verification QR */}
+            <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '14px' }}>
+                <div style={{
+                  width: '72px',
+                  height: '72px',
+                  borderRadius: '50%',
+                  backgroundColor: '#fef3c7',
+                  border: '3px solid #f59e0b',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 4px 10px rgba(217, 119, 6, 0.15)'
+                }}>
+                  <ShieldCheck size={26} color="#d97706" />
+                  <span style={{ fontSize: '0.52rem', fontWeight: 800, color: '#92400e', textTransform: 'uppercase' }}>
+                    VALID
+                  </span>
+                </div>
+
+                <a
+                  href={`/sertifikat/cek?nomor=${encodeURIComponent(certificate.nomor_sertifikat)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Klik atau pindai untuk memverifikasi keaslian sertifikat"
+                  style={{ textDecoration: 'none', display: 'block', textAlign: 'center' }}
+                >
+                  <img
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(`https://lmslembagakursuspijaraksara.netlify.app/sertifikat/cek?nomor=${certificate.nomor_sertifikat}`)}`}
+                    alt={`QR Verifikasi ${certificate.nomor_sertifikat}`}
+                    width={68}
+                    height={68}
+                    style={{
+                      borderRadius: '8px',
+                      border: '1px solid #cbd5e1',
+                      padding: '3px',
+                      backgroundColor: '#ffffff',
+                      display: 'block',
+                      margin: '0 auto'
+                    }}
+                  />
+                  <span style={{ display: 'block', fontSize: '0.6rem', color: '#64748b', fontWeight: 700, marginTop: '2px' }}>
+                    Pindai Verifikasi
+                  </span>
+                </a>
               </div>
+
               <div style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: 600 }}>
                 Depok, {formattedDate}
               </div>

@@ -95,6 +95,18 @@ export default async function RuangBelajarPage({ params, searchParams }: Props) 
     .eq('pendaftaran_id', pendaftaranId)
     .maybeSingle();
 
+  // Ambil profil peserta dari sesi terautentikasi di level server untuk penanda air dinamis
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('nama_lengkap, email')
+    .eq('id', user.id)
+    .maybeSingle();
+
+  const watermarkUser = {
+    name: profile?.nama_lengkap || (user.user_metadata?.nama_lengkap as string) || 'Peserta',
+    email: profile?.email || user.email || '',
+  };
+
   return (
     <LearningRoom
       kursusSlug={slug}
@@ -104,6 +116,7 @@ export default async function RuangBelajarPage({ params, searchParams }: Props) 
       quizAttempts={quizAttempts || []}
       certificate={certificate || null}
       initialUrutan={initialUrutan}
+      watermarkUser={watermarkUser}
     />
   );
 }

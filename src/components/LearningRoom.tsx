@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { tandaiMateriDibacaAction, getSignedPdfUrlAction } from '@/app/belajar/actions';
 import { getSoalKuisAction, submitKuisAction } from '@/app/belajar/kuis-actions';
+import DynamicWatermark from '@/components/DynamicWatermark';
 import {
   BookOpen,
   CheckCircle2,
@@ -76,6 +77,10 @@ interface Props {
     nomor_sertifikat: string;
   } | null;
   initialUrutan?: number;
+  watermarkUser?: {
+    name: string;
+    email: string;
+  };
 }
 
 export default function LearningRoom({
@@ -86,6 +91,7 @@ export default function LearningRoom({
   quizAttempts: initialAttempts,
   certificate,
   initialUrutan,
+  watermarkUser,
 }: Props) {
   const router = useRouter();
 
@@ -631,6 +637,13 @@ export default function LearningRoom({
                             allowFullScreen
                             className="absolute inset-0 w-full h-full border-0"
                           />
+                          {watermarkUser && (
+                            <DynamicWatermark
+                              name={watermarkUser.name}
+                              email={watermarkUser.email}
+                              variant="dark"
+                            />
+                          )}
                         </div>
                       </div>
                     )}
@@ -641,8 +654,17 @@ export default function LearningRoom({
                         <BookOpen size={15} className="text-[#843bab]" />
                         <span>Isi Materi Pelatihan</span>
                       </div>
-                      <div className="p-6 rounded-2xl bg-slate-50/70 border border-slate-200 text-slate-700 text-sm sm:text-base leading-relaxed whitespace-pre-line">
-                        {activeModule.isi_materi || 'Materi sedang disiapkan oleh instruktur.'}
+                      <div className="relative overflow-hidden p-6 rounded-2xl bg-slate-50/70 border border-slate-200 text-slate-700 text-sm sm:text-base leading-relaxed whitespace-pre-line">
+                        <div className="relative z-0">
+                          {activeModule.isi_materi || 'Materi sedang disiapkan oleh instruktur.'}
+                        </div>
+                        {watermarkUser && (
+                          <DynamicWatermark
+                            name={watermarkUser.name}
+                            email={watermarkUser.email}
+                            variant="light"
+                          />
+                        )}
                       </div>
                     </div>
 

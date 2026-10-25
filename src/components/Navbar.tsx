@@ -41,6 +41,12 @@ export default async function Navbar() {
               >
                 Home
               </Link>
+              <Link
+                href="/sertifikat/cek"
+                className="px-3.5 py-2 rounded-xl text-sm font-bold text-slate-700 hover:text-[#843bab] hover:bg-purple-50/60 transition-all cursor-pointer"
+              >
+                Cek Sertifikat
+              </Link>
             </nav>
 
             {/* Separator Vertikal Halus */}
@@ -86,6 +92,12 @@ export default async function Navbar() {
               className="px-2 py-1 rounded-lg text-xs font-bold text-slate-700 hover:text-[#843bab]"
             >
               Home
+            </Link>
+            <Link
+              href="/sertifikat/cek"
+              className="px-2 py-1 rounded-lg text-xs font-bold text-slate-700 hover:text-[#843bab]"
+            >
+              Cek Sertifikat
             </Link>
 
             {user ? (

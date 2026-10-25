@@ -24,7 +24,8 @@ import {
   UserPlus,
   User,
   Menu,
-  X
+  X,
+  Clock
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -38,6 +39,7 @@ interface SidebarProps {
     no_hp?: string | null;
     avatar_url?: string | null;
   } | null;
+  urgentQueueCount?: number;
 }
 
 interface NavItem {
@@ -54,7 +56,7 @@ interface NavSection {
   items: NavItem[];
 }
 
-export default function Sidebar({ user, profile }: SidebarProps) {
+export default function Sidebar({ user, profile, urgentQueueCount: initialUrgentCount }: SidebarProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const currentTab = searchParams.get('tab');
@@ -62,6 +64,25 @@ export default function Sidebar({ user, profile }: SidebarProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [activeProfile, setActiveProfile] = useState(profile);
+  const [urgentCount, setUrgentCount] = useState<number>(initialUrgentCount || 0);
+
+  React.useEffect(() => {
+    if (initialUrgentCount !== undefined) {
+      setUrgentCount(initialUrgentCount);
+    }
+  }, [initialUrgentCount]);
+
+  React.useEffect(() => {
+    const handleQueueUpdated = (e: CustomEvent<{ urgentCount?: number }>) => {
+      if (typeof e.detail?.urgentCount === 'number') {
+        setUrgentCount(e.detail.urgentCount);
+      }
+    };
+    window.addEventListener('lms:queue-updated', handleQueueUpdated as EventListener);
+    return () => {
+      window.removeEventListener('lms:queue-updated', handleQueueUpdated as EventListener);
+    };
+  }, []);
 
   React.useEffect(() => {
     setActiveProfile(profile);
@@ -116,6 +137,13 @@ export default function Sidebar({ user, profile }: SidebarProps) {
             icon: BarChart3,
             badge: 'Analitik',
             badgeColor: 'bg-purple-50 text-[#843bab] border-purple-200'
+          },
+          {
+            label: 'Antrean Operasional',
+            href: '/admin/antrean',
+            icon: Clock,
+            badge: urgentCount > 0 ? String(urgentCount) : undefined,
+            badgeColor: 'bg-red-50 text-red-700 border-red-200 font-extrabold'
           },
           {
             label: 'Tinjauan Kursus',
@@ -243,6 +271,11 @@ export default function Sidebar({ user, profile }: SidebarProps) {
     // 3. Dashboard Statistik Admin (/admin/dashboard)
     if (href === '/admin/dashboard') {
       return pathname === '/admin/dashboard';
+    }
+
+    // 4. Antrean Operasional Admin (/admin/antrean)
+    if (href === '/admin/antrean') {
+      return pathname === '/admin/antrean';
     }
 
     // 4. Instruktur - Kelola Kursus & Silabus (/instruktur dan editor /instruktur/kursus/[id])

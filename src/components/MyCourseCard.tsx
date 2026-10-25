@@ -361,14 +361,13 @@ export default function MyCourseCard({ enrollment, onCancelRequest }: Props) {
               <span>Batalkan</span>
             </button>
 
-            <button
-              type="button"
-              onClick={() => setShowPaymentModal(true)}
+            <Link
+              href={`/kursus-saya/${id}/bayar`}
               className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-bold transition-all shadow-xs cursor-pointer"
             >
               <CreditCard size={14} />
               <span>Bayar Sekarang</span>
-            </button>
+            </Link>
           </div>
         )}
 

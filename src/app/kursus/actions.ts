@@ -37,9 +37,9 @@ export async function daftarKursusAction(kursusId: string, metodeBayar: string =
     return { error: rpcErr.message };
   }
 
-  // 3. Jika kursus berbayar, coba integrasikan dengan Mayar Sandbox (PRD Bagian 11)
+  // 3. Jika kursus berbayar dan metode bayar Mayar, integrasikan dengan API Mayar
   let paymentUrl: string | null = null;
-  if (kursus.harga > 0 && pendaftaran) {
+  if (kursus.harga > 0 && pendaftaran && metodeBayar === 'mayar') {
     const { data: profile } = await supabase
       .from('profiles')
       .select('nama_lengkap, email, nomor_hp')
@@ -54,15 +54,29 @@ export async function daftarKursusAction(kursusId: string, metodeBayar: string =
       description: `Pendaftaran Kursus ${kursus.judul}`,
     });
 
-    if (invoice?.id) {
-      // Simpan ID invoice Mayar ke tabel pendaftaran
+    if (!invoice?.id) {
+      // Kegagalan ke Mayar: di produksi, batalkan pendaftaran yang baru dibuat agar tidak menggantung dengan invoice palsu
       await supabase
         .from('pendaftaran')
-        .update({ mayar_invoice_id: invoice.id })
+        .update({
+          status: 'dibatalkan',
+          dibatalkan_pada: new Date().toISOString(),
+          alasan_batal: 'Gagal membuat tagihan pembayaran Mayar. Silakan coba lagi.'
+        })
         .eq('id', pendaftaran.id);
 
-      paymentUrl = invoice.link || null;
+      return {
+        error: 'Layanan gerbang pembayaran Mayar sedang mengalami gangguan. Silakan coba lagi beberapa saat lagi.',
+      };
     }
+
+    // Simpan ID invoice Mayar yang valid ke tabel pendaftaran
+    await supabase
+      .from('pendaftaran')
+      .update({ mayar_invoice_id: invoice.id })
+      .eq('id', pendaftaran.id);
+
+    paymentUrl = invoice.link || null;
   }
 
   // 4. Pengiriman Email Otomatis jika kursus gratis (langsung aktif) (BR-07)

@@ -45,6 +45,7 @@ export async function ubahStatusKursusAction(
   }
 
   revalidatePath('/admin');
+  revalidatePath('/admin/antrean');
   revalidatePath('/kursus');
   revalidatePath('/');
   if (data?.slug) {
@@ -80,6 +81,7 @@ export async function ubahKuotaKursusAction(
   }
 
   revalidatePath('/admin');
+  revalidatePath('/admin/antrean');
   revalidatePath('/kursus');
   return { success: true, kursus: data };
 }
@@ -126,6 +128,7 @@ export async function konfirmasiPembayaranAction(pendaftaranId: string) {
   }
 
   revalidatePath('/admin');
+  revalidatePath('/admin/antrean');
   return { success: true, pendaftaran: data };
 }
 
@@ -155,6 +158,7 @@ export async function batalkanPendaftaranAction(
   }
 
   revalidatePath('/admin');
+  revalidatePath('/admin/antrean');
   return { success: true, pendaftaran: data };
 }
 

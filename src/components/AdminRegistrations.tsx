@@ -23,8 +23,10 @@ import {
   Phone,
   ArrowRight,
   ShieldCheck,
+  ExternalLink,
 } from 'lucide-react';
 import { konfirmasiPembayaranAction, batalkanPendaftaranAction } from '@/app/admin/actions';
+import { getSignedBuktiBayarUrlAction } from '@/app/kursus-saya/actions';
 
 export interface RegistrationItem {
   id: string;
@@ -32,6 +34,7 @@ export interface RegistrationItem {
   nominal: number;
   metode_bayar: 'gratis' | 'transfer_manual' | 'mayar';
   batas_bayar: string | null;
+  bukti_bayar_path?: string | null;
   dibayar_pada: string | null;
   dikonfirmasi_oleh: string | null;
   alasan_batal: string | null;
@@ -68,6 +71,39 @@ export default function AdminRegistrations({ registrations }: Props) {
   const [cancelModalReg, setCancelModalReg] = useState<RegistrationItem | null>(null);
   const [cancelReason, setCancelReason] = useState('');
   const [cancelError, setCancelError] = useState<string | null>(null);
+
+  // Modal Lihat Bukti Pembayaran (Signed URL)
+  const [loadingProofId, setLoadingProofId] = useState<string | null>(null);
+  const [proofModal, setProofModal] = useState<{
+    isOpen: boolean;
+    url: string | null;
+    studentName?: string;
+    courseTitle?: string;
+  }>({
+    isOpen: false,
+    url: null,
+  });
+
+  const handleLihatBukti = async (reg: RegistrationItem) => {
+    setLoadingProofId(reg.id);
+    try {
+      const res = await getSignedBuktiBayarUrlAction(reg.id);
+      if (res.signedUrl) {
+        setProofModal({
+          isOpen: true,
+          url: res.signedUrl,
+          studentName: reg.peserta.nama_lengkap,
+          courseTitle: reg.kursus.judul,
+        });
+      } else {
+        alert(res.error || 'Gagal memuat bukti pembayaran.');
+      }
+    } catch (err: any) {
+      alert(err.message || 'Terjadi kesalahan sistem saat memuat bukti.');
+    } finally {
+      setLoadingProofId(null);
+    }
+  };
 
   const formatRupiah = (val: number) => {
     return new Intl.NumberFormat('id-ID', {
@@ -484,8 +520,27 @@ export default function AdminRegistrations({ registrations }: Props) {
                         <div className="font-black text-slate-900">
                           {reg.nominal === 0 ? 'Gratis' : formatRupiah(reg.nominal)}
                         </div>
-                        <div className="inline-block px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-100 text-slate-600 uppercase tracking-wider mt-1">
-                          {reg.metode_bayar.replace('_', ' ')}
+                        <div className="flex flex-wrap items-center gap-1.5 mt-1">
+                          <span className="inline-block px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-100 text-slate-600 uppercase tracking-wider">
+                            {reg.metode_bayar.replace('_', ' ')}
+                          </span>
+
+                          {reg.bukti_bayar_path ? (
+                            <button
+                              type="button"
+                              onClick={() => handleLihatBukti(reg)}
+                              disabled={loadingProofId === reg.id}
+                              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-purple-50 hover:bg-purple-100 text-[#843bab] border border-purple-200 transition-colors cursor-pointer"
+                              title="Buka bukti pembayaran (Signed URL 60 menit)"
+                            >
+                              <FileText size={10} />
+                              <span>{loadingProofId === reg.id ? 'Memuat...' : 'Bukti Bayar'}</span>
+                            </button>
+                          ) : reg.metode_bayar === 'transfer_manual' && reg.status === 'menunggu_bayar' ? (
+                            <span className="text-[10px] font-medium text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">
+                              Belum Unggah
+                            </span>
+                          ) : null}
                         </div>
                       </td>
 
@@ -698,6 +753,89 @@ export default function AdminRegistrations({ registrations }: Props) {
                 className="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs shadow-xs hover:shadow transition-all cursor-pointer disabled:opacity-50"
               >
                 {loadingId === cancelModalReg.id ? 'Membatalkan...' : 'Batalkan Pendaftaran'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =========================================================================
+          6. MODAL LIHAT BUKTI PEMBAYARAN (SIGNED URL MAKSIMAL 60 MENIT)
+         ========================================================================= */}
+      {proofModal.isOpen && proofModal.url && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-fadeIn">
+          <div className="bg-white rounded-3xl max-w-2xl w-full p-6 shadow-2xl border border-slate-200 space-y-4">
+            <div className="flex items-start justify-between gap-3 pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-purple-50 text-[#843bab] flex items-center justify-center shrink-0">
+                  <FileText size={20} />
+                </div>
+                <div>
+                  <h3 className="text-base font-black text-slate-900">
+                    Bukti Pembayaran Transfer Manual
+                  </h3>
+                  <p className="text-xs text-slate-600 mt-0.5">
+                    {proofModal.studentName} &bull; {proofModal.courseTitle}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setProofModal({ isOpen: false, url: null })}
+                className="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="bg-purple-50/60 rounded-2xl p-3 border border-purple-100 text-xs text-purple-900 flex items-center gap-2">
+              <ShieldCheck size={16} className="text-[#843bab] shrink-0" />
+              <span>
+                Tautan unduh aman (signed URL) ini hanya berlaku maksimal 60 menit dari Supabase Storage privat.
+              </span>
+            </div>
+
+            <div className="max-h-[60vh] overflow-auto rounded-2xl border border-slate-200 bg-slate-50 p-2 flex items-center justify-center">
+              {proofModal.url.toLowerCase().includes('.pdf') ? (
+                <div className="w-full text-center py-10 space-y-3">
+                  <FileText size={48} className="mx-auto text-purple-600" />
+                  <p className="text-sm font-bold text-slate-800">Dokumen PDF Bukti Transfer</p>
+                  <a
+                    href={proofModal.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#843bab] hover:bg-[#703291] text-white font-bold text-xs shadow-xs transition-colors"
+                  >
+                    <ExternalLink size={14} />
+                    <span>Buka PDF di Tab Baru</span>
+                  </a>
+                </div>
+              ) : (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img
+                  src={proofModal.url}
+                  alt="Bukti Transfer Pembayaran"
+                  className="max-h-[50vh] max-w-full object-contain rounded-xl shadow-xs"
+                />
+              )}
+            </div>
+
+            <div className="flex items-center justify-end gap-2.5 pt-2">
+              <a
+                href={proofModal.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-purple-200 bg-purple-50 hover:bg-purple-100 text-[#843bab] font-bold text-xs transition-colors cursor-pointer"
+              >
+                <ExternalLink size={14} />
+                <span>Buka di Tab Baru</span>
+              </a>
+              <button
+                type="button"
+                onClick={() => setProofModal({ isOpen: false, url: null })}
+                className="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-colors cursor-pointer"
+              >
+                Tutup
               </button>
             </div>
           </div>

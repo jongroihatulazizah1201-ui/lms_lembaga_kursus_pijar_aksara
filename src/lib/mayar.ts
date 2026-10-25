@@ -7,6 +7,18 @@ interface CreateInvoiceParams {
   redirectUrl?: string;
 }
 
+export interface MayarInvoiceDetail {
+  id: string;
+  status: string;
+  isPaid: boolean;
+  amount: number | null;
+  raw?: any;
+}
+
+export function isMayarSandbox(): boolean {
+  return process.env.MAYAR_MODE === 'sandbox';
+}
+
 export async function createMayarInvoice(params: CreateInvoiceParams) {
   const apiKey = process.env.MAYAR_API_KEY;
   const baseUrl = process.env.MAYAR_BASE_URL || 'https://api.mayar.io/hl/v2';
@@ -15,13 +27,8 @@ export async function createMayarInvoice(params: CreateInvoiceParams) {
   const siteUrl = process.env.NETLIFY_SITE_URL || 'http://localhost:3000';
 
   if (!apiKey) {
-    console.warn('MAYAR_API_KEY not configured, generating sandbox simulation invoice.');
-    const mockId = `inv_sb_${Date.now()}`;
-    return {
-      id: mockId,
-      link: `https://sandbox.mayar.id/inv/${mockId}`,
-      raw: { id: mockId, amount: params.amount, status: 'unpaid' },
-    };
+    console.error('MAYAR_API_KEY tidak dikonfigurasi. Pembuatan invoice dibatalkan.');
+    return null;
   }
 
   try {
@@ -31,6 +38,13 @@ export async function createMayarInvoice(params: CreateInvoiceParams) {
       mobile: params.mobile || '081234567890',
       amount: params.amount,
       description: params.description,
+      items: [
+        {
+          description: params.description || 'Pendaftaran Kursus',
+          quantity: 1,
+          rate: params.amount,
+        },
+      ],
       expiredAt: expiredAt,
       redirectUrl: params.redirectUrl || `${siteUrl}/kursus-saya`,
     };
@@ -59,31 +73,18 @@ export async function createMayarInvoice(params: CreateInvoiceParams) {
     console.error('Mayar invoice error:', err.message);
   }
 
-  // Fallback tangguh untuk Sandbox/Pengujian jika host Mayar sedang kendala jaringan/timeout
-  const mockId = `inv_sb_${Date.now()}`;
-  return {
-    id: mockId,
-    link: `https://sandbox.mayar.id/inv/${mockId}`,
-    raw: { id: mockId, amount: params.amount, status: 'unpaid' },
-  };
+  return null;
 }
 
-export async function getMayarInvoice(invoiceId: string) {
+export async function getMayarInvoice(
+  invoiceId: string,
+  expectedAmount?: number
+): Promise<MayarInvoiceDetail | null> {
   const apiKey = process.env.MAYAR_API_KEY;
   const baseUrl = process.env.MAYAR_BASE_URL || 'https://api.mayar.io/hl/v2';
 
-  // Jika invoice ID adalah tagihan simulasi sandbox
-  if (invoiceId.startsWith('inv_sb_')) {
-    return {
-      id: invoiceId,
-      status: 'paid',
-      isPaid: true,
-      amount: null,
-    };
-  }
-
   if (!apiKey) {
-    console.warn('MAYAR_API_KEY not configured, cannot retrieve invoice from Mayar.');
+    console.warn('MAYAR_API_KEY tidak dikonfigurasi, tidak dapat mengambil invoice dari Mayar.');
     return null;
   }
 
@@ -99,10 +100,28 @@ export async function getMayarInvoice(invoiceId: string) {
     });
 
     const data = await res.json();
-    if (res.ok && data?.data) {
-      return data.data;
-    } else if (res.ok && data?.id) {
-      return data;
+    if (res.ok && (data?.data || data?.id)) {
+      const raw = data.data || data;
+      const rawStatus = (raw.status || '').toLowerCase();
+      const isPaid =
+        raw.isPaid === true ||
+        rawStatus === 'paid' ||
+        rawStatus === 'closed' ||
+        rawStatus === 'settled' ||
+        rawStatus === 'success';
+
+      const amountVal =
+        raw.amount !== null && raw.amount !== undefined
+          ? Number(raw.amount ?? raw.totalAmount ?? raw.paymentAmount)
+          : null;
+
+      return {
+        id: raw.id || invoiceId,
+        status: raw.status || 'unknown',
+        isPaid,
+        amount: isNaN(Number(amountVal)) ? null : amountVal,
+        raw,
+      };
     } else {
       console.warn('Mayar invoice lookup response:', data);
       return null;

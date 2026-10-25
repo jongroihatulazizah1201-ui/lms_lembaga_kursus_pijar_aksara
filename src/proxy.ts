@@ -54,6 +54,8 @@ export async function proxy(request: NextRequest) {
   const isInstrukturRoute = path.startsWith('/instruktur');
   const isPesertaRoute = path.startsWith('/kursus-saya') || path.startsWith('/belajar');
   const isAuthRoute = path.startsWith('/login') || path.startsWith('/register');
+  // Rute sertifikat pemilik (/sertifikat/[id]) wajib login, sedangkan /sertifikat/cek publik untuk tamu
+  const isCertificateOwnerRoute = path.startsWith('/sertifikat/') && !path.startsWith('/sertifikat/cek');
 
   // 1. Jika pengguna sudah login mencoba membuka halaman auth (/login atau /register):
   // Segera alihkan ke halaman utama sesuai peran tanpa menampilkan halaman login
@@ -78,7 +80,7 @@ export async function proxy(request: NextRequest) {
   }
 
   // 2. Proteksi rute terlindungi
-  if (isAdminRoute || isInstrukturRoute || isPesertaRoute) {
+  if (isAdminRoute || isInstrukturRoute || isPesertaRoute || isCertificateOwnerRoute) {
     if (!user) {
       const redirectUrl = new URL('/login', request.url);
       redirectUrl.searchParams.set('redirect', path);

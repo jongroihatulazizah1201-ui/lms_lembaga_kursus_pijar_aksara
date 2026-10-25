@@ -38,6 +38,7 @@ export default async function RootLayout({
   const { data: { user } } = await supabase.auth.getUser();
 
   let profile = null;
+  let urgentQueueCount = 0;
   if (user) {
     const { data } = await supabase
       .from('profiles')
@@ -45,6 +46,11 @@ export default async function RootLayout({
       .eq('id', user.id)
       .single();
     profile = data;
+
+    if (profile?.peran === 'admin') {
+      const { getUrgentQueueCount } = await import('@/lib/antrean');
+      urgentQueueCount = await getUrgentQueueCount(supabase);
+    }
   }
 
   // 1. JIKA DI HALAMAN AUTH (/login, /register, /daftar):
@@ -70,7 +76,7 @@ export default async function RootLayout({
         <body suppressHydrationWarning className="bg-white text-slate-900 min-h-screen flex flex-col lg:flex-row antialiased selection:bg-[#ffdf0f] selection:text-slate-900">
           {/* Left Sidebar untuk pengguna terautentikasi (Dibalut Suspense untuk useSearchParams) */}
           <Suspense fallback={<aside className="w-72 shrink-0 border-r border-slate-200 bg-white h-screen sticky top-0 hidden lg:block z-30" />}>
-            <Sidebar user={user} profile={profile} />
+            <Sidebar user={user} profile={profile} urgentQueueCount={urgentQueueCount} />
           </Suspense>
 
           {/* Workspace konten aplikasi (Tanpa Footer publik saat login) */}

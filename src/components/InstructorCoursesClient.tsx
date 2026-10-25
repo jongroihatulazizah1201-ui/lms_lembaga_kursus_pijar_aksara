@@ -56,10 +56,10 @@ export default function InstructorCoursesClient({ initialCourses, profile }: Pro
   // Hitung jumlah statistik
   const totalCount = initialCourses.length;
   const drafCount = initialCourses.filter((c) => c.status === 'draf').length;
-  const diajukanCount = initialCourses.filter((c) => c.status === 'diajukan' || c.status === 'ditinjau').length;
+  const diajukanCount = initialCourses.filter((c) => c.status === 'ditinjau').length;
   const terbitCount = initialCourses.filter((c) => c.status === 'terbit').length;
   const revisiCount = initialCourses.filter(
-    (c) => !!c.catatan_tinjauan && (c.status === 'draf' || c.status === 'ditolak')
+    (c) => !!c.catatan_tinjauan && c.status === 'draf'
   ).length;
 
   // Filter kursus berdasarkan Tab dan Search
@@ -67,10 +67,10 @@ export default function InstructorCoursesClient({ initialCourses, profile }: Pro
     // 1. Filter Tab
     let matchesTab = true;
     if (activeTab === 'draf') matchesTab = course.status === 'draf';
-    else if (activeTab === 'diajukan') matchesTab = course.status === 'diajukan' || course.status === 'ditinjau';
+    else if (activeTab === 'diajukan') matchesTab = course.status === 'ditinjau';
     else if (activeTab === 'terbit') matchesTab = course.status === 'terbit';
     else if (activeTab === 'revisi')
-      matchesTab = !!course.catatan_tinjauan && (course.status === 'draf' || course.status === 'ditolak');
+      matchesTab = !!course.catatan_tinjauan && course.status === 'draf';
 
     // 2. Filter Search Query
     const q = searchQuery.toLowerCase().trim();

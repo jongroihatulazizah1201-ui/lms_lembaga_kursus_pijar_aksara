@@ -102,6 +102,7 @@ export default async function AdminPanelPage({ searchParams }: Props) {
       nominal,
       metode_bayar,
       batas_bayar,
+      bukti_bayar_path,
       dibayar_pada,
       dikonfirmasi_oleh,
       alasan_batal,
