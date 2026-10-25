@@ -180,3 +180,113 @@ export async function getSignedBuktiBayarUrlAction(pendaftaranId: string) {
     expiresInSeconds: 3600,
   };
 }
+
+/**
+ * Server Action: Dapatkan atau buat invoice Mayar untuk pendaftaran berstatus 'menunggu_bayar'
+ * Mengembalikan paymentUrl (link Mayar) agar peserta bisa bayar via QRIS/VA/Mayar kapan saja.
+ */
+export async function getOrCreateMayarPaymentUrlAction(pendaftaranId: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { error: 'Silakan masuk terlebih dahulu.' };
+  }
+
+  // 1. Ambil pendaftaran
+  const { data: reg, error: regErr } = await supabase
+    .from('pendaftaran')
+    .select(`
+      id,
+      peserta_id,
+      status,
+      nominal,
+      batas_bayar,
+      mayar_invoice_id,
+      kursus:kursus_id (
+        id,
+        judul,
+        slug,
+        harga
+      )
+    `)
+    .eq('id', pendaftaranId)
+    .single();
+
+  if (regErr || !reg) {
+    return { error: 'Data pendaftaran tidak ditemukan.' };
+  }
+
+  if (reg.peserta_id !== user.id) {
+    return { error: 'Akses ditolak: Anda bukan pemilik pendaftaran ini.' };
+  }
+
+  if (reg.status !== 'menunggu_bayar') {
+    return { error: `Pendaftaran ini berstatus ${reg.status}.` };
+  }
+
+  if (reg.batas_bayar && new Date(reg.batas_bayar).getTime() < Date.now()) {
+    return { error: 'Batas waktu pembayaran 24 jam telah habis. Silakan daftar kembali dari katalog.' };
+  }
+
+  const { getMayarInvoice, createMayarInvoice } = await import('@/lib/mayar');
+
+  // 2. Jika sudah ada mayar_invoice_id, coba cek link aktif dari Mayar API
+  if (reg.mayar_invoice_id) {
+    try {
+      const existing = await getMayarInvoice(reg.mayar_invoice_id);
+      const link =
+        existing?.raw?.paymentUrl ||
+        (existing?.raw?.link
+          ? existing.raw.link.startsWith('http')
+            ? existing.raw.link
+            : `https://lmspijarkursuspijaraksara.myr.lat/invoices/${existing.raw.link}`
+          : null);
+
+      if (link) {
+        return { success: true, paymentUrl: link };
+      }
+    } catch (e) {
+      console.warn('Gagal mengambil invoice existing Mayar, membuat invoice baru:', e);
+    }
+  }
+
+  // 3. Jika belum ada atau link tidak ditemukan, buat invoice Mayar baru
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('nama_lengkap, email, no_hp')
+    .eq('id', user.id)
+    .single();
+
+  const kursus = reg.kursus as any;
+  const invoice = await createMayarInvoice({
+    name: profile?.nama_lengkap || user.email || 'Peserta',
+    email: profile?.email || user.email || '',
+    mobile: profile?.no_hp || '081234567890',
+    amount: Number(reg.nominal),
+    description: `Pendaftaran Kursus ${kursus?.judul || 'Pijar Aksara'}`,
+  });
+
+  if (!invoice?.id || !invoice?.link) {
+    return {
+      error: 'Layanan gerbang pembayaran Mayar sedang mengalami gangguan. Anda dapat menggunakan metode Transfer Bank Manual di bawah ini.',
+    };
+  }
+
+  // Simpan mayar_invoice_id baru dan update metode_bayar ke 'mayar'
+  await supabase
+    .from('pendaftaran')
+    .update({
+      mayar_invoice_id: invoice.id,
+      metode_bayar: 'mayar',
+    })
+    .eq('id', reg.id);
+
+  revalidatePath('/kursus-saya');
+  revalidatePath(`/kursus-saya/${pendaftaranId}/bayar`);
+
+  return { success: true, paymentUrl: invoice.link };
+}
+

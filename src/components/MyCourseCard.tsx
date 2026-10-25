@@ -22,7 +22,12 @@ import {
   Check,
   X,
   AlertTriangle,
+  Zap,
+  Sparkles,
+  QrCode,
 } from 'lucide-react';
+import { getOrCreateMayarPaymentUrlAction } from '@/app/kursus-saya/actions';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 export interface EnrollmentCourseData {
   id: string;
@@ -64,6 +69,25 @@ export default function MyCourseCard({ enrollment, onCancelRequest }: Props) {
   const [isExpired, setIsExpired] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [copiedBank, setCopiedBank] = useState<string | null>(null);
+  const [isRedirectingMayar, setIsRedirectingMayar] = useState(false);
+  const [mayarError, setMayarError] = useState<string | null>(null);
+
+  const handlePayViaMayar = async () => {
+    setIsRedirectingMayar(true);
+    setMayarError(null);
+    try {
+      const res = await getOrCreateMayarPaymentUrlAction(id);
+      if (res?.paymentUrl) {
+        window.location.href = res.paymentUrl;
+      } else {
+        setIsRedirectingMayar(false);
+        setMayarError(res?.error || 'Gagal menyiapkan halaman pembayaran Mayar.');
+      }
+    } catch (e: any) {
+      setIsRedirectingMayar(false);
+      setMayarError(e?.message || 'Terjadi gangguan saat menghubungi Mayar.');
+    }
+  };
 
   // Perhitungan progres kelulusan
   const totalModul = kursus.total_modul || 1;
@@ -349,25 +373,37 @@ export default function MyCourseCard({ enrollment, onCancelRequest }: Props) {
           </Link>
         )}
 
-        {/* 2. Status MENUNGGU_BAYAR: Tombol Batal & Bayar Sekarang */}
+        {/* 2. Status MENUNGGU_BAYAR: Tombol Bayar & Batal */}
         {status === 'menunggu_bayar' && (
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              type="button"
-              onClick={() => onCancelRequest?.(id, kursus.judul)}
-              className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl border border-red-300 hover:border-red-400 text-red-600 hover:bg-red-50 text-xs font-bold transition-all cursor-pointer"
-            >
-              <XCircle size={14} />
-              <span>Batalkan</span>
-            </button>
-
+          <div className="space-y-2">
             <Link
               href={`/kursus-saya/${id}/bayar`}
-              className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-bold transition-all shadow-xs cursor-pointer"
+              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#843bab] hover:bg-[#722f96] text-white font-bold text-xs shadow-xs hover:shadow-md transition-all cursor-pointer"
             >
-              <CreditCard size={14} />
-              <span>Bayar Sekarang</span>
+              <Zap size={14} className="text-[#ffdf0f]" />
+              <span>Bayar Kursus (Mayar / Transfer)</span>
+              <ArrowRight size={14} />
             </Link>
+
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => onCancelRequest?.(id, kursus.judul)}
+                className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-red-200 hover:border-red-300 text-red-600 hover:bg-red-50 text-xs font-semibold transition-all cursor-pointer"
+              >
+                <XCircle size={13} />
+                <span>Batalkan</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setShowPaymentModal(true)}
+                className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 hover:border-slate-300 text-slate-700 hover:bg-slate-50 text-xs font-semibold transition-all cursor-pointer"
+              >
+                <CreditCard size={13} />
+                <span>Petunjuk Bayar</span>
+              </button>
+            </div>
           </div>
         )}
 
@@ -482,97 +518,177 @@ export default function MyCourseCard({ enrollment, onCancelRequest }: Props) {
                   </button>
                 </div>
               ) : (
-                /* JIKA BELUM KEDALUWARSA: TAMPILKAN REKENING TRANSFER MANUAL */
+                /* JIKA BELUM KEDALUWARSA: TAMPILKAN METODE MAYAR & REKENING TRANSFER MANUAL */
                 <div className="space-y-4">
-                  <div className="text-xs font-bold text-slate-800">
-                    Pilihan Rekening Resmi LKP Pijar Aksara:
+                  {/* METODE 1: MAYAR (OTOMATIS) */}
+                  <div className="p-4 rounded-2xl bg-gradient-to-br from-purple-900 to-[#843bab] text-white space-y-3 shadow-md relative overflow-hidden">
+                    <div className="flex items-center justify-between">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-[#ffdf0f] text-slate-950 uppercase tracking-wider">
+                        <Sparkles size={11} />
+                        <span>Rekomendasi • Instan</span>
+                      </span>
+                      <span className="text-[10px] font-semibold text-purple-200">
+                        Gerbang Resmi Mayar
+                      </span>
+                    </div>
+
+                    <div>
+                      <h4 className="text-sm font-black text-white flex items-center gap-1.5">
+                        <Zap size={16} className="text-[#ffdf0f]" />
+                        <span>Metode 1: Bayar Otomatis via Mayar</span>
+                      </h4>
+                      <p className="text-[11px] text-purple-100 mt-1 leading-relaxed">
+                        Bayar via <strong>QRIS</strong> (semua e-wallet & mobile banking) atau <strong>Virtual Account Bank</strong>. Akses kursus langsung aktif otomatis begitu Anda selesai bayar!
+                      </p>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-1 pt-0.5">
+                      <span className="px-2 py-0.5 rounded bg-white/15 text-[10px] font-bold text-white flex items-center gap-1">
+                        <QrCode size={10} className="text-[#ffdf0f]" /> QRIS
+                      </span>
+                      <span className="px-2 py-0.5 rounded bg-white/15 text-[10px] font-bold text-white">
+                        BCA VA
+                      </span>
+                      <span className="px-2 py-0.5 rounded bg-white/15 text-[10px] font-bold text-white">
+                        Mandiri VA
+                      </span>
+                      <span className="px-2 py-0.5 rounded bg-white/15 text-[10px] font-bold text-white">
+                        BNI / BRI VA
+                      </span>
+                    </div>
+
+                    {mayarError && (
+                      <div className="p-2.5 rounded-xl bg-rose-500/20 border border-rose-300/40 text-[11px] text-rose-100 flex items-start gap-1.5">
+                        <AlertCircle size={14} className="text-rose-300 shrink-0 mt-0.5" />
+                        <span>{mayarError}</span>
+                      </div>
+                    )}
+
+                    <div className="pt-1">
+                      <button
+                        type="button"
+                        onClick={handlePayViaMayar}
+                        disabled={isRedirectingMayar}
+                        className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-[#ffdf0f] hover:bg-[#ebd00d] active:scale-[0.99] text-slate-950 font-black text-xs shadow-sm transition-all disabled:opacity-60 cursor-pointer"
+                      >
+                        {isRedirectingMayar ? (
+                          <div className="flex items-center gap-2">
+                            <LoadingSpinner size="xs" variant="slate" active={true} delayMs={0} />
+                            <span>Mengarahkan ke Mayar...</span>
+                          </div>
+                        ) : (
+                          <>
+                            <Zap size={14} className="text-slate-950" />
+                            <span>Bayar Sekarang via Mayar (QRIS / VA)</span>
+                            <ArrowRight size={14} />
+                          </>
+                        )}
+                      </button>
+                    </div>
                   </div>
 
-                  {/* Rekening BCA */}
-                  <div className="p-3.5 rounded-2xl border border-slate-200 bg-white hover:border-[#843bab]/40 transition-all flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center font-black text-xs shrink-0">
-                        BCA
+                  {/* METODE 2: TRANSFER MANUAL */}
+                  <div className="pt-2 border-t border-slate-100 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                        <CreditCard size={14} className="text-[#843bab]" />
+                        <span>Metode 2: Alternatif Transfer Bank Manual</span>
                       </div>
-                      <div>
-                        <div className="font-mono text-sm font-black text-slate-900 tracking-wider">
-                          123-456-7890
-                        </div>
-                        <div className="text-[11px] text-slate-500">
-                          a.n. Lembaga Kursus Pijar Aksara
-                        </div>
-                      </div>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">
+                        BR-07
+                      </span>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        navigator.clipboard.writeText('1234567890');
-                        setCopiedBank('BCA');
-                        setTimeout(() => setCopiedBank(null), 2500);
-                      }}
-                      className="px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-xs font-bold text-slate-700 flex items-center gap-1.5 transition-colors cursor-pointer"
-                    >
-                      {copiedBank === 'BCA' ? (
-                        <>
-                          <Check size={13} className="text-emerald-600" />
-                          <span className="text-emerald-700">Tersalin</span>
-                        </>
-                      ) : (
-                        <>
-                          <Copy size={13} />
-                          <span>Salin</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
 
-                  {/* Rekening Mandiri */}
-                  <div className="p-3.5 rounded-2xl border border-slate-200 bg-white hover:border-[#843bab]/40 transition-all flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-800 flex items-center justify-center font-black text-xs shrink-0">
-                        MDR
-                      </div>
-                      <div>
-                        <div className="font-mono text-sm font-black text-slate-900 tracking-wider">
-                          157-00-1234567-8
-                        </div>
-                        <div className="text-[11px] text-slate-500">
-                          a.n. Lembaga Kursus Pijar Aksara
-                        </div>
-                      </div>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        navigator.clipboard.writeText('1570012345678');
-                        setCopiedBank('MANDIRI');
-                        setTimeout(() => setCopiedBank(null), 2500);
-                      }}
-                      className="px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-xs font-bold text-slate-700 flex items-center gap-1.5 transition-colors cursor-pointer"
-                    >
-                      {copiedBank === 'MANDIRI' ? (
-                        <>
-                          <Check size={13} className="text-emerald-600" />
-                          <span className="text-emerald-700">Tersalin</span>
-                        </>
-                      ) : (
-                        <>
-                          <Copy size={13} />
-                          <span>Salin</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
-
-                  {/* Info Verifikasi Admin */}
-                  <div className="p-3 rounded-xl bg-purple-50/70 border border-[#843bab]/20 text-[11px] text-slate-700 space-y-1">
-                    <div className="font-bold text-[#843bab] flex items-center gap-1">
-                      <CheckCircle2 size={13} />
-                      <span>Verifikasi Pembayaran Manual</span>
-                    </div>
-                    <p className="leading-relaxed">
-                      Setelah transfer berhasil, Admin Lembaga Kursus Pijar Aksara akan melakukan konfirmasi melalui sistem verifikasi pembayaran. Begitu dikonfirmasi, akses ruang belajar kursus Anda akan langsung terbuka otomatis.
+                    <p className="text-[11px] text-slate-500 leading-relaxed">
+                      Jika Anda ingin transfer langsung antarbank, silakan transfer ke rekening berikut dan unggah bukti transfer:
                     </p>
+
+                    {/* Rekening BCA */}
+                    <div className="p-3 rounded-xl border border-slate-200 bg-white hover:border-[#843bab]/40 transition-all flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center font-black text-[11px] shrink-0">
+                          BCA
+                        </div>
+                        <div>
+                          <div className="font-mono text-xs font-black text-slate-900 tracking-wider">
+                            123-456-7890
+                          </div>
+                          <div className="text-[10px] text-slate-500">
+                            a.n. Lembaga Kursus Pijar Aksara
+                          </div>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          navigator.clipboard.writeText('1234567890');
+                          setCopiedBank('BCA');
+                          setTimeout(() => setCopiedBank(null), 2500);
+                        }}
+                        className="px-2.5 py-1 rounded-md border border-slate-200 hover:bg-slate-50 text-[11px] font-bold text-slate-700 flex items-center gap-1 transition-colors cursor-pointer"
+                      >
+                        {copiedBank === 'BCA' ? (
+                          <>
+                            <Check size={12} className="text-emerald-600" />
+                            <span className="text-emerald-700">Tersalin</span>
+                          </>
+                        ) : (
+                          <>
+                            <Copy size={12} />
+                            <span>Salin</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+
+                    {/* Rekening Mandiri */}
+                    <div className="p-3 rounded-xl border border-slate-200 bg-white hover:border-[#843bab]/40 transition-all flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-800 flex items-center justify-center font-black text-[11px] shrink-0">
+                          MDR
+                        </div>
+                        <div>
+                          <div className="font-mono text-xs font-black text-slate-900 tracking-wider">
+                            157-00-1234567-8
+                          </div>
+                          <div className="text-[10px] text-slate-500">
+                            a.n. Lembaga Kursus Pijar Aksara
+                          </div>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          navigator.clipboard.writeText('1570012345678');
+                          setCopiedBank('MANDIRI');
+                          setTimeout(() => setCopiedBank(null), 2500);
+                        }}
+                        className="px-2.5 py-1 rounded-md border border-slate-200 hover:bg-slate-50 text-[11px] font-bold text-slate-700 flex items-center gap-1 transition-colors cursor-pointer"
+                      >
+                        {copiedBank === 'MANDIRI' ? (
+                          <>
+                            <Check size={12} className="text-emerald-600" />
+                            <span className="text-emerald-700">Tersalin</span>
+                          </>
+                        ) : (
+                          <>
+                            <Copy size={12} />
+                            <span>Salin</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+
+                    <div className="pt-1">
+                      <Link
+                        href={`/kursus-saya/${id}/bayar`}
+                        className="w-full flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl border border-slate-300 hover:border-slate-400 bg-slate-50 hover:bg-slate-100 text-slate-800 font-bold text-xs transition-colors cursor-pointer"
+                      >
+                        <CreditCard size={14} className="text-slate-600" />
+                        <span>Halaman Pembayaran & Unggah Bukti Transfer</span>
+                        <ArrowRight size={13} />
+                      </Link>
+                    </div>
                   </div>
                 </div>
               )}

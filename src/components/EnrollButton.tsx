@@ -18,6 +18,7 @@ import {
   X,
   Lock
 } from 'lucide-react';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 interface Props {
   courseId: string;
@@ -163,20 +164,38 @@ export default function EnrollButton({
     const dbMetode = selectedMetode === 'qris' || selectedMetode === 'va' ? 'mayar' : selectedMetode;
 
     const res = await daftarKursusAction(courseId, dbMetode);
-    setLoading(false);
 
     if (res?.error) {
+      setLoading(false);
       setError(res.error);
     } else if (res?.success) {
       setSuccessData({
         status: res.status,
         paymentUrl: res.paymentUrl || null,
-        message: res.message,
+        message: res.paymentUrl
+          ? 'Tagihan pembayaran Mayar berhasil dibuat! Mengarahkan Anda ke gerbang pembayaran...'
+          : res.message,
       });
+
+      // Sesuai PRD Poin 1:
+      // "Saat peserta mendaftar kursus berbayar, aplikasi membuat tagihan di Mayar dan mengarahkan peserta ke halaman bayar."
+      if (res.paymentUrl) {
+        setTimeout(() => {
+          window.location.href = res.paymentUrl!;
+        }, 700);
+        return;
+      }
+
+      setLoading(false);
+
       if (res.isFree) {
         setTimeout(() => {
           router.push('/kursus-saya');
         }, 1500);
+      } else {
+        setTimeout(() => {
+          router.push(`/kursus-saya/${res.pendaftaranId}/bayar`);
+        }, 1200);
       }
     }
   };
@@ -192,7 +211,10 @@ export default function EnrollButton({
           className="w-full py-3.5 px-5 rounded-xl text-sm font-black text-slate-900 bg-[#ffdf0f] hover:bg-[#eacb0d] shadow-sm hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
         >
           {loading ? (
-            <span>Mendaftarkan Kursus...</span>
+            <span className="flex items-center gap-2">
+              <LoadingSpinner size="xs" variant="primary" />
+              <span>Mendaftarkan Kursus...</span>
+            </span>
           ) : (
             <>
               <span>Daftar Kursus Gratis Ini</span>
@@ -219,6 +241,7 @@ export default function EnrollButton({
             <button
               type="button"
               onClick={() => {
+                if (loading && successData?.paymentUrl) return;
                 setModalOpen(false);
                 setSuccessData(null);
                 setError('');
@@ -229,47 +252,51 @@ export default function EnrollButton({
               <X size={20} />
             </button>
 
-            {/* State Berhasil */}
+            {/* State Berhasil / Mengarahkan */}
             {successData ? (
-              <div className="text-center py-4 space-y-4">
-                <div className="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto">
-                  <CheckCircle2 size={32} />
-                </div>
+              <div className="text-center py-6 space-y-4">
+                {successData.paymentUrl ? (
+                  <div className="py-2">
+                    <LoadingSpinner
+                      size="lg"
+                      variant="primary"
+                      label="Mengarahkan ke Gerbang Pembayaran Mayar..."
+                      sublabel="Menghubungkan ke invoice resmi Mayar (QRIS & Virtual Account)"
+                    />
+                  </div>
+                ) : (
+                  <div className="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto">
+                    <CheckCircle2 size={32} />
+                  </div>
+                )}
+
                 <h3 className="text-xl font-black text-slate-900">
-                  Pendaftaran Kursus Berhasil!
+                  {successData.paymentUrl ? 'Tagihan Pembayaran Terbit' : 'Pendaftaran Berhasil!'}
                 </h3>
                 <p className="text-sm text-slate-600 max-w-sm mx-auto leading-relaxed">
                   {successData.message}
                 </p>
 
-                {successData.paymentUrl ? (
-                  <div className="pt-2 flex flex-col gap-2.5">
+                {successData.paymentUrl && (
+                  <div className="pt-2 flex flex-col gap-2.5 max-w-xs mx-auto">
                     <a
                       href={successData.paymentUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
                       className="w-full py-3 px-5 rounded-xl text-sm font-bold text-slate-900 bg-[#ffdf0f] hover:bg-[#eacb0d] shadow-sm transition-all flex items-center justify-center gap-2"
                     >
-                      <span>Lanjut Bayar via Mayar</span>
+                      <span>Buka Pembayaran Mayar Sekarang</span>
                       <ExternalLink size={16} />
                     </a>
-                    <Link
-                      href="/kursus-saya"
-                      className="w-full py-3 px-5 rounded-xl text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-all flex items-center justify-center"
-                    >
-                      Buka Halaman Kursus Saya
-                    </Link>
-                  </div>
-                ) : (
-                  <div className="pt-2">
-                    <Link
-                      href="/kursus-saya"
-                      className="w-full py-3 px-5 rounded-xl text-sm font-bold text-white bg-[#843bab] hover:bg-[#722f95] transition-all flex items-center justify-center"
-                    >
-                      Buka Ruang Belajar Saya
-                    </Link>
                   </div>
                 )}
+
+                <div className="pt-2">
+                  <Link
+                    href="/kursus-saya"
+                    className="w-full py-2.5 px-4 rounded-xl text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-all inline-flex items-center justify-center"
+                  >
+                    Buka Halaman Kursus Saya
+                  </Link>
+                </div>
               </div>
             ) : (
               <div className="space-y-5">

@@ -41,6 +41,7 @@ export default async function ManualPaymentPage({ params }: Props) {
       nominal,
       metode_bayar,
       batas_bayar,
+      mayar_invoice_id,
       bukti_bayar_path,
       didaftarkan_pada,
       kursus:kursus_id (
@@ -96,6 +97,24 @@ export default async function ManualPaymentPage({ params }: Props) {
     }
   }
 
+  // 6. Ambil link tagihan Mayar jika mayar_invoice_id sudah ada
+  let initialMayarPaymentUrl: string | null = null;
+  if (registration.mayar_invoice_id) {
+    try {
+      const { getMayarInvoice } = await import('@/lib/mayar');
+      const invoiceData = await getMayarInvoice(registration.mayar_invoice_id);
+      initialMayarPaymentUrl =
+        invoiceData?.raw?.paymentUrl ||
+        (invoiceData?.raw?.link
+          ? invoiceData.raw.link.startsWith('http')
+            ? invoiceData.raw.link
+            : `https://lmspijarkursuspijaraksara.myr.lat/invoices/${invoiceData.raw.link}`
+          : null);
+    } catch (e) {
+      console.warn('Error fetching Mayar invoice in bayar page:', e);
+    }
+  }
+
   const formattedReg = {
     ...registration,
     kursus: Array.isArray(registration.kursus) ? registration.kursus[0] : registration.kursus,
@@ -106,6 +125,7 @@ export default async function ManualPaymentPage({ params }: Props) {
       registration={formattedReg as any}
       bankDetails={bankDetails}
       existingSignedUrl={existingSignedUrl}
+      initialMayarPaymentUrl={initialMayarPaymentUrl}
     />
   );
 }
