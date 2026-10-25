@@ -535,72 +535,79 @@ export default function ManualPaymentClient({
               METODE 1: PEMBAYARAN OTOMATIS MAYAR (QRIS / VA) - REKOMENDASI
              ========================================================= */}
           {registration.status === 'menunggu_bayar' && (
-            <div className="bg-gradient-to-br from-purple-900 via-[#843bab] to-[#6a258f] rounded-2xl p-6 text-white shadow-lg space-y-4 relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-[#ffdf0f]/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="bg-white rounded-2xl border-2 border-[#843bab]/30 p-6 shadow-xs space-y-4">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-purple-100 text-[#843bab] flex items-center justify-center shrink-0">
+                    <Zap size={16} />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-extrabold text-slate-900">
+                      Pembayaran Otomatis Mayar
+                    </h3>
+                    <p className="text-[11px] text-slate-500">
+                      Aktivasi instan tanpa menunggu konfirmasi manual admin
+                    </p>
+                  </div>
+                </div>
 
-              <div className="flex flex-wrap items-center justify-between gap-2 relative z-10">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black bg-[#ffdf0f] text-slate-950 uppercase tracking-wider shadow-xs">
-                  <Sparkles size={13} className="text-slate-950" />
-                  <span>Rekomendasi • Verifikasi Otomatis</span>
-                </span>
-                <span className="text-[11px] font-semibold text-purple-200">
-                  Gerbang Resmi Mayar
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  <Sparkles size={12} className="text-emerald-600" />
+                  <span>Rekomendasi Utama</span>
                 </span>
               </div>
 
-              <div className="relative z-10 space-y-1">
-                <h3 className="text-xl font-black text-white flex items-center gap-2">
-                  <Zap size={20} className="text-[#ffdf0f]" />
-                  <span>Metode 1: Bayar Otomatis via Mayar</span>
-                </h3>
-                <p className="text-xs text-purple-100 leading-relaxed">
-                  Bayar instan menggunakan <strong>QRIS</strong> (GoPay, OVO, Dana, ShopeePay, BCA Mobile, Livin, LinkAja) atau <strong>Virtual Account Bank</strong>. Begitu pembayaran selesai, sistem webhook Mayar langsung mengaktifkan pendaftaran kursus Anda seketika tanpa perlu konfirmasi manual admin!
-                </p>
-              </div>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Bayar instan via <strong>QRIS</strong> (GoPay, OVO, Dana, ShopeePay, BCA Mobile, Livin) atau <strong>Virtual Account Bank</strong> melalui gerbang resmi Mayar. Begitu pembayaran selesai, sistem webhook langsung mengaktifkan pendaftaran kursus Anda seketika!
+              </p>
 
               {/* Supported payment badges */}
-              <div className="flex flex-wrap items-center gap-1.5 pt-1 relative z-10">
-                <span className="px-2.5 py-1 rounded-lg bg-white/15 text-[11px] font-bold text-white border border-white/10 flex items-center gap-1">
-                  <QrCode size={12} className="text-[#ffdf0f]" /> QRIS
+              <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                <span className="px-2.5 py-1 rounded-lg bg-slate-100 border border-slate-200 text-xs font-semibold text-slate-700 flex items-center gap-1.5">
+                  <QrCode size={13} className="text-[#843bab]" />
+                  <span>QRIS</span>
                 </span>
-                <span className="px-2.5 py-1 rounded-lg bg-white/15 text-[11px] font-bold text-white border border-white/10">
+                <span className="px-2.5 py-1 rounded-lg bg-slate-100 border border-slate-200 text-xs font-semibold text-slate-700">
                   BCA VA
                 </span>
-                <span className="px-2.5 py-1 rounded-lg bg-white/15 text-[11px] font-bold text-white border border-white/10">
+                <span className="px-2.5 py-1 rounded-lg bg-slate-100 border border-slate-200 text-xs font-semibold text-slate-700">
                   Mandiri VA
                 </span>
-                <span className="px-2.5 py-1 rounded-lg bg-white/15 text-[11px] font-bold text-white border border-white/10">
-                  BNI / BRI VA
+                <span className="px-2.5 py-1 rounded-lg bg-slate-100 border border-slate-200 text-xs font-semibold text-slate-700">
+                  BNI VA
                 </span>
-                <span className="px-2.5 py-1 rounded-lg bg-white/15 text-[11px] font-bold text-white border border-white/10">
+                <span className="px-2.5 py-1 rounded-lg bg-slate-100 border border-slate-200 text-xs font-semibold text-slate-700">
+                  BRI VA
+                </span>
+                <span className="px-2.5 py-1 rounded-lg bg-slate-100 border border-slate-200 text-xs font-semibold text-slate-700">
                   E-Wallet
                 </span>
               </div>
 
               {mayarError && (
-                <div className="p-3 rounded-xl bg-rose-500/20 border border-rose-300/40 text-xs text-rose-100 flex items-start gap-2 relative z-10">
-                  <AlertCircle size={15} className="text-rose-300 shrink-0 mt-0.5" />
+                <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-800 flex items-start gap-2">
+                  <AlertCircle size={15} className="text-rose-600 shrink-0 mt-0.5" />
                   <span>{mayarError}</span>
                 </div>
               )}
 
-              <div className="pt-2 relative z-10">
+              <div className="pt-2">
                 <button
                   type="button"
                   onClick={handlePayViaMayar}
                   disabled={isRedirectingMayar || timeLeft.isExpired}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-[#ffdf0f] hover:bg-[#ebd00d] active:scale-[0.99] text-slate-950 font-black text-sm shadow-md transition-all disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#843bab] hover:bg-[#723294] active:bg-[#612880] text-white text-xs font-extrabold shadow-xs hover:shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
                   {isRedirectingMayar ? (
                     <div className="flex items-center gap-2">
-                      <LoadingSpinner size="xs" variant="slate" active={true} delayMs={0} />
-                      <span>Mengarahkan ke Halaman Pembayaran Mayar...</span>
+                      <LoadingSpinner size="xs" variant="white" active={true} delayMs={0} />
+                      <span>Mengarahkan ke Halaman Mayar...</span>
                     </div>
                   ) : (
                     <>
-                      <Zap size={16} className="text-slate-950" />
+                      <Zap size={14} className="text-[#ffdf0f]" />
                       <span>Bayar Sekarang via Mayar (QRIS / VA)</span>
-                      <ArrowRight size={16} />
+                      <ArrowRight size={14} />
                     </>
                   )}
                 </button>
@@ -613,17 +620,26 @@ export default function ManualPaymentClient({
              ========================================================= */}
           <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs space-y-4">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <div className="flex items-center gap-2 text-slate-900">
-                <CreditCard size={18} className="text-[#843bab]" />
-                <h3 className="text-base font-extrabold">Metode 2: Alternatif Transfer Bank Manual</h3>
+              <div className="flex items-center gap-2.5 text-slate-900">
+                <div className="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center shrink-0">
+                  <CreditCard size={16} />
+                </div>
+                <div>
+                  <h3 className="text-base font-extrabold text-slate-900">
+                    Transfer Bank Manual
+                  </h3>
+                  <p className="text-[11px] text-slate-500">
+                    Konfirmasi manual oleh administrator (BR-07)
+                  </p>
+                </div>
               </div>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
-                BR-07
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
+                Alternatif
               </span>
             </div>
 
-            <p className="text-xs text-slate-500">
-              Jika Anda lebih memilih transfer antarbank biasa, silakan transfer ke rekening resmi di bawah ini dan unggah bukti transfer pada formulir sebelah kanan:
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Jika Anda ingin transfer antarbank langsung, silakan transfer ke rekening resmi di bawah ini dan unggah berkas bukti transfer pada formulir sebelah kanan:
             </p>
 
             <div className="p-4 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-800 text-white space-y-3 shadow-md relative overflow-hidden">

@@ -521,45 +521,48 @@ export default function MyCourseCard({ enrollment, onCancelRequest }: Props) {
                 /* JIKA BELUM KEDALUWARSA: TAMPILKAN METODE MAYAR & REKENING TRANSFER MANUAL */
                 <div className="space-y-4">
                   {/* METODE 1: MAYAR (OTOMATIS) */}
-                  <div className="p-4 rounded-2xl bg-gradient-to-br from-purple-900 to-[#843bab] text-white space-y-3 shadow-md relative overflow-hidden">
+                  <div className="p-4 rounded-2xl bg-purple-50/50 border border-purple-200/80 space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-[#ffdf0f] text-slate-950 uppercase tracking-wider">
-                        <Sparkles size={11} />
-                        <span>Rekomendasi • Instan</span>
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#843bab] text-white">
+                        <Sparkles size={11} className="text-[#ffdf0f]" />
+                        <span>Rekomendasi • Otomatis</span>
                       </span>
-                      <span className="text-[10px] font-semibold text-purple-200">
+                      <span className="text-[11px] text-slate-500">
                         Gerbang Resmi Mayar
                       </span>
                     </div>
 
                     <div>
-                      <h4 className="text-sm font-black text-white flex items-center gap-1.5">
-                        <Zap size={16} className="text-[#ffdf0f]" />
-                        <span>Metode 1: Bayar Otomatis via Mayar</span>
+                      <h4 className="text-sm font-extrabold text-slate-900 flex items-center gap-1.5">
+                        <Zap size={15} className="text-[#843bab]" />
+                        <span>Pembayaran Otomatis (QRIS & VA)</span>
                       </h4>
-                      <p className="text-[11px] text-purple-100 mt-1 leading-relaxed">
-                        Bayar via <strong>QRIS</strong> (semua e-wallet & mobile banking) atau <strong>Virtual Account Bank</strong>. Akses kursus langsung aktif otomatis begitu Anda selesai bayar!
+                      <p className="text-xs text-slate-600 mt-1 leading-relaxed">
+                        Bayar via <strong>QRIS</strong> (e-wallet / m-Banking) atau <strong>Virtual Account Bank</strong>. Akses kursus langsung aktif otomatis tanpa menunggu konfirmasi manual admin.
                       </p>
                     </div>
 
                     <div className="flex flex-wrap items-center gap-1 pt-0.5">
-                      <span className="px-2 py-0.5 rounded bg-white/15 text-[10px] font-bold text-white flex items-center gap-1">
-                        <QrCode size={10} className="text-[#ffdf0f]" /> QRIS
+                      <span className="px-2 py-0.5 rounded-md bg-white border border-slate-200 text-[10px] font-semibold text-slate-700 flex items-center gap-1">
+                        <QrCode size={11} className="text-[#843bab]" /> QRIS
                       </span>
-                      <span className="px-2 py-0.5 rounded bg-white/15 text-[10px] font-bold text-white">
+                      <span className="px-2 py-0.5 rounded-md bg-white border border-slate-200 text-[10px] font-semibold text-slate-700">
                         BCA VA
                       </span>
-                      <span className="px-2 py-0.5 rounded bg-white/15 text-[10px] font-bold text-white">
+                      <span className="px-2 py-0.5 rounded-md bg-white border border-slate-200 text-[10px] font-semibold text-slate-700">
                         Mandiri VA
                       </span>
-                      <span className="px-2 py-0.5 rounded bg-white/15 text-[10px] font-bold text-white">
+                      <span className="px-2 py-0.5 rounded-md bg-white border border-slate-200 text-[10px] font-semibold text-slate-700">
                         BNI / BRI VA
+                      </span>
+                      <span className="px-2 py-0.5 rounded-md bg-white border border-slate-200 text-[10px] font-semibold text-slate-700">
+                        E-Wallet
                       </span>
                     </div>
 
                     {mayarError && (
-                      <div className="p-2.5 rounded-xl bg-rose-500/20 border border-rose-300/40 text-[11px] text-rose-100 flex items-start gap-1.5">
-                        <AlertCircle size={14} className="text-rose-300 shrink-0 mt-0.5" />
+                      <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700 flex items-start gap-1.5">
+                        <AlertCircle size={14} className="text-rose-600 shrink-0 mt-0.5" />
                         <span>{mayarError}</span>
                       </div>
                     )}
@@ -569,16 +572,16 @@ export default function MyCourseCard({ enrollment, onCancelRequest }: Props) {
                         type="button"
                         onClick={handlePayViaMayar}
                         disabled={isRedirectingMayar}
-                        className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-[#ffdf0f] hover:bg-[#ebd00d] active:scale-[0.99] text-slate-950 font-black text-xs shadow-sm transition-all disabled:opacity-60 cursor-pointer"
+                        className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-[#843bab] hover:bg-[#723294] active:bg-[#612880] text-white font-bold text-xs shadow-xs transition-all disabled:opacity-60 cursor-pointer"
                       >
                         {isRedirectingMayar ? (
                           <div className="flex items-center gap-2">
-                            <LoadingSpinner size="xs" variant="slate" active={true} delayMs={0} />
+                            <LoadingSpinner size="xs" variant="white" active={true} delayMs={0} />
                             <span>Mengarahkan ke Mayar...</span>
                           </div>
                         ) : (
                           <>
-                            <Zap size={14} className="text-slate-950" />
+                            <Zap size={14} className="text-[#ffdf0f]" />
                             <span>Bayar Sekarang via Mayar (QRIS / VA)</span>
                             <ArrowRight size={14} />
                           </>
