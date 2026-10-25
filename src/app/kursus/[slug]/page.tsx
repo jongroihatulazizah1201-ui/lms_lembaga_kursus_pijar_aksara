@@ -6,6 +6,7 @@ import { formatRupiah } from '@/components/CourseCard';
 import { createClient } from '@/lib/supabase/server';
 import EnrollButton from '@/components/EnrollButton';
 import CourseIllustration from '@/components/CourseIllustration';
+import BackButton from '@/components/BackButton';
 import {
   BookOpen,
   Clock,
@@ -16,7 +17,6 @@ import {
   User,
   ArrowRight,
   ShieldCheck,
-  ChevronRight,
   GraduationCap,
   CalendarCheck,
   FileCheck2
@@ -164,24 +164,12 @@ export default async function CourseDetailPage({ params }: Props) {
       />
 
       <div className="bg-white min-h-screen text-slate-900 pb-20">
-        {/* Breadcrumb Header Bar */}
-        <nav aria-label="Navigasi Jejak" className="bg-slate-50 border-b border-slate-200 py-3.5">
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="flex items-center gap-2 text-xs text-slate-500 flex-wrap">
-              <Link href="/" className="hover:text-slate-900 transition-colors">
-                Beranda
-              </Link>
-              <ChevronRight size={13} className="text-slate-400" />
-              <Link href="/kursus" className="hover:text-slate-900 transition-colors">
-                Kelas Kursus
-              </Link>
-              <ChevronRight size={13} className="text-slate-400" />
-              <span className="font-bold text-[#843bab] truncate max-w-[280px] sm:max-w-none">
-                {course.judul}
-              </span>
-            </div>
+        {/* Navigasi Tombol Kembali */}
+        <div className="sticky top-[57px] lg:top-0 z-30 w-full bg-white/95 backdrop-blur-md border-b border-slate-200/90 shadow-xs py-2.5 sm:py-3 transition-all">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
+            <BackButton fallbackUrl="/kursus" label="Kembali" />
           </div>
-        </nav>
+        </div>
 
         {/* Hero Section: Info Utama & Ilustrasi Tematik */}
         <header className="bg-slate-50/70 border-b border-slate-200 py-8 sm:py-12">
