@@ -17,7 +17,9 @@ Dokumen ini memuat **Rencana Kerja Per Halaman**, **Matriks Akses Peran**, **Tes
    - Generator nomor urut sertifikat berurutan `PA-TAHUN-NOMOR` tanpa lompatan (BR-11).
    - Trigger pencatatan aktivitas sensitif ke `audit_log` (BR-12).
 3. **Storage & Kebijakan Akses (RLS):**
-   - Supabase Storage privat `materi-lampiran` untuk file PDF modul (maks 10 MB per file, diakses lewat *Signed URL* berlaku maks 60 menit).
+   - Supabase Storage privat `materi_pdf` untuk file PDF modul (maks 10 MB per file, diakses lewat *Signed URL* berlaku maks 60 menit).
+   - Supabase Storage publik `kursus_brosur` untuk foto pamflet/brosur kursus rasio 16:9 (maks 1 MB per file).
+   - Supabase Storage publik `avatars` untuk foto profil peserta, instruktur, dan admin (maks 1 MB per file).
    - Row Level Security (RLS) ketat pada seluruh tabel.
 
 ---
@@ -44,15 +46,15 @@ Dokumen ini memuat **Rencana Kerja Per Halaman**, **Matriks Akses Peran**, **Tes
    - Tombol pembatalan pendaftaran (hanya jika belum dibayar).
    - Progress bar kelulusan (%) dan tombol "Lanjut Belajar".
    - Tombol unduh/lihat sertifikat untuk pendaftaran berstatus `selesai`.
-5. **Ruang Belajar (`/belajar/[pendaftaran_id]/modul/[urutan]`)**
+5. **Ruang Belajar (`/belajar/[slug]?modul=[urutan]`)**
    - Sidebar navigasi modul: Modul 1 langsung terbuka, Modul N+1 terkunci sampai kuis Modul N lulus (BR-08).
-   - Konten: bacaan materi teks, video embed (`https://`), unduh file PDF via *Signed URL* sementara.
+   - Konten: bacaan materi teks, video embed (`https://`), unduh file PDF via *Signed URL* sementara (maks. 60 menit).
    - Tombol "Tandai materi sudah dibaca" untuk membuka akses pengerjaan kuis.
    - Form pengerjaan kuis pilihan ganda A–D (wajib dijawab semua).
    - Evaluasi nilai kuis otomatis di server, menampilkan skor, jumlah benar, dan sisa kesempatan (maks. 3x percobaan, BR-10).
    - Otomatis mengubah pendaftaran menjadi `selesai` dan menerbitkan sertifikat saat semua modul lulus (BR-11).
-6. **Cetak Sertifikat (`/sertifikat/[nomor_sertifikat]`)**
-   - Tampilan sertifikat resmi Lembaga Kursus Pijar Aksara dengan nomor unik berurutan `PA-TAHUN-NOMOR`.
+6. **Cetak Sertifikat (`/sertifikat/[id]`)**
+   - Tampilan sertifikat resmi Lembaga Kursus Pijar Aksara dengan nomor unik berurutan `PA-TAHUN-NOMOR` dan nama peserta sesuai profil.
 
 ---
 
