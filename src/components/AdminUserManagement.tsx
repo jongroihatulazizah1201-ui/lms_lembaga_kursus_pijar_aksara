@@ -179,129 +179,133 @@ export default function AdminUserManagement({ users, currentAdminId }: Props) {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Alert Banner Feedback */}
-      {feedbackMsg && (
-        <div
-          className={`flex items-center justify-between gap-3 p-4 rounded-2xl text-sm font-medium border shadow-xs animate-fadeIn ${
-            feedbackMsg.type === 'success'
-              ? 'bg-emerald-50 border-emerald-200 text-emerald-900'
-              : 'bg-red-50 border-red-200 text-red-900'
-          }`}
-        >
-          <div className="flex items-center gap-2.5">
-            {feedbackMsg.type === 'success' ? (
-              <CheckCircle2 size={18} className="text-emerald-600 shrink-0" />
-            ) : (
-              <AlertCircle size={18} className="text-red-600 shrink-0" />
-            )}
-            <span>{feedbackMsg.text}</span>
-          </div>
-          <button
-            onClick={() => setFeedbackMsg(null)}
-            className="p-1 text-slate-400 hover:text-slate-600"
-          >
-            <X size={16} />
-          </button>
-        </div>
-      )}
-
+    <div>
       {/* 1. STICKY TOP HEADER: Judul Halaman & Toolbar Pencarian/Filter Pengguna */}
-      <div className="sticky top-[57px] lg:top-0 z-20 bg-white/95 backdrop-blur-md rounded-2xl border border-slate-200/90 p-4 sm:p-5 shadow-sm space-y-4 transition-all">
-        {/* Judul Halaman */}
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-purple-100 text-[#843bab] flex items-center justify-center shrink-0 shadow-2xs">
-              <Users size={18} />
+      <header className="sticky top-[57px] lg:top-0 z-30 w-full bg-white/95 backdrop-blur-md border-b border-slate-200/90 shadow-xs transition-all">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4 space-y-3.5">
+          {/* Judul Halaman */}
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-purple-100 text-[#843bab] flex items-center justify-center shrink-0 shadow-2xs">
+                <Users size={18} />
+              </div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-lg sm:text-2xl font-black text-slate-900 tracking-tight">
+                  Pengguna (Ubah Peran, Nonaktifkan)
+                </h1>
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-slate-100 text-slate-700 border border-slate-200 shadow-2xs">
+                  {users.length}
+                </span>
+              </div>
             </div>
-            <div className="flex items-center gap-2 flex-wrap">
-              <h1 className="text-lg sm:text-2xl font-black text-slate-900 tracking-tight">
-                Pengguna (Ubah Peran, Nonaktifkan)
-              </h1>
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-slate-100 text-slate-700 border border-slate-200 shadow-2xs">
-                {users.length}
-              </span>
+          </div>
+
+          {/* Filter & Search Toolbar */}
+          <div className="bg-slate-50/70 border border-slate-200/80 rounded-xl p-2.5 sm:p-3 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+            {/* Search Input */}
+            <div className="relative flex-1 min-w-[280px]">
+              <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Cari nama pengguna, email, atau no HP..."
+                className="w-full pl-10 pr-10 py-2 rounded-xl bg-white border border-slate-200 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#843bab]/20 focus:border-[#843bab] transition-all"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600"
+                >
+                  <X size={14} />
+                </button>
+              )}
+            </div>
+
+            {/* Filter Role & Status Dropdowns / Buttons */}
+            <div className="flex flex-wrap items-center gap-2">
+              {/* Role Filter */}
+              <div className="flex items-center gap-1 bg-white p-1 rounded-xl border border-slate-200">
+                {[
+                  { id: 'semua', label: 'Semua Peran' },
+                  { id: 'peserta', label: 'Peserta' },
+                  { id: 'instruktur', label: 'Instruktur' },
+                  { id: 'admin', label: 'Admin' },
+                ].map((r) => {
+                  const isActive = filterRole === r.id;
+                  return (
+                    <button
+                      key={r.id}
+                      onClick={() => setFilterRole(r.id)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                        isActive
+                          ? 'bg-[#843bab] text-white shadow-2xs'
+                          : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                      }`}
+                    >
+                      {r.label}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Status Filter */}
+              <select
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+                className="px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#843bab]/20 cursor-pointer"
+              >
+                <option value="semua">Semua Status</option>
+                <option value="aktif">Akun Aktif</option>
+                <option value="nonaktif">Dinonaktifkan</option>
+              </select>
+
+              {/* Reset Button */}
+              {(searchQuery || filterRole !== 'semua' || filterStatus !== 'semua') && (
+                <button
+                  onClick={() => {
+                    setSearchQuery('');
+                    setFilterRole('semua');
+                    setFilterStatus('semua');
+                  }}
+                  className="p-2 rounded-xl text-slate-500 hover:text-red-600 hover:bg-red-50 bg-white border border-slate-200 transition-colors cursor-pointer"
+                  title="Reset Filter"
+                >
+                  <RotateCcw size={14} />
+                </button>
+              )}
             </div>
           </div>
         </div>
+      </header>
 
-        {/* Filter & Search Toolbar */}
-        <div className="bg-slate-50/70 border border-slate-200/80 rounded-xl p-2.5 sm:p-3 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
-          {/* Search Input */}
-          <div className="relative flex-1 min-w-[280px]">
-            <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Cari nama pengguna, email, atau no HP..."
-              className="w-full pl-10 pr-10 py-2 rounded-xl bg-white border border-slate-200 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#843bab]/20 focus:border-[#843bab] transition-all"
-            />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600"
-              >
-                <X size={14} />
-              </button>
-            )}
-          </div>
-
-          {/* Filter Role & Status Dropdowns / Buttons */}
-          <div className="flex flex-wrap items-center gap-2">
-            {/* Role Filter */}
-            <div className="flex items-center gap-1 bg-white p-1 rounded-xl border border-slate-200">
-              {[
-                { id: 'semua', label: 'Semua Peran' },
-                { id: 'peserta', label: 'Peserta' },
-                { id: 'instruktur', label: 'Instruktur' },
-                { id: 'admin', label: 'Admin' },
-              ].map((r) => {
-                const isActive = filterRole === r.id;
-                return (
-                  <button
-                    key={r.id}
-                    onClick={() => setFilterRole(r.id)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                      isActive
-                        ? 'bg-[#843bab] text-white shadow-2xs'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-                    }`}
-                  >
-                    {r.label}
-                  </button>
-                );
-              })}
+      {/* 2. MAIN WORKSPACE CONTENT */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 sm:space-y-8">
+        {/* Alert Banner Feedback */}
+        {feedbackMsg && (
+          <div
+            className={`flex items-center justify-between gap-3 p-4 rounded-2xl text-sm font-medium border shadow-xs animate-fadeIn ${
+              feedbackMsg.type === 'success'
+                ? 'bg-emerald-50 border-emerald-200 text-emerald-900'
+                : 'bg-red-50 border-red-200 text-red-900'
+            }`}
+          >
+            <div className="flex items-center gap-2.5">
+              {feedbackMsg.type === 'success' ? (
+                <CheckCircle2 size={18} className="text-emerald-600 shrink-0" />
+              ) : (
+                <AlertCircle size={18} className="text-red-600 shrink-0" />
+              )}
+              <span>{feedbackMsg.text}</span>
             </div>
-
-            {/* Status Filter */}
-            <select
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-              className="px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#843bab]/20 cursor-pointer"
+            <button
+              onClick={() => setFeedbackMsg(null)}
+              className="p-1 text-slate-400 hover:text-slate-600"
             >
-              <option value="semua">Semua Status</option>
-              <option value="aktif">Akun Aktif</option>
-              <option value="nonaktif">Dinonaktifkan</option>
-            </select>
-
-            {/* Reset Button */}
-            {(searchQuery || filterRole !== 'semua' || filterStatus !== 'semua') && (
-              <button
-                onClick={() => {
-                  setSearchQuery('');
-                  setFilterRole('semua');
-                  setFilterStatus('semua');
-                }}
-                className="p-2 rounded-xl text-slate-500 hover:text-red-600 hover:bg-red-50 bg-white border border-slate-200 transition-colors cursor-pointer"
-                title="Reset Filter"
-              >
-                <RotateCcw size={14} />
-              </button>
-            )}
+              <X size={16} />
+            </button>
           </div>
-        </div>
-      </div>
+        )}
 
       {/* 2. KPI Cards Ringkasan Pengguna */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -535,6 +539,7 @@ export default function AdminUserManagement({ users, currentAdminId }: Props) {
             </tbody>
           </table>
         </div>
+      </div>
       </div>
 
       {/* =========================================================================

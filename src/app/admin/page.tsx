@@ -166,27 +166,25 @@ export default async function AdminPanelPage({ searchParams }: Props) {
 
   return (
     <div className="min-h-screen bg-slate-50/60 text-slate-900 pb-28">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 sm:pt-4">
-        {/* Tab 1: Tinjauan Kursus (tombol status) */}
-        {activeTab === 'kursus' && (
-          <AdminCourseReview courses={formattedCourses} />
-        )}
+      {/* Tab 1: Tinjauan Kursus (tombol status) */}
+      {activeTab === 'kursus' && (
+        <AdminCourseReview courses={formattedCourses} />
+      )}
 
-        {/* Tab 2: Pendaftaran dan Pembayaran (konfirmasi, batal) */}
-        {activeTab === 'pendaftaran' && (
-          <AdminRegistrations registrations={formattedRegistrations} />
-        )}
+      {/* Tab 2: Pendaftaran dan Pembayaran (konfirmasi, batal) */}
+      {activeTab === 'pendaftaran' && (
+        <AdminRegistrations registrations={formattedRegistrations} />
+      )}
 
-        {/* Tab 3: Pengguna (ubah peran, nonaktifkan) */}
-        {activeTab === 'pengguna' && (
-          <AdminUserManagement users={users || []} currentAdminId={user.id} />
-        )}
+      {/* Tab 3: Pengguna (ubah peran, nonaktifkan) */}
+      {activeTab === 'pengguna' && (
+        <AdminUserManagement users={users || []} currentAdminId={user.id} />
+      )}
 
-        {/* Tab 4: Audit Log */}
-        {activeTab === 'audit' && (
-          <AdminAuditLog logs={formattedAuditLogs} />
-        )}
-      </div>
+      {/* Tab 4: Audit Log */}
+      {activeTab === 'audit' && (
+        <AdminAuditLog logs={formattedAuditLogs} />
+      )}
     </div>
   );
 }

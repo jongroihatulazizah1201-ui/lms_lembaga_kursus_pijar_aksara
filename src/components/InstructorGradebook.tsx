@@ -286,35 +286,35 @@ export default function InstructorGradebook({
 
   return (
     <div className="min-h-screen bg-slate-50/60 pb-28 text-slate-900 print:bg-white print:p-0">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 sm:pt-4">
-        {/* =========================================================================
-            1. PRINT ONLY HEADER (Muncul saat dicetak ke PDF / Printer)
-           ========================================================================= */}
-        <div className="hidden print:block p-8 border-b-2 border-slate-800 mb-6">
-          <div className="flex justify-between items-start">
-            <div>
-              <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">
-                Lembaga Kursus Pijar Aksara
-              </h1>
-              <p className="text-sm text-slate-600">
-                Laporan Rekapitulasi Peserta & Nilai Kuis Vokasi
-              </p>
-              <div className="mt-3 text-xs text-slate-700 space-y-1">
-                <div><strong>Kursus:</strong> {judul_kursus} ({kategori})</div>
-                <div><strong>Tanggal Cetak:</strong> {new Date().toLocaleDateString('id-ID', { dateStyle: 'full' })}</div>
-              </div>
-            </div>
-            <div className="text-right text-xs text-slate-500">
-              <div>Dicetak oleh: {currentUser.nama_lengkap}</div>
-              <div>Peran: {currentUser.peran.toUpperCase()}</div>
+      {/* =========================================================================
+          1. PRINT ONLY HEADER (Muncul saat dicetak ke PDF / Printer)
+         ========================================================================= */}
+      <div className="hidden print:block max-w-7xl mx-auto p-8 border-b-2 border-slate-800 mb-6">
+        <div className="flex justify-between items-start">
+          <div>
+            <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">
+              Lembaga Kursus Pijar Aksara
+            </h1>
+            <p className="text-sm text-slate-600">
+              Laporan Rekapitulasi Peserta & Nilai Kuis Vokasi
+            </p>
+            <div className="mt-3 text-xs text-slate-700 space-y-1">
+              <div><strong>Kursus:</strong> {judul_kursus} ({kategori})</div>
+              <div><strong>Tanggal Cetak:</strong> {new Date().toLocaleDateString('id-ID', { dateStyle: 'full' })}</div>
             </div>
           </div>
+          <div className="text-right text-xs text-slate-500">
+            <div>Dicetak oleh: {currentUser.nama_lengkap}</div>
+            <div>Peran: {currentUser.peran.toUpperCase()}</div>
+          </div>
         </div>
+      </div>
 
-        {/* =========================================================================
-            2. STICKY TOP HEADER: Judul Halaman, Pemilih Kursus, Ekspor, & Filter Toolbar
-           ========================================================================= */}
-        <div className="sticky top-[57px] lg:top-0 z-20 bg-white/95 backdrop-blur-md rounded-2xl border border-slate-200/90 p-4 sm:p-5 shadow-sm space-y-4 transition-all print:hidden mb-6">
+      {/* =========================================================================
+          2. STICKY TOP HEADER: Judul Halaman, Pemilih Kursus, Ekspor, & Filter Toolbar
+         ========================================================================= */}
+      <header className="sticky top-[57px] lg:top-0 z-30 w-full bg-white/95 backdrop-blur-md border-b border-slate-200/90 shadow-xs transition-all print:hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4 space-y-3.5">
           {/* Baris 1: Judul Halaman & Kontrol Kursus / Ekspor */}
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             {/* Sisi Kiri: Judul Halaman & Deskripsi (Tombol panah kembali dihapus) */}
@@ -470,6 +470,12 @@ export default function InstructorGradebook({
             </div>
           </div>
         </div>
+      </header>
+
+      {/* =========================================================================
+          3. MAIN WORKSPACE CONTENT
+         ========================================================================= */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 sm:space-y-8">
         {/* =======================================================================
             3. KARTU RINGKASAN METRIK (KPI CARDS)
            ======================================================================= */}

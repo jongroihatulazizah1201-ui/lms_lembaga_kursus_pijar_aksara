@@ -173,7 +173,7 @@ export default function AdminDashboardView({
       {/* =========================================================================
           STICKY TOP ACTION BAR (Tetap Stay di Atas Saat Di-scroll & Jejer Lurus)
          ========================================================================= */}
-      <header className="sticky top-[57px] lg:top-0 z-20 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs transition-all print:hidden">
+      <header className="sticky top-[57px] lg:top-0 z-30 w-full bg-white/95 backdrop-blur-md border-b border-slate-200/90 shadow-xs transition-all print:hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <span className="text-[11px] font-extrabold px-3 py-1 rounded-full bg-[#843bab]/10 text-[#843bab] uppercase tracking-wider border border-[#843bab]/20">

@@ -245,118 +245,122 @@ export default function AdminRegistrations({ registrations }: Props) {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Alert Banner Feedback */}
-      {feedbackMsg && (
-        <div
-          className={`flex items-center justify-between gap-3 p-4 rounded-2xl text-sm font-medium border shadow-xs animate-fadeIn ${
-            feedbackMsg.type === 'success'
-              ? 'bg-emerald-50 border-emerald-200 text-emerald-900'
-              : 'bg-red-50 border-red-200 text-red-900'
-          }`}
-        >
-          <div className="flex items-center gap-2.5">
-            {feedbackMsg.type === 'success' ? (
-              <CheckCircle2 size={18} className="text-emerald-600 shrink-0" />
-            ) : (
-              <AlertCircle size={18} className="text-red-600 shrink-0" />
-            )}
-            <span>{feedbackMsg.text}</span>
-          </div>
-          <button
-            onClick={() => setFeedbackMsg(null)}
-            className="p-1 text-slate-400 hover:text-slate-600"
-          >
-            <X size={16} />
-          </button>
-        </div>
-      )}
-
+    <div>
       {/* 1. STICKY TOP HEADER: Judul Halaman & Toolbar Pencarian/Filter Pendaftaran */}
-      <div className="sticky top-[57px] lg:top-0 z-20 bg-white/95 backdrop-blur-md rounded-2xl border border-slate-200/90 p-4 sm:p-5 shadow-sm space-y-4 transition-all">
-        {/* Judul Halaman */}
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-purple-100 text-[#843bab] flex items-center justify-center shrink-0 shadow-2xs">
-              <CreditCard size={18} />
-            </div>
-            <div className="flex items-center gap-2 flex-wrap">
-              <h1 className="text-lg sm:text-2xl font-black text-slate-900 tracking-tight">
-                Pendaftaran & Pembayaran (Konfirmasi, Batal)
-              </h1>
-              {menungguBayarCount > 0 ? (
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-black bg-amber-100 text-amber-800 border border-amber-200 shadow-2xs">
-                  {menungguBayarCount} Menunggu
-                </span>
-              ) : (
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-slate-100 text-slate-700 border border-slate-200 shadow-2xs">
-                  {registrations.length}
-                </span>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Filter & Search Toolbar */}
-        <div className="bg-slate-50/70 border border-slate-200/80 rounded-xl p-2.5 sm:p-3 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
-          {/* Search Box */}
-          <div className="relative flex-1 min-w-[280px]">
-            <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Cari nama peserta, email, no HP, atau kursus..."
-              className="w-full pl-10 pr-10 py-2 rounded-xl bg-white border border-slate-200 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#843bab]/20 focus:border-[#843bab] transition-all"
-            />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600"
-              >
-                <X size={14} />
-              </button>
-            )}
-          </div>
-
-        {/* Status Filter Buttons */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
-          {[
-            { id: 'semua', label: 'Semua' },
-            { id: 'menunggu_bayar', label: 'Menunggu Bayar', count: menungguBayarCount },
-            { id: 'aktif', label: 'Aktif Belajar' },
-            { id: 'selesai', label: 'Selesai' },
-            { id: 'dibatalkan', label: 'Dibatalkan' },
-            { id: 'kedaluwarsa', label: 'Kedaluwarsa' },
-          ].map((st) => {
-            const isActive = filterStatus === st.id;
-            return (
-              <button
-                key={st.id}
-                type="button"
-                onClick={() => setFilterStatus(st.id)}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-colors cursor-pointer ${
-                  isActive
-                    ? 'bg-[#843bab] text-white shadow-xs'
-                    : 'bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-900 border border-slate-200'
-                }`}
-              >
-                <span>{st.label}</span>
-                {st.count !== undefined && st.count > 0 && (
-                  <span
-                    className={`px-1.5 py-0.2 rounded-full text-[10px] font-extrabold ${
-                      isActive ? 'bg-[#ffdf0f] text-slate-900' : 'bg-amber-100 text-amber-800'
-                    }`}
-                  >
-                    {st.count}
+      <header className="sticky top-[57px] lg:top-0 z-30 w-full bg-white/95 backdrop-blur-md border-b border-slate-200/90 shadow-xs transition-all">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4 space-y-3.5">
+          {/* Judul Halaman */}
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-purple-100 text-[#843bab] flex items-center justify-center shrink-0 shadow-2xs">
+                <CreditCard size={18} />
+              </div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-lg sm:text-2xl font-black text-slate-900 tracking-tight">
+                  Pendaftaran & Pembayaran (Konfirmasi, Batal)
+                </h1>
+                {menungguBayarCount > 0 ? (
+                  <span className="px-2.5 py-0.5 rounded-full text-xs font-black bg-amber-100 text-amber-800 border border-amber-200 shadow-2xs">
+                    {menungguBayarCount} Menunggu
+                  </span>
+                ) : (
+                  <span className="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-slate-100 text-slate-700 border border-slate-200 shadow-2xs">
+                    {registrations.length}
                   </span>
                 )}
-              </button>
-            );
-          })}
+              </div>
+            </div>
+          </div>
+
+          {/* Filter & Search Toolbar */}
+          <div className="bg-slate-50/70 border border-slate-200/80 rounded-xl p-2.5 sm:p-3 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+            {/* Search Box */}
+            <div className="relative flex-1 min-w-[280px]">
+              <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Cari nama peserta, email, no HP, atau kursus..."
+                className="w-full pl-10 pr-10 py-2 rounded-xl bg-white border border-slate-200 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#843bab]/20 focus:border-[#843bab] transition-all"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600"
+                >
+                  <X size={14} />
+                </button>
+              )}
+            </div>
+
+            {/* Status Filter Buttons */}
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
+              {[
+                { id: 'semua', label: 'Semua' },
+                { id: 'menunggu_bayar', label: 'Menunggu Bayar', count: menungguBayarCount },
+                { id: 'aktif', label: 'Aktif Belajar' },
+                { id: 'selesai', label: 'Selesai' },
+                { id: 'dibatalkan', label: 'Dibatalkan' },
+                { id: 'kedaluwarsa', label: 'Kedaluwarsa' },
+              ].map((st) => {
+                const isActive = filterStatus === st.id;
+                return (
+                  <button
+                    key={st.id}
+                    type="button"
+                    onClick={() => setFilterStatus(st.id)}
+                    className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-colors cursor-pointer ${
+                      isActive
+                        ? 'bg-[#843bab] text-white shadow-xs'
+                        : 'bg-white text-slate-600 hover:bg-slate-100 hover:text-slate-900 border border-slate-200'
+                    }`}
+                  >
+                    <span>{st.label}</span>
+                    {st.count !== undefined && st.count > 0 && (
+                      <span
+                        className={`px-1.5 py-0.2 rounded-full text-[10px] font-extrabold ${
+                          isActive ? 'bg-[#ffdf0f] text-slate-900' : 'bg-amber-100 text-amber-800'
+                        }`}
+                      >
+                        {st.count}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      </header>
+
+      {/* 2. MAIN WORKSPACE CONTENT */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 sm:space-y-8">
+        {/* Alert Banner Feedback */}
+        {feedbackMsg && (
+          <div
+            className={`flex items-center justify-between gap-3 p-4 rounded-2xl text-sm font-medium border shadow-xs animate-fadeIn ${
+              feedbackMsg.type === 'success'
+                ? 'bg-emerald-50 border-emerald-200 text-emerald-900'
+                : 'bg-red-50 border-red-200 text-red-900'
+            }`}
+          >
+            <div className="flex items-center gap-2.5">
+              {feedbackMsg.type === 'success' ? (
+                <CheckCircle2 size={18} className="text-emerald-600 shrink-0" />
+              ) : (
+                <AlertCircle size={18} className="text-red-600 shrink-0" />
+              )}
+              <span>{feedbackMsg.text}</span>
+            </div>
+            <button
+              onClick={() => setFeedbackMsg(null)}
+              className="p-1 text-slate-400 hover:text-slate-600"
+            >
+              <X size={16} />
+            </button>
+          </div>
+        )}
 
       {/* 2. KPI Cards Ringkasan Pendaftaran */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -622,6 +626,7 @@ export default function AdminRegistrations({ registrations }: Props) {
             </tbody>
           </table>
         </div>
+      </div>
       </div>
 
       {/* =========================================================================

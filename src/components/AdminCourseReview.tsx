@@ -216,101 +216,105 @@ export default function AdminCourseReview({ courses }: Props) {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Feedback Banner */}
-      {feedbackMsg && (
-        <div
-          className={`flex items-center gap-3 p-4 rounded-2xl text-sm font-medium border shadow-sm transition-all ${
-            feedbackMsg.type === 'success'
-              ? 'bg-emerald-50 border-emerald-200 text-emerald-900'
-              : 'bg-red-50 border-red-200 text-red-900'
-          }`}
-        >
-          {feedbackMsg.type === 'success' ? (
-            <CheckCircle2 size={18} className="text-emerald-600 shrink-0" />
-          ) : (
-            <AlertCircle size={18} className="text-red-600 shrink-0" />
-          )}
-          <span>{feedbackMsg.text}</span>
-        </div>
-      )}
-
+    <div>
       {/* STICKY TOP HEADER: Judul Halaman & Toolbar Pencarian/Filter Kursus */}
-      <div className="sticky top-[57px] lg:top-0 z-20 bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-2xl p-4 sm:p-5 shadow-sm space-y-4 transition-all">
-        {/* Judul Halaman */}
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-purple-100 text-[#843bab] flex items-center justify-center shrink-0 shadow-2xs">
-              <BookOpen size={18} />
-            </div>
-            <div className="flex items-center gap-2 flex-wrap">
-              <h1 className="text-lg sm:text-2xl font-black text-slate-900 tracking-tight">
-                Tinjauan Kursus (Tombol Status)
-              </h1>
-              {pendingReviewCount > 0 ? (
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-black bg-[#ffdf0f] text-slate-900 shadow-2xs animate-pulse">
-                  {pendingReviewCount} Menunggu
-                </span>
-              ) : (
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-slate-100 text-slate-700 border border-slate-200 shadow-2xs">
-                  {courses.length}
-                </span>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Filter and Search Bar */}
-        <div className="bg-slate-50/70 border border-slate-200/80 rounded-xl p-2.5 sm:p-3 flex flex-col md:flex-row md:items-center justify-between gap-3">
-          {/* Search Input */}
-          <div className="relative flex-1 min-w-[260px]">
-            <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Cari judul kursus, kategori, instruktur..."
-              className="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#843bab]/30 focus:border-[#843bab] transition-all"
-            />
-          </div>
-
-        {/* Status Filter Buttons */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
-          {[
-            { id: 'semua', label: 'Semua' },
-            { id: 'ditinjau', label: 'Menunggu Tinjauan', count: pendingReviewCount },
-            { id: 'terbit', label: 'Terbit' },
-            { id: 'ditutup', label: 'Ditutup' },
-            { id: 'draf', label: 'Draf' },
-          ].map((item) => {
-            const isActive = filterStatus === item.id;
-            return (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => setFilterStatus(item.id)}
-                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-colors min-h-[40px] ${
-                  isActive
-                    ? 'bg-[#843bab] text-white shadow-sm'
-                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900'
-                }`}
-              >
-                <span>{item.label}</span>
-                {item.count !== undefined && item.count > 0 && (
-                  <span
-                    className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
-                      isActive ? 'bg-white text-[#843bab]' : 'bg-amber-100 text-amber-800'
-                    }`}
-                  >
-                    {item.count}
+      <header className="sticky top-[57px] lg:top-0 z-30 w-full bg-white/95 backdrop-blur-md border-b border-slate-200/90 shadow-xs transition-all">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4 space-y-3.5">
+          {/* Judul Halaman */}
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-purple-100 text-[#843bab] flex items-center justify-center shrink-0 shadow-2xs">
+                <BookOpen size={18} />
+              </div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-lg sm:text-2xl font-black text-slate-900 tracking-tight">
+                  Tinjauan Kursus (Tombol Status)
+                </h1>
+                {pendingReviewCount > 0 ? (
+                  <span className="px-2.5 py-0.5 rounded-full text-xs font-black bg-[#ffdf0f] text-slate-900 shadow-2xs animate-pulse">
+                    {pendingReviewCount} Menunggu
+                  </span>
+                ) : (
+                  <span className="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-slate-100 text-slate-700 border border-slate-200 shadow-2xs">
+                    {courses.length}
                   </span>
                 )}
-              </button>
-            );
-          })}
+              </div>
+            </div>
+          </div>
+
+          {/* Filter and Search Bar */}
+          <div className="bg-slate-50/70 border border-slate-200/80 rounded-xl p-2.5 sm:p-3 flex flex-col md:flex-row md:items-center justify-between gap-3">
+            {/* Search Input */}
+            <div className="relative flex-1 min-w-[260px]">
+              <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Cari judul kursus, kategori, instruktur..."
+                className="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#843bab]/30 focus:border-[#843bab] transition-all"
+              />
+            </div>
+
+            {/* Status Filter Buttons */}
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
+              {[
+                { id: 'semua', label: 'Semua' },
+                { id: 'ditinjau', label: 'Menunggu Tinjauan', count: pendingReviewCount },
+                { id: 'terbit', label: 'Terbit' },
+                { id: 'ditutup', label: 'Ditutup' },
+                { id: 'draf', label: 'Draf' },
+              ].map((item) => {
+                const isActive = filterStatus === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => setFilterStatus(item.id)}
+                    className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-colors min-h-[40px] cursor-pointer ${
+                      isActive
+                        ? 'bg-[#843bab] text-white shadow-sm'
+                        : 'bg-white text-slate-600 hover:bg-slate-100 hover:text-slate-900 border border-slate-200'
+                    }`}
+                  >
+                    <span>{item.label}</span>
+                    {item.count !== undefined && item.count > 0 && (
+                      <span
+                        className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
+                          isActive ? 'bg-[#ffdf0f] text-slate-900' : 'bg-amber-100 text-amber-800'
+                        }`}
+                      >
+                        {item.count}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      </header>
+
+      {/* MAIN CONTENT WORKSPACE */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 sm:space-y-8">
+        {/* Feedback Banner */}
+        {feedbackMsg && (
+          <div
+            className={`flex items-center gap-3 p-4 rounded-2xl text-sm font-medium border shadow-sm transition-all ${
+              feedbackMsg.type === 'success'
+                ? 'bg-emerald-50 border-emerald-200 text-emerald-900'
+                : 'bg-red-50 border-red-200 text-red-900'
+            }`}
+          >
+            {feedbackMsg.type === 'success' ? (
+              <CheckCircle2 size={18} className="text-emerald-600 shrink-0" />
+            ) : (
+              <AlertCircle size={18} className="text-red-600 shrink-0" />
+            )}
+            <span>{feedbackMsg.text}</span>
+          </div>
+        )}
 
       {/* Course Review Cards List */}
       <div className="space-y-4">
@@ -577,6 +581,7 @@ export default function AdminCourseReview({ courses }: Props) {
             );
           })
         )}
+      </div>
       </div>
 
       {/* Modal Kembalikan ke Draf (BR-02: Catatan Minimal 10 Karakter) */}

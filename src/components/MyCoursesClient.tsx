@@ -123,7 +123,7 @@ export default function MyCoursesClient({ initialCourses, userProfile }: Props) 
          ========================================================= */}
       <section
         aria-label="Pencarian dan Filter Kursus Saya"
-        className="sticky top-[57px] lg:top-0 z-20 bg-white/95 backdrop-blur-md pt-3.5 pb-3 border-b border-slate-200/80 shadow-xs transition-all"
+        className="sticky top-[57px] lg:top-0 z-30 w-full bg-white/95 backdrop-blur-md pt-3.5 pb-3 border-b border-slate-200/90 shadow-xs transition-all"
       >
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">

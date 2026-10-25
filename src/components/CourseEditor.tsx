@@ -301,11 +301,11 @@ export default function CourseEditor({ course }: Props) {
   };
 
   return (
-    <div className="space-y-6 text-slate-900">
+    <div className="text-slate-900">
       {/* =========================================================
           STICKY COURSE HEADER BAR (Tetap Stay di Atas Saat Di-scroll)
          ========================================================= */}
-      <div className="sticky top-[57px] lg:top-0 z-20 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs transition-all">
+      <header className="sticky top-[57px] lg:top-0 z-30 w-full bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs transition-all">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
             <Link
@@ -335,10 +335,10 @@ export default function CourseEditor({ course }: Props) {
             </div>
           )}
         </div>
-      </div>
+      </header>
 
       {/* Main Content Workspace */}
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 space-y-6">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 space-y-6">
         {/* Alert Notifikasi */}
         {feedbackMsg && (
           <div

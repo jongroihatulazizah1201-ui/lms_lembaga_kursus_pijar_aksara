@@ -182,7 +182,7 @@ export default function ProfileClient({ profile }: Props) {
   return (
     <div className="min-h-screen bg-slate-50/60 pb-20 text-slate-900">
       {/* Navigasi Header Sticky: Tetap Stay di Atas Saat Di-scroll */}
-      <header className="sticky top-[57px] lg:top-0 z-20 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs transition-all">
+      <header className="sticky top-[57px] lg:top-0 z-30 w-full bg-white/95 backdrop-blur-md border-b border-slate-200/90 shadow-xs transition-all">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
           <Link
             href={
