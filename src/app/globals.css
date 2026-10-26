@@ -129,7 +129,7 @@ h1, h2, h3, h4, h5, h6 {
   display: flex;
   width: max-content;
   will-change: transform;
-  animation: marqueeScroll 28s linear infinite;
+  animation: marqueeScroll 52s linear infinite;
 }
 
 .marquee-track:hover,
