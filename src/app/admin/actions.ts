@@ -295,7 +295,7 @@ export async function cekStatusMayarAction(pendaftaranId: string) {
     // Validasi kecocokan nominal
     if (invoice.amount !== null && invoice.amount !== reg.nominal) {
       return {
-        error: `Nominal tidak cocok! Invoice Mayar mencatat Rp ${invoice.amount.toLocaleString('id-ID')}, namun tagihan LMS adalah Rp ${reg.nominal.toLocaleString('id-ID')}. Konfirmasi ditahan demi keamanan (BR-07).`,
+        error: `Nominal tidak cocok! Invoice Mayar mencatat Rp ${invoice.amount.toLocaleString('id-ID')}, namun tagihan LMS adalah Rp ${reg.nominal.toLocaleString('id-ID')}. Konfirmasi ditahan demi keamanan.`,
       };
     }
 

@@ -302,7 +302,7 @@ export default function ManualPaymentClient({
               Pembayaran Kursus
             </h1>
             <p className="text-sm text-slate-500 mt-1">
-              Gunakan pembayaran otomatis Mayar (QRIS / Virtual Account) untuk aktivasi instan, atau pilih transfer manual (BR-07).
+              Gunakan pembayaran otomatis Mayar (QRIS / Virtual Account) untuk aktivasi instan, atau pilih transfer manual.
             </p>
           </div>
 
@@ -662,7 +662,7 @@ export default function ManualPaymentClient({
           )}
 
           {/* =========================================================
-              METODE 2: TRANSFER BANK MANUAL (BR-07) - ALTERNATIF
+              METODE 2: TRANSFER BANK MANUAL - ALTERNATIF
              ========================================================= */}
           <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs space-y-4">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -675,7 +675,7 @@ export default function ManualPaymentClient({
                     Transfer Bank Manual
                   </h3>
                   <p className="text-[11px] text-slate-500">
-                    Konfirmasi manual oleh administrator (BR-07)
+                    Konfirmasi manual oleh administrator
                   </p>
                 </div>
               </div>

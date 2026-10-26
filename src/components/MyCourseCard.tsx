@@ -684,9 +684,6 @@ export default function MyCourseCard({ enrollment, onCancelRequest }: Props) {
                         <CreditCard size={14} className="text-[#843bab]" />
                         <span>Metode 2: Alternatif Transfer Bank Manual</span>
                       </div>
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">
-                        BR-07
-                      </span>
                     </div>
 
                     <p className="text-[11px] text-slate-500 leading-relaxed">

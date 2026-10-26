@@ -94,11 +94,11 @@ export default function StudentDashboardClient({
   const faqList = [
     {
       q: 'Berapa standar nilai minimal kelulusan (passing grade) kuis?',
-      a: 'Standar nilai kelulusan kuis ditentukan pada masing-masing kursus dalam rentang 50 hingga 100 dengan nilai bawaan 70 (sesuai aturan BR-03). Jika perolehan nilai evaluasi Anda mencapai atau melampaui nilai kelulusan kursus tersebut, modul dinyatakan LULUS dan modul selanjutnya otomatis terbuka.',
+      a: 'Standar nilai kelulusan kuis ditentukan pada masing-masing kursus dalam rentang 50 hingga 100 dengan nilai bawaan 70. Jika perolehan nilai evaluasi Anda mencapai atau melampaui nilai kelulusan kursus tersebut, modul dinyatakan LULUS dan modul selanjutnya otomatis terbuka.',
     },
     {
       q: 'Berapa kali batas kesempatan mencoba kuis jika belum mencapai nilai lulus?',
-      a: 'Setiap modul memiliki batas maksimal 3 kali percobaan kuis per pendaftaran (sesuai aturan BR-10). Jika belum lulus pada percobaan sebelumnya, Anda dapat mempelajari kembali materi sebelum mencoba lagi. Setelah lulus, kuis modul tersebut tidak dapat dikerjakan ulang.',
+      a: 'Setiap modul memiliki batas maksimal 3 kali percobaan kuis per pendaftaran. Jika belum lulus pada percobaan sebelumnya, Anda dapat mempelajari kembali materi sebelum mencoba lagi. Setelah lulus, kuis modul tersebut tidak dapat dikerjakan ulang.',
     },
     {
       q: 'Mengapa modul berikutnya masih terkunci dengan ikon gembok?',
@@ -110,7 +110,7 @@ export default function StudentDashboardClient({
     },
     {
       q: 'Bagaimana cara mengakses sertifikat kelulusan saya?',
-      a: 'Sertifikat kompetensi resmi bersifat privat dan dapat diakses eksklusif oleh peserta melalui menu Kursus Saya setelah menyelesaikan seluruh modul dan lulus kuis (sesuai aturan BR-11 & BR-12). Setiap sertifikat dilengkapi nomor registrasi unik berformat PA-TAHUN-NOMOR dan tanda tangan digital resmi.',
+      a: 'Sertifikat kompetensi resmi bersifat privat dan dapat diakses eksklusif oleh peserta melalui menu Kursus Saya setelah menyelesaikan seluruh modul dan lulus kuis. Setiap sertifikat dilengkapi nomor registrasi unik berformat PA-TAHUN-NOMOR dan tanda tangan digital resmi.',
     },
     {
       q: 'Berapa lama batas waktu pembayaran setelah mendaftar kursus?',
@@ -461,7 +461,7 @@ export default function StudentDashboardClient({
                   Kompeten (Standar Vokasi)
                 </h4>
                 <p className="text-xs text-slate-700 leading-relaxed">
-                  Mencapai KKM kursus (rentang 50–100, bawaan 70 sesuai BR-03). Dinyatakan LULUS dan modul selanjutnya terbuka.
+                  Mencapai KKM kursus (rentang 50–100, bawaan 70). Dinyatakan LULUS dan modul selanjutnya terbuka.
                 </p>
               </div>
 
@@ -476,7 +476,7 @@ export default function StudentDashboardClient({
                   Perlu Pengulangan (Maks. 3x)
                 </h4>
                 <p className="text-xs text-amber-900 leading-relaxed">
-                  Siswa dapat mempelajari kembali materi dan mengulang kuis selama sisa kesempatan (maksimal 3 percobaan per BR-10).
+                  Siswa dapat mempelajari kembali materi dan mengulang kuis selama sisa kesempatan (maksimal 3 percobaan).
                 </p>
               </div>
             </div>
@@ -491,13 +491,13 @@ export default function StudentDashboardClient({
                 <li className="flex items-start gap-2">
                   <Check size={16} className="text-emerald-600 shrink-0 mt-0.5" />
                   <span>
-                    <strong>Penilaian Aman di Server (BR-09):</strong> Begitu tombol <em>&quot;Kirim Jawaban&quot;</em> ditekan, sistem server langsung menilai jawaban Anda. Kunci jawaban tidak pernah dikirim ke browser demi menjaga integritas evaluasi.
+                    <strong>Penilaian Aman di Server:</strong> Begitu tombol <em>&quot;Kirim Jawaban&quot;</em> ditekan, sistem server langsung menilai jawaban Anda. Kunci jawaban tidak pernah dikirim ke browser demi menjaga integritas evaluasi.
                   </span>
                 </li>
                 <li className="flex items-start gap-2">
                   <Check size={16} className="text-emerald-600 shrink-0 mt-0.5" />
                   <span>
-                    <strong>Batas Maksimal 3 Percobaan (BR-10):</strong> Setiap modul memiliki batas paling banyak 3 kali percobaan kuis per pendaftaran. Setelah lulus, modul tidak dapat dikerjakan ulang.
+                    <strong>Batas Maksimal 3 Percobaan:</strong> Setiap modul memiliki batas paling banyak 3 kali percobaan kuis per pendaftaran. Setelah lulus, modul tidak dapat dikerjakan ulang.
                   </span>
                 </li>
                 <li className="flex items-start gap-2">
@@ -569,7 +569,7 @@ export default function StudentDashboardClient({
                   </div>
                   <h4 className="font-bold text-sm text-slate-900">Lulus Kuis Modul</h4>
                   <p className="text-xs text-slate-600 leading-relaxed">
-                    Raih nilai kuis mencapai standar kelulusan kursus (standar bawaan 70). Tersedia maksimal 3 kali percobaan per modul (BR-10).
+                    Raih nilai kuis mencapai standar kelulusan kursus (standar bawaan 70). Tersedia maksimal 3 kali percobaan per modul.
                   </p>
                 </div>
                 <div className="mt-3 pt-2 border-t border-slate-200 text-[11px] font-bold text-emerald-600">
@@ -616,7 +616,7 @@ export default function StudentDashboardClient({
                   3. Standar Sertifikat Resmi &amp; Verifikasi Digital Anti-Pemalsuan
                 </h3>
                 <p className="text-xs sm:text-sm text-slate-500">
-                  Sertifikat kompetensi resmi dengan nomor registrasi unik dan QR Code verifikasi publik
+                  Sertifikat kompetensi resmi dengan nomor registrasi unik dan QR Code resmi
                 </p>
               </div>
             </div>
@@ -642,7 +642,7 @@ export default function StudentDashboardClient({
                   <div>
                     <h4 className="font-bold text-slate-900 text-sm">Akses Privat Kursus Saya</h4>
                     <p className="mt-0.5">
-                      Sertifikat resmi bersifat privat dan eksklusif bagi peserta yang bersangkutan (BR-11 &amp; BR-12). Akses sertifikat, nomor registrasi, dan QR code resmi tersedia langsung di menu Kursus Saya.
+                      Sertifikat resmi bersifat privat dan eksklusif bagi peserta yang bersangkutan. Akses sertifikat, nomor registrasi, dan QR code resmi tersedia langsung di menu Kursus Saya.
                     </p>
                   </div>
                 </div>
