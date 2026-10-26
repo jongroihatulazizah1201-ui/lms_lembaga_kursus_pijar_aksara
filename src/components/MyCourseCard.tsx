@@ -23,7 +23,7 @@ import {
   X,
   AlertTriangle,
   CreditCardCheck,
-  Sparkles,
+  Target,
   QrCode,
   HelpCircle,
 } from 'lucide-react';
@@ -346,7 +346,7 @@ export default function MyCourseCard({ enrollment, onCancelRequest }: Props) {
               {/* Callout Tugas Berikutnya yang Belum Dikerjakan */}
               {status === 'aktif' && enrollment.next_modul && (
                 <div className="p-2.5 rounded-xl bg-purple-50/70 border border-purple-200/80 text-[11px] text-slate-700 flex items-start gap-2">
-                  <Sparkles size={13} className="text-[#843bab] shrink-0 mt-0.5" />
+                  <Target size={13} className="text-[#843bab] shrink-0 mt-0.5" />
                   <div className="min-w-0 flex-1 leading-snug">
                     <div className="font-bold text-slate-900 truncate">
                       Tugas Berikutnya: Modul {enrollment.next_modul.urutan}
@@ -597,7 +597,7 @@ export default function MyCourseCard({ enrollment, onCancelRequest }: Props) {
                   <div className="p-4 rounded-2xl bg-purple-50/50 border border-purple-200/80 space-y-3">
                     <div className="flex items-center justify-between">
                       <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#843bab] text-white">
-                        <Sparkles size={11} className="text-[#ffdf0f]" />
+                        <CheckCircle2 size={11} className="text-[#ffdf0f]" />
                         <span>Rekomendasi • Otomatis</span>
                       </span>
                       <span className="text-[11px] text-slate-500">

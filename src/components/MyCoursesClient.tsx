@@ -16,7 +16,7 @@ import {
   ArrowRight,
   AlertTriangle,
   GraduationCap,
-  Sparkles,
+  Target,
   Printer,
   Compass,
 } from 'lucide-react';
@@ -280,8 +280,8 @@ export default function MyCoursesClient({ initialCourses, userProfile }: Props) 
               <div className="bg-gradient-to-br from-purple-50/90 via-white to-purple-50/50 rounded-3xl border border-[#843bab]/30 p-5 shadow-xs space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[#843bab]">
-                    <Sparkles size={14} className="text-[#ffdf0f]" />
-                    <span>Tugas Selanjutnya</span>
+                    <Target size={14} className="text-[#843bab]" />
+                    <span>Target Tugas Selanjutnya</span>
                   </span>
                   <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#843bab] text-white">
                     Siap Dikerjakan
