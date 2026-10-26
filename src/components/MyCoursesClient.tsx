@@ -18,7 +18,6 @@ import {
   GraduationCap,
   Target,
   Printer,
-  Compass,
 } from 'lucide-react';
 import LoadingSpinner from '@/components/LoadingSpinner';
 
@@ -119,15 +118,6 @@ export default function MyCoursesClient({ initialCourses, userProfile }: Props) 
     return diff > 0 && diff <= 6 * 60 * 60 * 1000;
   });
 
-  // Kalkulasi Skala Pengerjaan Penugasan Siswa (Modul & Kuis)
-  const activeOrCompleted = initialCourses.filter((c) => c.status === 'aktif' || c.status === 'selesai');
-  const totalTugasTerdaftar = activeOrCompleted.reduce((acc, c) => acc + (c.kursus.total_modul || 0), 0);
-  const totalTugasLulus = activeOrCompleted.reduce((acc, c) => acc + (c.modul_lulus || 0), 0);
-  const totalTugasPending = Math.max(0, totalTugasTerdaftar - totalTugasLulus);
-  const totalDurasiSelesaiMenit = activeOrCompleted.reduce((acc, c) => acc + (c.durasi_selesai_menit || 0), 0);
-  const totalDurasiSemuaMenit = activeOrCompleted.reduce((acc, c) => acc + (c.kursus.total_durasi_menit || 0), 0);
-  const skalaPersen = totalTugasTerdaftar > 0 ? Math.min(100, Math.round((totalTugasLulus / totalTugasTerdaftar) * 100)) : 0;
-
   // Cari kursus aktif yang memiliki modul/tugas berikutnya untuk notifikasi ajakan belajar
   const activeCourseWithNextTask = initialCourses.find(
     (c) => c.status === 'aktif' && c.next_modul
@@ -138,303 +128,157 @@ export default function MyCoursesClient({ initialCourses, userProfile }: Props) 
     (c) => c.status === 'selesai' && c.sertifikat?.nomor_sertifikat
   );
 
-  // Inisial Peserta untuk Avatar
-  const userInitials = (userProfile.nama_lengkap || 'P')
-    .split(' ')
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((n) => n[0])
-    .join('')
-    .toUpperCase() || 'P';
-
   return (
-    <div className="min-h-screen bg-slate-50/60 pb-20">
+    <div className="min-h-screen bg-slate-50/50 pb-20">
       {/* =========================================================
-          1. HEADER BANNER: Profil & Dashboard Siswa
+          STICKY SEARCH & FAST FILTER TOOLBAR (Berada di Atas & Stay Saat Di-scroll)
          ========================================================= */}
-      <section className="bg-gradient-to-b from-purple-50/80 via-white to-slate-50/50 border-b border-slate-200/80 pt-8 pb-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
-            <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#843bab]/10 text-[#843bab] text-xs font-bold border border-[#843bab]/20 mb-2.5">
-                <GraduationCap size={14} />
-                <span>Dashboard &amp; Area Belajar Siswa</span>
-              </div>
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight">
-                Dashboard Belajar
-              </h1>
-              <p className="text-slate-600 text-xs sm:text-sm mt-1 max-w-xl leading-relaxed">
-                Halo, <span className="font-semibold text-slate-900">{userProfile.nama_lengkap}</span>! Pantau skala penyelesaian tugas kuis, pelajari kurikulum vokasi praktis, dan raih sertifikat kompetensi industri.
-              </p>
+      <section
+        aria-label="Pencarian dan Filter Kursus Saya"
+        className="sticky top-[57px] lg:top-0 z-30 w-full bg-white/95 backdrop-blur-md pt-3.5 pb-3 border-b border-slate-200/90 shadow-xs transition-all"
+      >
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+            {/* Search Box: Cari kursus atau instruktur... */}
+            <div className="relative flex-1 w-full max-w-md">
+              <Search
+                size={18}
+                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
+              />
+              <input
+                type="text"
+                placeholder="Cari kursus atau instruktur..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-9 py-2.5 rounded-xl text-xs sm:text-sm bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#843bab]/30 focus:border-[#843bab] focus:bg-white transition-all shadow-2xs"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 text-xs font-bold p-1 cursor-pointer"
+                  title="Hapus pencarian"
+                >
+                  ✕
+                </button>
+              )}
             </div>
 
-            <div className="flex items-center gap-3 shrink-0">
-              <Link
-                href="/kursus"
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-[#843bab]/30 bg-white hover:bg-purple-50 text-[#843bab] font-bold text-xs sm:text-sm shadow-2xs hover:shadow-xs transition-all"
+            {/* Tab Filter Buttons */}
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 scrollbar-none shrink-0">
+              <button
+                type="button"
+                onClick={() => setActiveTab('semua')}
+                className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+                  activeTab === 'semua'
+                    ? 'bg-[#843bab] text-white shadow-xs'
+                    : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-200 hover:bg-slate-50'
+                }`}
               >
-                <BookOpen size={16} />
-                <span>Jelajahi Katalog Kursus</span>
-              </Link>
+                Semua ({totalCount})
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('aktif')}
+                className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+                  activeTab === 'aktif'
+                    ? 'bg-emerald-600 text-white shadow-xs'
+                    : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-200 hover:bg-slate-50'
+                }`}
+              >
+                Aktif Belajar ({aktifCount})
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('menunggu_bayar')}
+                className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+                  activeTab === 'menunggu_bayar'
+                    ? 'bg-amber-500 text-slate-950 shadow-xs'
+                    : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-200 hover:bg-slate-50'
+                }`}
+              >
+                Menunggu Bayar ({menungguCount})
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('selesai')}
+                className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+                  activeTab === 'selesai'
+                    ? 'bg-[#843bab] text-white shadow-xs'
+                    : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-200 hover:bg-slate-50'
+                }`}
+              >
+                Selesai & Lulus ({selesaiCount})
+              </button>
+              {batalCount > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('dibatalkan')}
+                  className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+                    activeTab === 'dibatalkan'
+                      ? 'bg-slate-700 text-white shadow-xs'
+                      : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-200 hover:bg-slate-50'
+                  }`}
+                >
+                  Dibatalkan ({batalCount})
+                </button>
+              )}
+
+              {(searchQuery || activeTab !== 'semua') && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveTab('semua');
+                    setSearchQuery('');
+                  }}
+                  className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-500 hover:text-slate-900 bg-white border border-slate-200 hover:bg-slate-100 transition-colors shrink-0 cursor-pointer"
+                  title="Reset Filter & Pencarian"
+                >
+                  Reset
+                </button>
+              )}
             </div>
           </div>
         </div>
       </section>
 
       {/* =========================================================
-          2. WORKSPACE UTAMA: 2-KOLOM (SIDEBAR DASHBOARD + MAIN CONTENT)
+          1. HEADER BANNER: Profil & Ringkasan Statistik
          ========================================================= */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* =========================================================
-              KOLOM KIRI: SIDEBAR DASHBOARD SISWA (Sticky)
-             ========================================================= */}
-          <aside className="lg:col-span-4 lg:sticky lg:top-24 space-y-6">
-            {/* CARD 1: PROFIL & SKALA PENUGASAN SISWA */}
-            <div className="bg-white rounded-3xl border border-slate-200/90 p-5 sm:p-6 shadow-xs space-y-5">
-              {/* Identitas Peserta */}
-              <div className="flex items-center gap-3.5">
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#843bab] to-purple-600 text-white flex items-center justify-center font-black text-base shadow-xs shrink-0">
-                  {userInitials}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <h2 className="text-base font-extrabold text-slate-900 truncate">
-                    {userProfile.nama_lengkap}
-                  </h2>
-                  <div className="flex items-center gap-2 text-xs text-slate-500 mt-0.5">
-                    <span className="truncate">{userProfile.email}</span>
-                  </div>
-                  <span className="inline-block mt-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#843bab]/10 text-[#843bab] border border-[#843bab]/20">
-                    Peserta Aktif
-                  </span>
-                </div>
+      <section className="bg-gradient-to-b from-purple-50/80 via-white to-slate-50/50 border-b border-slate-200/80 pt-8 pb-10">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
+            {/* Sapaan Pengguna */}
+            <div>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#843bab]/10 text-[#843bab] text-xs font-bold border border-[#843bab]/20 mb-3">
+                <GraduationCap size={14} />
+                <span>Area Belajar Peserta</span>
               </div>
-
-              {/* Garis Pemisah */}
-              <div className="border-t border-slate-100" />
-
-              {/* Skala Penugasan Belajar */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1.5 font-bold text-xs text-slate-800">
-                    <Compass size={15} className="text-[#843bab]" />
-                    <span>Skala Penugasan Kursus</span>
-                  </div>
-                  <span className="px-2 py-0.5 rounded-full text-[11px] font-black bg-purple-100 text-[#843bab]">
-                    {skalaPersen}%
-                  </span>
-                </div>
-
-                {/* Progress Bar */}
-                <div className="w-full h-2.5 rounded-full bg-slate-100 p-0.5 border border-slate-200/60 overflow-hidden">
-                  <div
-                    className="h-full rounded-full bg-gradient-to-r from-[#843bab] via-purple-500 to-emerald-500 transition-all duration-500"
-                    style={{ width: `${skalaPersen}%` }}
-                  />
-                </div>
-
-                <div className="text-[11px] text-slate-600 font-medium">
-                  <strong className="text-slate-900 font-bold">{totalTugasLulus}</strong> dari{' '}
-                  <strong className="text-slate-900 font-bold">{totalTugasTerdaftar}</strong> modul &amp; kuis telah diselesaikan.
-                </div>
-
-                {/* 4 Mini Cards Metrik Skala */}
-                <div className="grid grid-cols-2 gap-2.5 pt-1">
-                  <div className="p-3 rounded-2xl bg-emerald-50/70 border border-emerald-100/80">
-                    <div className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider">Lulus Kuis</div>
-                    <div className="text-lg font-black text-emerald-600 mt-0.5">
-                      {totalTugasLulus} <span className="text-xs font-normal text-emerald-800">Modul</span>
-                    </div>
-                  </div>
-
-                  <div className="p-3 rounded-2xl bg-amber-50/70 border border-amber-100/80">
-                    <div className="text-[10px] font-bold text-amber-800 uppercase tracking-wider">Sisa Tugas</div>
-                    <div className="text-lg font-black text-amber-600 mt-0.5">
-                      {totalTugasPending} <span className="text-xs font-normal text-amber-800">Modul</span>
-                    </div>
-                  </div>
-
-                  <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/60">
-                    <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Waktu Belajar</div>
-                    <div className="text-base font-black text-slate-800 mt-0.5">
-                      {totalDurasiSelesaiMenit} <span className="text-xs font-normal text-slate-500">mnt</span>
-                    </div>
-                  </div>
-
-                  <div className="p-3 rounded-2xl bg-purple-50/70 border border-purple-100/80">
-                    <div className="text-[10px] font-bold text-[#843bab] uppercase tracking-wider">Sertifikat</div>
-                    <div className="text-lg font-black text-[#843bab] mt-0.5">
-                      {selesaiCount} <span className="text-xs font-normal text-[#843bab]">Terbit</span>
-                    </div>
-                  </div>
-                </div>
-
-                <p className="text-[10px] text-slate-400 leading-relaxed pt-1">
-                  Ambang batas kelulusan kuis &ge; 80% (maks. 3 kali kesempatan). Sertifikat kompetensi terbit otomatis saat seluruh modul lulus.
-                </p>
-              </div>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight mb-2">
+                Kursus Saya
+              </h1>
+              <p className="text-slate-600 text-sm sm:text-base max-w-xl leading-relaxed">
+                Halo, <span className="font-semibold text-slate-800">{userProfile.nama_lengkap}</span>! Pantau jadwal belajar, selesaikan modul kuis berstandar industri, dan dapatkan sertifikat kelulusan resmi.
+              </p>
             </div>
 
-            {/* CARD 2: TUGAS SELANJUTNYA (UP NEXT ACTION NUDGE) */}
-            {activeCourseWithNextTask && (
-              <div className="bg-gradient-to-br from-purple-50/90 via-white to-purple-50/50 rounded-3xl border border-[#843bab]/30 p-5 shadow-xs space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[#843bab]">
-                    <Target size={14} className="text-[#843bab]" />
-                    <span>Target Tugas Selanjutnya</span>
-                  </span>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#843bab] text-white">
-                    Siap Dikerjakan
-                  </span>
-                </div>
-
-                <div>
-                  <div className="text-xs font-semibold text-slate-500 truncate">
-                    {activeCourseWithNextTask.kursus.judul}
-                  </div>
-                  <div className="text-sm font-bold text-slate-900 mt-0.5 line-clamp-2 leading-snug">
-                    Modul {activeCourseWithNextTask.next_modul?.urutan}: {activeCourseWithNextTask.next_modul?.judul}
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-600 bg-white/80 border border-purple-100 rounded-xl px-3 py-1.5">
-                  <span className={`w-2 h-2 rounded-full ${
-                    activeCourseWithNextTask.next_modul?.is_read ? 'bg-amber-500' : 'bg-[#843bab]'
-                  }`} />
-                  <span>
-                    {activeCourseWithNextTask.next_modul?.is_read
-                      ? 'Kuis Evaluasi Menunggu Dikerjakan'
-                      : 'Pelajari Materi & Video'}
-                  </span>
-                </div>
-
-                <Link
-                  href={`/belajar/${activeCourseWithNextTask.kursus.slug}`}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-[#843bab] hover:bg-[#722f96] text-white font-bold text-xs shadow-xs hover:shadow-md transition-all cursor-pointer"
-                >
-                  <span>Kerjakan Tugas Sekarang</span>
-                  <ArrowRight size={14} />
-                </Link>
-              </div>
-            )}
-
-            {/* CARD 3: NAVIGASI FILTER STATUS KURSUS (Sidebar Filter List) */}
-            <div className="bg-white rounded-3xl border border-slate-200/90 p-4 sm:p-5 shadow-xs space-y-2">
-              <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider px-2 mb-2">
-                Filter Kursus Saya
-              </h3>
-
-              <div className="space-y-1">
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('semua')}
-                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                    activeTab === 'semua'
-                      ? 'bg-[#843bab] text-white shadow-xs'
-                      : 'text-slate-700 hover:bg-slate-100'
-                  }`}
-                >
-                  <span className="flex items-center gap-2">
-                    <BookOpen size={14} />
-                    <span>Semua Kursus</span>
-                  </span>
-                  <span className={`px-2 py-0.5 rounded-full text-[10px] ${
-                    activeTab === 'semua' ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600'
-                  }`}>
-                    {totalCount}
-                  </span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('aktif')}
-                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                    activeTab === 'aktif'
-                      ? 'bg-emerald-600 text-white shadow-xs'
-                      : 'text-slate-700 hover:bg-slate-100'
-                  }`}
-                >
-                  <span className="flex items-center gap-2">
-                    <CheckCircle2 size={14} className={activeTab === 'aktif' ? 'text-white' : 'text-emerald-600'} />
-                    <span>Aktif Belajar</span>
-                  </span>
-                  <span className={`px-2 py-0.5 rounded-full text-[10px] ${
-                    activeTab === 'aktif' ? 'bg-white/20 text-white' : 'bg-emerald-50 text-emerald-700'
-                  }`}>
-                    {aktifCount}
-                  </span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('menunggu_bayar')}
-                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                    activeTab === 'menunggu_bayar'
-                      ? 'bg-amber-500 text-slate-950 shadow-xs'
-                      : 'text-slate-700 hover:bg-slate-100'
-                  }`}
-                >
-                  <span className="flex items-center gap-2">
-                    <Clock size={14} className={activeTab === 'menunggu_bayar' ? 'text-slate-950' : 'text-amber-500'} />
-                    <span>Menunggu Bayar</span>
-                  </span>
-                  <span className={`px-2 py-0.5 rounded-full text-[10px] ${
-                    activeTab === 'menunggu_bayar' ? 'bg-slate-950/20 text-slate-950' : 'bg-amber-50 text-amber-800'
-                  }`}>
-                    {menungguCount}
-                  </span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('selesai')}
-                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                    activeTab === 'selesai'
-                      ? 'bg-[#843bab] text-white shadow-xs'
-                      : 'text-slate-700 hover:bg-slate-100'
-                  }`}
-                >
-                  <span className="flex items-center gap-2">
-                    <Award size={14} className={activeTab === 'selesai' ? 'text-white' : 'text-[#843bab]'} />
-                    <span>Selesai &amp; Lulus</span>
-                  </span>
-                  <span className={`px-2 py-0.5 rounded-full text-[10px] ${
-                    activeTab === 'selesai' ? 'bg-white/20 text-white' : 'bg-purple-50 text-[#843bab]'
-                  }`}>
-                    {selesaiCount}
-                  </span>
-                </button>
-
-                {batalCount > 0 && (
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab('dibatalkan')}
-                    className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                      activeTab === 'dibatalkan'
-                        ? 'bg-slate-700 text-white shadow-xs'
-                        : 'text-slate-700 hover:bg-slate-100'
-                    }`}
-                  >
-                    <span className="flex items-center gap-2">
-                      <XCircle size={14} />
-                      <span>Dibatalkan</span>
-                    </span>
-                    <span className={`px-2 py-0.5 rounded-full text-[10px] ${
-                      activeTab === 'dibatalkan' ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600'
-                    }`}>
-                      {batalCount}
-                    </span>
-                  </button>
-                )}
-              </div>
+            {/* Quick Action Button */}
+            <div className="flex items-center gap-3">
+              <Link
+                href="/kursus"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-[#843bab]/30 bg-white hover:bg-purple-50 text-[#843bab] font-bold text-sm shadow-2xs hover:shadow-xs transition-all"
+              >
+                <BookOpen size={16} />
+                <span>Jelajahi Katalog Kursus</span>
+              </Link>
             </div>
-          </aside>
+          </div>
 
           {/* =========================================================
-              KOLOM KANAN: KONTEN KURSUS & FEED UTAMA
+              NOTIFIKASI PINTAR & PENGINGAT PESERTA (In-App Smart Alerts)
              ========================================================= */}
-          <section className="lg:col-span-8 space-y-6">
-            {/* NOTIFIKASI PINTAR (In-App Smart Alerts) */}
+          <div className="space-y-3 mt-6">
+            {/* 1. Pengingat Batas Bayar Mendesak (< 6 Jam) */}
             {urgentPayments.length > 0 && (
               <div className="p-4 rounded-2xl bg-amber-500/10 border-2 border-amber-500/40 text-amber-950 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
                 <div className="flex items-start gap-3">
@@ -467,7 +311,42 @@ export default function MyCoursesClient({ initialCourses, userProfile }: Props) 
               </div>
             )}
 
-            {/* Notifikasi Kelulusan & Sertifikat Siap Diunduh */}
+            {/* 2. Notifikasi Tugas Belajar (Resume Learning Nudge) */}
+            {activeCourseWithNextTask && (
+              <div className="p-4 rounded-2xl bg-white border border-[#843bab]/30 text-slate-900 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
+                <div className="flex items-start gap-3">
+                  <div className="p-2.5 rounded-xl bg-purple-100 text-[#843bab] shrink-0 mt-0.5">
+                    <Target size={20} />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-bold text-sm sm:text-base text-slate-900">
+                        Lanjutkan Penugasan Belajar
+                      </h3>
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-[#843bab] border border-purple-200">
+                        Tugas Aktif
+                      </span>
+                    </div>
+                    <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mt-0.5">
+                      Pada kursus <strong className="text-slate-900">{activeCourseWithNextTask.kursus.judul}</strong>: tugas Anda berikutnya adalah{' '}
+                      <strong className="text-[#843bab]">
+                        Modul {activeCourseWithNextTask.next_modul?.urutan}: {activeCourseWithNextTask.next_modul?.judul}
+                      </strong>{' '}
+                      ({activeCourseWithNextTask.next_modul?.is_read ? 'Kuis Evaluasi Menunggu Dikerjakan' : 'Pelajari Materi & Video'}).
+                    </p>
+                  </div>
+                </div>
+                <Link
+                  href={`/belajar/${activeCourseWithNextTask.kursus.slug}`}
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#843bab] hover:bg-[#722f96] text-white font-bold text-xs whitespace-nowrap shadow-xs hover:shadow-md transition-all shrink-0"
+                >
+                  <span>Kerjakan Tugas Sekarang</span>
+                  <ArrowRight size={14} />
+                </Link>
+              </div>
+            )}
+
+            {/* 3. Notifikasi Kelulusan & Sertifikat Siap Diunduh */}
             {!activeCourseWithNextTask && recentlyCompletedCourse && (
               <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-slate-900 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
                 <div className="flex items-start gap-3">
@@ -494,134 +373,192 @@ export default function MyCoursesClient({ initialCourses, userProfile }: Props) 
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs whitespace-nowrap shadow-xs hover:shadow-md transition-all shrink-0"
                 >
-                  <span>Lihat &amp; Cetak Sertifikat</span>
+                  <span>Lihat & Cetak Sertifikat</span>
                   <Printer size={14} />
                 </Link>
               </div>
             )}
+          </div>
 
-            {/* Alert Sukses Batal Pendaftaran */}
-            {cancelSuccess && (
-              <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm flex items-center justify-between shadow-xs">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 size={18} className="text-emerald-600 shrink-0" />
-                  <span>{cancelSuccess}</span>
-                </div>
-                <button
-                  onClick={() => setCancelSuccess(null)}
-                  className="text-emerald-600 hover:text-emerald-800 text-xs font-bold cursor-pointer"
-                >
-                  Tutup
-                </button>
+          {/* Quick Stats Grid (Clickable to switch tab) */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
+            {/* Card 1: Total */}
+            <button
+              type="button"
+              onClick={() => setActiveTab('semua')}
+              className={`p-4 rounded-2xl border text-left transition-all cursor-pointer ${
+                activeTab === 'semua'
+                  ? 'bg-white border-[#843bab] ring-2 ring-[#843bab]/20 shadow-sm'
+                  : 'bg-white/80 border-slate-200 hover:border-slate-300 hover:bg-white'
+              }`}
+            >
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Kursus</span>
+                <BookOpen size={16} className="text-slate-400" />
               </div>
-            )}
+              <div className="text-2xl sm:text-3xl font-black text-slate-900">{totalCount}</div>
+              <div className="text-[11px] text-slate-500 mt-1">Seluruh riwayat pendaftaran</div>
+            </button>
 
-            {/* TOOLBAR PENCARIAN & STATUS FILTER */}
-            <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs space-y-3">
-              <div className="flex items-center justify-between gap-3">
-                <div className="relative flex-1">
-                  <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-                  <input
-                    type="text"
-                    placeholder="Cari judul kursus atau instruktur..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-8 py-2 rounded-xl text-xs sm:text-sm bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#843bab]/30 focus:border-[#843bab] focus:bg-white transition-all shadow-2xs"
-                  />
-                  {searchQuery && (
-                    <button
-                      type="button"
-                      onClick={() => setSearchQuery('')}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 text-xs font-bold p-1 cursor-pointer"
-                    >
-                      ✕
-                    </button>
-                  )}
-                </div>
+            {/* Card 2: Aktif Belajar */}
+            <button
+              type="button"
+              onClick={() => setActiveTab('aktif')}
+              className={`p-4 rounded-2xl border text-left transition-all cursor-pointer ${
+                activeTab === 'aktif'
+                  ? 'bg-white border-emerald-500 ring-2 ring-emerald-500/20 shadow-sm'
+                  : 'bg-white/80 border-slate-200 hover:border-slate-300 hover:bg-white'
+              }`}
+            >
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs font-bold text-emerald-700 uppercase tracking-wider">Aktif Belajar</span>
+                <CheckCircle2 size={16} className="text-emerald-500" />
+              </div>
+              <div className="text-2xl sm:text-3xl font-black text-emerald-600">{aktifCount}</div>
+              <div className="text-[11px] text-slate-500 mt-1">Dapat diakses 24 jam</div>
+            </button>
 
-                {(searchQuery || activeTab !== 'semua') && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setActiveTab('semua');
-                      setSearchQuery('');
-                    }}
-                    className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-500 hover:text-slate-900 bg-slate-50 border border-slate-200 hover:bg-slate-100 transition-colors shrink-0 cursor-pointer"
-                  >
-                    Reset Filter
-                  </button>
-                )}
+            {/* Card 3: Menunggu Bayar */}
+            <button
+              type="button"
+              onClick={() => setActiveTab('menunggu_bayar')}
+              className={`p-4 rounded-2xl border text-left transition-all cursor-pointer ${
+                activeTab === 'menunggu_bayar'
+                  ? 'bg-white border-amber-500 ring-2 ring-amber-500/20 shadow-sm'
+                  : 'bg-white/80 border-slate-200 hover:border-slate-300 hover:bg-white'
+              }`}
+            >
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs font-bold text-amber-700 uppercase tracking-wider">Menunggu Bayar</span>
+                <Clock size={16} className="text-amber-500" />
               </div>
+              <div className="text-2xl sm:text-3xl font-black text-amber-600">{menungguCount}</div>
+              <div className="text-[11px] text-slate-500 mt-1">Batas waktu 24 jam</div>
+            </button>
 
-              {/* Status Bar */}
-              <div className="flex items-center justify-between text-xs text-slate-500 pt-1 border-t border-slate-100">
-                <div>
-                  Menampilkan <strong className="text-slate-800">{filteredCourses.length}</strong> kursus
-                  {activeTab !== 'semua' && (
-                    <> pada status <strong className="text-[#843bab] capitalize">{activeTab.replace('_', ' ')}</strong></>
-                  )}
-                  {searchQuery && (
-                    <> untuk kata kunci &quot;<strong className="text-slate-800">{searchQuery}</strong>&quot;</>
-                  )}
-                </div>
+            {/* Card 4: Selesai & Sertifikat */}
+            <button
+              type="button"
+              onClick={() => setActiveTab('selesai')}
+              className={`p-4 rounded-2xl border text-left transition-all cursor-pointer ${
+                activeTab === 'selesai'
+                  ? 'bg-white border-[#843bab] ring-2 ring-[#843bab]/20 shadow-sm'
+                  : 'bg-white/80 border-slate-200 hover:border-slate-300 hover:bg-white'
+              }`}
+            >
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs font-bold text-[#843bab] uppercase tracking-wider">Selesai & Lulus</span>
+                <Award size={16} className="text-[#843bab]" />
               </div>
-            </div>
-
-            {/* GRID KURSUS / EMPTY STATE */}
-            {filteredCourses.length === 0 ? (
-              <div className="bg-white rounded-3xl border border-slate-200 p-12 text-center shadow-xs">
-                <div className="w-16 h-16 rounded-2xl bg-[#843bab]/10 text-[#843bab] flex items-center justify-center mx-auto mb-4">
-                  <BookOpen size={28} />
-                </div>
-                <h3 className="text-xl font-bold text-slate-900 mb-2">
-                  {searchQuery
-                    ? 'Kursus Tidak Ditemukan'
-                    : activeTab === 'semua'
-                    ? 'Belum Ada Kursus yang Terdaftar'
-                    : 'Tidak Ada Kursus di Kategori Ini'}
-                </h3>
-                <p className="text-slate-500 text-sm leading-relaxed mb-6 max-w-md mx-auto">
-                  {searchQuery
-                    ? `Tidak ada kursus yang cocok dengan pencarian "${searchQuery}". Silakan coba kata kunci lain.`
-                    : activeTab === 'semua'
-                    ? 'Anda belum mendaftar kursus apapun. Temukan kurikulum vokasi praktis di katalog kursus kami.'
-                    : 'Tidak ada kursus yang sesuai dengan filter yang Anda pilih saat ini.'}
-                </p>
-                {activeTab !== 'semua' || searchQuery ? (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setActiveTab('semua');
-                      setSearchQuery('');
-                    }}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-slate-200 hover:border-slate-300 text-slate-700 text-sm font-bold bg-slate-50 hover:bg-slate-100 transition-all cursor-pointer"
-                  >
-                    <span>Reset Filter &amp; Pencarian</span>
-                  </button>
-                ) : (
-                  <Link
-                    href="/kursus"
-                    className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#843bab] hover:bg-[#722f96] text-white font-bold text-sm shadow-xs hover:shadow-md transition-all"
-                  >
-                    <span>Lihat Katalog Kursus</span>
-                    <ArrowRight size={16} />
-                  </Link>
-                )}
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {filteredCourses.map((item) => (
-                  <MyCourseCard
-                    key={item.id}
-                    enrollment={item}
-                    onCancelRequest={handleOpenCancelModal}
-                  />
-                ))}
-              </div>
-            )}
-          </section>
+              <div className="text-2xl sm:text-3xl font-black text-[#843bab]">{selesaiCount}</div>
+              <div className="text-[11px] text-slate-500 mt-1">Sertifikat terbit</div>
+            </button>
+          </div>
         </div>
-      </main>
+      </section>
+
+      {/* =========================================================
+          2. DAFTAR KURSUS PESERTA
+         ========================================================= */}
+      <section className="max-w-7xl mx-auto px-6 pt-6">
+        {/* Success Alert */}
+        {cancelSuccess && (
+          <div className="mb-6 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm flex items-center justify-between shadow-xs">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 size={18} className="text-emerald-600 shrink-0" />
+              <span>{cancelSuccess}</span>
+            </div>
+            <button
+              onClick={() => setCancelSuccess(null)}
+              className="text-emerald-600 hover:text-emerald-800 text-xs font-bold"
+            >
+              Tutup
+            </button>
+          </div>
+        )}
+
+        {/* Info Pencarian / Filter Aktif */}
+        {(searchQuery || activeTab !== 'semua') && (
+          <div className="flex items-center justify-between text-xs text-slate-500 mb-6 pb-2.5 border-b border-slate-200/60">
+            <div>
+              Menampilkan <span className="font-bold text-slate-800">{filteredCourses.length}</span> kursus
+              {searchQuery && (
+                <> untuk pencarian "<span className="font-semibold text-slate-800">{searchQuery}</span>"</>
+              )}
+              {activeTab !== 'semua' && (
+                <> pada filter <span className="font-semibold text-[#843bab] capitalize">{activeTab.replace('_', ' ')}</span></>
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setActiveTab('semua');
+                setSearchQuery('');
+              }}
+              className="text-[#843bab] hover:underline font-bold cursor-pointer"
+            >
+              Hapus Filter
+            </button>
+          </div>
+        )}
+
+        {/* =========================================================
+            3. GRID KURSUS / EMPTY STATE
+           ========================================================= */}
+        {filteredCourses.length === 0 ? (
+          /* Empty State */
+          <div className="bg-white rounded-3xl border border-slate-200 p-12 text-center max-w-xl mx-auto my-8 shadow-xs">
+            <div className="w-16 h-16 rounded-2xl bg-[#843bab]/10 text-[#843bab] flex items-center justify-center mx-auto mb-4">
+              <BookOpen size={28} />
+            </div>
+            <h3 className="text-xl font-bold text-slate-900 mb-2">
+              {searchQuery
+                ? 'Kursus Tidak Ditemukan'
+                : activeTab === 'semua'
+                ? 'Belum Ada Kursus yang Terdaftar'
+                : 'Tidak Ada Kursus di Kategori Ini'}
+            </h3>
+            <p className="text-slate-500 text-sm leading-relaxed mb-6 max-w-md mx-auto">
+              {searchQuery
+                ? `Tidak ada kursus yang cocok dengan pencarian "${searchQuery}". Silakan coba kata kunci lain.`
+                : activeTab === 'semua'
+                ? 'Anda belum mendaftar kursus apapun. Temukan kurikulum vokasi praktis di katalog kursus kami.'
+                : 'Tidak ada kursus yang sesuai dengan filter yang Anda pilih saat ini.'}
+            </p>
+            {activeTab !== 'semua' || searchQuery ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTab('semua');
+                  setSearchQuery('');
+                }}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-slate-200 hover:border-slate-300 text-slate-700 text-sm font-bold bg-slate-50 hover:bg-slate-100 transition-all cursor-pointer"
+              >
+                <span>Reset Filter & Pencarian</span>
+              </button>
+            ) : (
+              <Link
+                href="/kursus"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#843bab] hover:bg-[#722f96] text-white font-bold text-sm shadow-xs hover:shadow-md transition-all"
+              >
+                <span>Lihat Katalog Kursus</span>
+                <ArrowRight size={16} />
+              </Link>
+            )}
+          </div>
+        ) : (
+          /* Grid of MyCourseCard */
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredCourses.map((item) => (
+              <MyCourseCard
+                key={item.id}
+                enrollment={item}
+                onCancelRequest={handleOpenCancelModal}
+              />
+            ))}
+          </div>
+        )}
+      </section>
 
       {/* =========================================================
           4. MODAL KONFIRMASI BATAL PENDAFTARAN (Unpaid Only)

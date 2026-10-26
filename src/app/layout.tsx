@@ -1,6 +1,7 @@
 import React, { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { headers } from 'next/headers';
+import { redirect } from 'next/navigation';
 import './globals.css';
 import { createClient } from '@/lib/supabase/server';
 import Navbar from '@/components/Navbar';
@@ -32,6 +33,7 @@ export default async function RootLayout({
                         currentPath.startsWith('/instruktur') ||
                         currentPath.startsWith('/kursus-saya') ||
                         currentPath.startsWith('/belajar') ||
+                        currentPath.startsWith('/dashboard') ||
                         currentPath.startsWith('/profil');
 
   const supabase = await createClient();
@@ -53,7 +55,20 @@ export default async function RootLayout({
     }
   }
 
-  // 1. JIKA DI HALAMAN AUTH (/login, /register, /daftar):
+  // 1. JIKA PENGGUNA SUDAH LOGIN TETAPI MEMBUKA HALAMAN AUTH (/login, /register, /daftar):
+  // Jangan pernah tampilkan halaman auth atau Navbar terautentikasi di /login!
+  // Segera alihkan detik itu juga langsung ke ruang kerja masing-masing sesuai peran
+  if (user && profile && isAuthPage) {
+    if (profile.peran === 'admin') {
+      redirect('/admin/dashboard');
+    } else if (profile.peran === 'instruktur') {
+      redirect('/instruktur');
+    } else {
+      redirect('/dashboard');
+    }
+  }
+
+  // 2. JIKA DI HALAMAN AUTH UNTUK TAMU (Belum Login):
   // Tampilkan hanya Top Navbar & Form tanpa Footer agar footer tidak pernah muncul saat proses login
   if (isAuthPage) {
     return (

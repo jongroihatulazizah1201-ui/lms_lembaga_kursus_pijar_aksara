@@ -18,8 +18,10 @@ import {
   Save,
   ArrowLeft,
   GraduationCap,
+  LogOut,
 } from 'lucide-react';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import LogoutConfirmModal from '@/components/LogoutConfirmModal';
 
 interface ProfileData {
   id: string;
@@ -46,6 +48,7 @@ export default function ProfileClient({ profile }: Props) {
 
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [isPending, startTransition] = useTransition();
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -446,6 +449,34 @@ export default function ProfileClient({ profile }: Props) {
             </button>
           </div>
         </form>
+
+        {/* Zona Keluar Akun (Akses Mudah untuk Pengguna Mobile & Desktop) */}
+        <div className="bg-white rounded-3xl border border-red-100 p-6 sm:p-7 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+              <LogOut size={16} className="text-red-500" />
+              <span>Sesi Akun Pengguna</span>
+            </h3>
+            <p className="text-xs text-slate-500 mt-1">
+              Ingin mengakhiri sesi di perangkat ini? Anda dapat masuk kembali kapan saja dengan email terdaftar.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setShowLogoutModal(true)}
+            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl border border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 font-bold text-xs shadow-2xs transition-all cursor-pointer min-h-[40px] shrink-0"
+          >
+            <LogOut size={14} />
+            <span>Keluar dari Akun</span>
+          </button>
+        </div>
+
+        {/* Modal Konfirmasi Logout */}
+        <LogoutConfirmModal
+          isOpen={showLogoutModal}
+          onClose={() => setShowLogoutModal(false)}
+          userName={profile.nama_lengkap}
+        />
       </div>
     </div>
   );

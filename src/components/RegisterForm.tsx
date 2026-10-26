@@ -101,10 +101,11 @@ export default function RegisterForm({ redirectParam = '' }: Props) {
       if (res?.error) {
         setError(res.error);
         setLoading(false);
-      } else if (res?.success && res.redirectTo) {
-        window.location.replace(res.redirectTo);
       }
-    } catch {
+    } catch (err: any) {
+      if (err?.message?.includes('NEXT_REDIRECT') || err?.digest?.includes('NEXT_REDIRECT')) {
+        return;
+      }
       setError('Terjadi kendala saat mendaftarkan akun. Silakan coba lagi.');
       setLoading(false);
     }

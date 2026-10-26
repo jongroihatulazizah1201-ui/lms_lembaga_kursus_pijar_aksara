@@ -39,7 +39,7 @@ export default async function LoginPage({ searchParams }: PageProps) {
       ) {
         redirect(redirectParam);
       }
-      redirect('/kursus-saya');
+      redirect('/dashboard');
     }
   }
 

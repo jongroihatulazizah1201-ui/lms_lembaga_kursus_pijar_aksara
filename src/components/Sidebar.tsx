@@ -25,7 +25,8 @@ import {
   User,
   Menu,
   X,
-  Clock
+  Clock,
+  LayoutDashboard
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -118,7 +119,7 @@ export default function Sidebar({ user, profile, urgentQueueCount: initialUrgent
   const isPeserta = activeProfile?.peran === 'peserta';
   const isInstruktur = activeProfile?.peran === 'instruktur';
   const isAdmin = activeProfile?.peran === 'admin';
-  const portalHome = isAdmin ? '/admin/dashboard' : isInstruktur ? '/instruktur' : isPeserta ? '/kursus-saya' : '/';
+  const portalHome = isAdmin ? '/admin/dashboard' : isInstruktur ? '/instruktur' : isPeserta ? '/dashboard' : '/';
 
   // =========================================================================
   // STRUKTUR MENU DITATA SPESIFIK & RAPI BERDASARKAN FITUR RIIL SETIAP PERAN
@@ -220,6 +221,13 @@ export default function Sidebar({ user, profile, urgentQueueCount: initialUrgent
         title: 'Pembelajaran Saya',
         items: [
           {
+            label: 'Dashboard Siswa',
+            href: '/dashboard',
+            icon: LayoutDashboard,
+            badge: 'Aturan & Skala',
+            badgeColor: 'bg-purple-50 text-[#843bab] border-purple-200'
+          },
+          {
             label: 'Kursus Saya',
             href: '/kursus-saya',
             icon: GraduationCap,
@@ -295,7 +303,12 @@ export default function Sidebar({ user, profile, urgentQueueCount: initialUrgent
       return pathname === '/instruktur/nilai' || pathname.startsWith('/instruktur/nilai/');
     }
 
-    // 7. Kursus Saya & Ruang Belajar (/kursus-saya dan /belajar/[id])
+    // 7. Dashboard Siswa (/dashboard)
+    if (href === '/dashboard') {
+      return pathname === '/dashboard';
+    }
+
+    // 8. Kursus Saya & Ruang Belajar (/kursus-saya dan /belajar/[id])
     if (href === '/kursus-saya') {
       return pathname === '/kursus-saya' || pathname.startsWith('/belajar');
     }
@@ -517,7 +530,7 @@ export default function Sidebar({ user, profile, urgentQueueCount: initialUrgent
       </aside>
 
       {/* 2. MOBILE TOP BAR WITH SIDEBAR HAMBURGER */}
-      <div className="lg:hidden sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 px-4 py-2.5 flex items-center justify-between">
+      <div className="lg:hidden sticky top-0 z-40 bg-white border-b border-slate-200 px-4 py-2.5 flex items-center justify-between shadow-2xs">
         <div className="flex items-center gap-2.5">
           <button
             type="button"
@@ -532,17 +545,29 @@ export default function Sidebar({ user, profile, urgentQueueCount: initialUrgent
         </div>
 
         {user && activeProfile ? (
-          <span
-            className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase border ${
-              isAdmin
-                ? 'bg-purple-50 text-[#843bab] border-purple-200'
-                : isInstruktur
-                ? 'bg-purple-50 text-[#843bab] border-purple-200'
-                : 'bg-emerald-50 text-emerald-700 border-emerald-200'
-            }`}
-          >
-            {activeProfile.peran}
-          </span>
+          <div className="flex items-center gap-2">
+            <span
+              className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase border ${
+                isAdmin
+                  ? 'bg-purple-50 text-[#843bab] border-purple-200'
+                  : isInstruktur
+                  ? 'bg-purple-50 text-[#843bab] border-purple-200'
+                  : 'bg-emerald-50 text-emerald-700 border-emerald-200'
+              }`}
+            >
+              {activeProfile.peran}
+            </span>
+            <button
+              type="button"
+              onClick={() => setShowLogoutModal(true)}
+              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 border border-red-200 rounded-xl transition-colors min-h-[36px] cursor-pointer"
+              title="Keluar dari Akun"
+              aria-label="Keluar dari Akun"
+            >
+              <LogOut size={14} />
+              <span className="text-[11px] font-bold">Keluar</span>
+            </button>
+          </div>
         ) : (
           <Link
             href="/login"

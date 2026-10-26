@@ -64,13 +64,22 @@ export default function UserNav({ user, profile }: Props) {
       {/* Role specific links (Desktop) */}
       <nav className="hidden lg:flex items-center gap-4 text-sm font-semibold">
         {isPeserta && (
-          <Link
-            href="/kursus-saya"
-            className="flex items-center gap-1.5 text-slate-700 hover:text-[#843bab] transition-colors"
-          >
-            <Award size={16} className="text-[#843bab]" />
-            <span>Kursus Saya</span>
-          </Link>
+          <>
+            <Link
+              href="/dashboard"
+              className="flex items-center gap-1.5 text-slate-700 hover:text-[#843bab] transition-colors"
+            >
+              <LayoutDashboard size={16} className="text-[#843bab]" />
+              <span>Dashboard Siswa</span>
+            </Link>
+            <Link
+              href="/kursus-saya"
+              className="flex items-center gap-1.5 text-slate-700 hover:text-[#843bab] transition-colors"
+            >
+              <Award size={16} className="text-[#843bab]" />
+              <span>Kursus Saya</span>
+            </Link>
+          </>
         )}
 
         {isInstruktur && (

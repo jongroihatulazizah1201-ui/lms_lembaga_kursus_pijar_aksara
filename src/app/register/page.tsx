@@ -38,7 +38,7 @@ export default async function RegisterPage({ searchParams }: PageProps) {
       ) {
         redirect(redirectParam);
       }
-      redirect('/kursus-saya');
+      redirect('/dashboard');
     }
   }
 

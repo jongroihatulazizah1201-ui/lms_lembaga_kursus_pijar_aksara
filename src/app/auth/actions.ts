@@ -41,11 +41,8 @@ export async function loginAction(formData: FormData) {
     return { error: 'Akun Anda dinonaktifkan. Silakan hubungi admin.' };
   }
 
-  // Bersihkan cache layout agar antarmuka terautentikasi langsung aktif tanpa menampilkan layout publik
-  revalidatePath('/', 'layout');
-
-  // Arahkan langsung ke halaman utama sesuai peran pengguna tanpa singgah ke /profil
-  let targetUrl = '/kursus-saya';
+  // Arahkan langsung ke halaman utama sesuai peran pengguna
+  let targetUrl = '/dashboard';
   if (profile.peran === 'admin') {
     targetUrl = '/admin/dashboard';
   } else if (profile.peran === 'instruktur') {
@@ -61,11 +58,13 @@ export async function loginAction(formData: FormData) {
     ) {
       targetUrl = redirectTo;
     } else {
-      targetUrl = '/kursus-saya';
+      targetUrl = '/dashboard';
     }
   }
 
-  return { success: true, redirectTo: targetUrl };
+  // Bersihkan cache layout dan segera alihkan user langsung ke workspace perannya
+  revalidatePath('/', 'layout');
+  redirect(targetUrl);
 }
 
 export async function registerAction(formData: FormData) {
@@ -153,11 +152,10 @@ export async function registerAction(formData: FormData) {
     });
   }
 
-  // Bersihkan cache layout agar data user baru langsung aktif
+  const targetUrl = redirectTo && redirectTo.startsWith('/') ? redirectTo : '/dashboard';
+  // Bersihkan cache layout dan segera alihkan user langsung ke workspace perannya
   revalidatePath('/', 'layout');
-
-  const targetUrl = redirectTo && redirectTo.startsWith('/') ? redirectTo : '/kursus-saya';
-  return { success: true, redirectTo: targetUrl };
+  redirect(targetUrl);
 }
 
 export async function logoutAction() {

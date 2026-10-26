@@ -68,7 +68,7 @@ export default function MobileBottomNav({ user, profile }: Props) {
   const isMasukActive = pathname === '/login';
   const isDaftarActive = pathname === '/register' || pathname === '/daftar';
 
-  const isBelajarActive = pathname.startsWith('/kursus-saya') || pathname.startsWith('/belajar');
+  const isBelajarActive = pathname.startsWith('/kursus-saya') || pathname.startsWith('/belajar') || pathname === '/dashboard';
   const isAdminActive = pathname.startsWith('/admin');
   const isInstrukturActive = pathname.startsWith('/instruktur');
   const isProfilActive = pathname.startsWith('/profil');

@@ -52,12 +52,12 @@ export async function proxy(request: NextRequest) {
   // Rute yang diproteksi berdasarkan peran
   const isAdminRoute = path.startsWith('/admin');
   const isInstrukturRoute = path.startsWith('/instruktur');
-  const isPesertaRoute = path.startsWith('/kursus-saya') || path.startsWith('/belajar');
-  const isAuthRoute = path.startsWith('/login') || path.startsWith('/register');
+  const isPesertaRoute = path.startsWith('/kursus-saya') || path.startsWith('/belajar') || path.startsWith('/dashboard');
+  const isAuthRoute = path.startsWith('/login') || path.startsWith('/register') || path.startsWith('/daftar');
   // Rute sertifikat pemilik (/sertifikat/[id]) wajib login, sedangkan /sertifikat/cek publik untuk tamu
   const isCertificateOwnerRoute = path.startsWith('/sertifikat/') && !path.startsWith('/sertifikat/cek');
 
-  // 1. Jika pengguna sudah login mencoba membuka halaman auth (/login atau /register):
+  // 1. Jika pengguna sudah login mencoba membuka halaman auth (/login, /register, /daftar):
   // Segera alihkan ke halaman utama sesuai peran tanpa menampilkan halaman login
   if (isAuthRoute && user) {
     try {
@@ -72,10 +72,20 @@ export async function proxy(request: NextRequest) {
       } else if (profile?.peran === 'instruktur') {
         return createRedirect('/instruktur');
       } else {
-        return createRedirect('/kursus-saya');
+        const redirectParam = request.nextUrl.searchParams.get('redirect');
+        if (
+          redirectParam &&
+          redirectParam.startsWith('/') &&
+          !redirectParam.startsWith('/login') &&
+          !redirectParam.startsWith('/register') &&
+          !redirectParam.startsWith('/profil')
+        ) {
+          return createRedirect(redirectParam);
+        }
+        return createRedirect('/dashboard');
       }
     } catch {
-      return createRedirect('/kursus-saya');
+      return createRedirect('/dashboard');
     }
   }
 

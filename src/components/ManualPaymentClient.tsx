@@ -22,6 +22,7 @@ import {
   AlertCircle,
   CreditCardCheck,
   QrCode,
+  BadgeCheck,
   ArrowRight,
 } from 'lucide-react';
 import {
@@ -551,7 +552,7 @@ export default function ManualPaymentClient({
                 </div>
 
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                  <CheckCircle2 size={12} className="text-emerald-600" />
+                  <BadgeCheck size={14} className="text-emerald-600" />
                   <span>Rekomendasi Utama</span>
                 </span>
               </div>
