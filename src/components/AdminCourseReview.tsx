@@ -65,6 +65,7 @@ interface CourseItem {
     email: string;
   };
   modul: Module[];
+  kursi_terpakai?: number;
 }
 
 interface Props {
@@ -168,6 +169,11 @@ export default function AdminCourseReview({ courses }: Props) {
 
     if (isNaN(newQuotaInput) || newQuotaInput < 1 || newQuotaInput > 100) {
       setQuotaError('Kuota harus antara 1 sampai 100 peserta.');
+      return;
+    }
+
+    if (quotaModalCourse.kursi_terpakai !== undefined && newQuotaInput < quotaModalCourse.kursi_terpakai) {
+      setQuotaError(`Kuota tidak boleh lebih kecil dari kursi terpakai (${quotaModalCourse.kursi_terpakai} kursi).`);
       return;
     }
 
@@ -365,7 +371,7 @@ export default function AdminCourseReview({ courses }: Props) {
                       </span>
                       <span className="text-slate-300">&bull;</span>
                       <span>
-                        Kuota: <strong className="text-slate-900">{c.kuota} Kursi</strong>
+                        Kuota: <strong className="text-slate-900">{c.kuota} Kursi {c.kursi_terpakai !== undefined && `(${c.kursi_terpakai} Terpakai)`}</strong>
                       </span>
                       <span className="text-slate-300">&bull;</span>
                       <span>
@@ -677,8 +683,16 @@ export default function AdminCourseReview({ courses }: Props) {
               Ubah kuota peserta untuk kursus terbit <strong className="text-slate-900">&ldquo;{quotaModalCourse.judul}&rdquo;</strong>.
             </p>
 
-            <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-600">
-              <strong className="text-slate-800">Ketentuan Kuota:</strong> Kuota kursus terbit tidak boleh lebih kecil dari kursi terpakai (pendaftaran aktif, selesai, dan menunggu bayar).
+            <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-600 space-y-1.5">
+              <div className="flex items-center justify-between">
+                <span className="font-semibold text-slate-700">Kursi Terpakai Saat Ini:</span>
+                <span className="font-bold text-[#843bab] bg-purple-100 px-2.5 py-0.5 rounded-md">
+                  {quotaModalCourse.kursi_terpakai !== undefined ? `${quotaModalCourse.kursi_terpakai} Peserta` : 'Memuat...'}
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-500 leading-relaxed pt-0.5">
+                <strong className="text-slate-700">Ketentuan Kuota:</strong> Kuota kursus terbit tidak boleh lebih kecil dari kursi terpakai (minimal {quotaModalCourse.kursi_terpakai || 1} kursi).
+              </p>
             </div>
 
             <div className="space-y-1.5">

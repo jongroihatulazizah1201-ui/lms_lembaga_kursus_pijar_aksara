@@ -81,15 +81,31 @@ export default async function AdminPanelPage({ searchParams }: Props) {
           pilihan_d,
           kunci_jawaban
         )
+      ),
+      pendaftaran (
+        id,
+        status,
+        batas_bayar
       )
     `)
     .order('dibuat_pada', { ascending: false });
 
-  const formattedCourses = (courses || []).map((c: any) => ({
-    ...c,
-    instruktur: Array.isArray(c.instruktur) ? c.instruktur[0] : c.instruktur,
-    modul: (c.modul || []).sort((a: any, b: any) => a.urutan - b.urutan),
-  }));
+  const now = new Date();
+  const formattedCourses = (courses || []).map((c: any) => {
+    const enrollments = c.pendaftaran || [];
+    const kursiTerpakai = enrollments.filter((p: any) => {
+      if (p.status === 'aktif' || p.status === 'selesai') return true;
+      if (p.status === 'menunggu_bayar' && (!p.batas_bayar || new Date(p.batas_bayar) > now)) return true;
+      return false;
+    }).length;
+
+    return {
+      ...c,
+      instruktur: Array.isArray(c.instruktur) ? c.instruktur[0] : c.instruktur,
+      modul: (c.modul || []).sort((a: any, b: any) => a.urutan - b.urutan),
+      kursi_terpakai: kursiTerpakai,
+    };
+  });
 
   const pendingReviewCount = formattedCourses.filter((c: any) => c.status === 'ditinjau').length;
 

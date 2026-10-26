@@ -77,7 +77,8 @@ export async function ubahKuotaKursusAction(
   });
 
   if (error) {
-    return { error: error.message };
+    const cleanMsg = error.message.replace(/ERROR:\s*[A-Z0-9]+:\s*/i, '').trim();
+    return { error: cleanMsg };
   }
 
   revalidatePath('/admin');
