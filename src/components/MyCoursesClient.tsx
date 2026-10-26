@@ -250,14 +250,14 @@ export default function MyCoursesClient({ initialCourses, userProfile }: Props) 
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
             {/* Sapaan Pengguna */}
             <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#843bab]/10 text-[#843bab] text-xs font-bold border border-[#843bab]/20 mb-3">
-                <GraduationCap size={14} />
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#843bab]/10 text-[#843bab] text-xs font-bold border border-[#843bab]/20 mb-2.5">
+                <GraduationCap size={13} />
                 <span>Area Belajar Peserta</span>
               </div>
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight mb-2">
+              <h1 className="text-xl sm:text-2xl lg:text-[28px] font-bold text-slate-900 tracking-tight mb-2 leading-snug">
                 Kursus Saya
               </h1>
-              <p className="text-slate-600 text-sm sm:text-base max-w-xl leading-relaxed">
+              <p className="text-slate-600 text-xs sm:text-sm max-w-xl leading-relaxed">
                 Halo, <span className="font-semibold text-slate-800">{userProfile.nama_lengkap}</span>! Pantau jadwal belajar, selesaikan modul kuis berstandar industri, dan dapatkan sertifikat kelulusan resmi.
               </p>
             </div>

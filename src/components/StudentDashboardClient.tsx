@@ -226,20 +226,20 @@ export default function StudentDashboardClient({
       {/* =========================================================
           2. HERO HEADER: Dashboard Siswa & Pedoman Akademik
          ========================================================= */}
-      <section className="bg-gradient-to-b from-purple-100/70 via-white to-slate-50 border-b border-slate-200/80 pt-6 sm:pt-8 pb-10">
+      <section className="bg-gradient-to-b from-purple-50/70 via-white to-slate-50/50 border-b border-slate-200/80 pt-6 sm:pt-8 pb-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
             {/* Sapaan & Identitas */}
             <div>
-              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#843bab]/10 text-[#843bab] text-xs font-bold border border-[#843bab]/20 mb-3 shadow-2xs">
-                <ShieldCheck size={14} className="text-[#843bab]" />
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#843bab]/10 text-[#843bab] text-xs font-bold border border-[#843bab]/20 mb-2.5 shadow-2xs">
+                <ShieldCheck size={13} className="text-[#843bab]" />
                 <span>Pusat Kendali &amp; Pedoman Siswa</span>
               </div>
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight mb-2">
+              <h1 className="text-xl sm:text-2xl lg:text-[28px] font-bold text-slate-900 tracking-tight mb-2 leading-snug">
                 Dashboard Siswa &amp; Aturan Belajar
               </h1>
-              <p className="text-slate-600 text-sm sm:text-base max-w-2xl leading-relaxed">
-                Halo, <span className="font-semibold text-slate-900">{userProfile.nama_lengkap}</span>! Pahami pedoman kelulusan, skala penilaian kuis berstandar industri, dan pantau skala pengerjaan penugasan belajar Anda secara real-time.
+              <p className="text-slate-600 text-xs sm:text-sm max-w-2xl leading-relaxed">
+                Halo, <span className="font-semibold text-slate-800">{userProfile.nama_lengkap}</span>! Pahami pedoman kelulusan, skala penilaian kuis berstandar industri, dan pantau skala pengerjaan penugasan belajar Anda secara real-time.
               </p>
             </div>
 
