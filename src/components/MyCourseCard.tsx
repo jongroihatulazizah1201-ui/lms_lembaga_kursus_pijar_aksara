@@ -30,6 +30,21 @@ import {
 import { getOrCreateMayarPaymentUrlAction } from '@/app/kursus-saya/actions';
 import LoadingSpinner from '@/components/LoadingSpinner';
 
+export interface ModulSummaryItem {
+  id: string;
+  urutan: number;
+  judul: string;
+  durasi_menit: number;
+  is_lulus: boolean;
+  is_read: boolean;
+}
+
+export interface NextModulInfo {
+  urutan: number;
+  judul: string;
+  is_read: boolean;
+}
+
 export interface EnrollmentCourseData {
   id: string;
   judul: string;
@@ -39,6 +54,7 @@ export interface EnrollmentCourseData {
   instruktur_nama: string;
   total_modul: number;
   total_durasi_menit?: number;
+  modul_list?: ModulSummaryItem[];
 }
 
 export interface EnrollmentItem {
@@ -52,6 +68,7 @@ export interface EnrollmentItem {
   kursus: EnrollmentCourseData;
   modul_lulus: number;
   durasi_selesai_menit?: number;
+  next_modul?: NextModulInfo | null;
   sertifikat?: {
     id: string;
     nomor_sertifikat: string;
@@ -248,10 +265,12 @@ export default function MyCourseCard({ enrollment, onCancelRequest }: Props) {
               BAGIAN: PROGRES BELAJAR (Untuk status 'aktif' dan 'selesai')
              ========================================================= */}
           {(status === 'aktif' || status === 'selesai') && (
-            <div className="bg-slate-50 rounded-xl p-3.5 border border-slate-200/80 space-y-2">
+            <div className="bg-slate-50 rounded-xl p-3.5 border border-slate-200/80 space-y-3">
+              {/* Header Skala */}
               <div className="flex items-center justify-between text-xs">
-                <span className="font-semibold text-slate-700 flex items-center gap-1">
-                  Progres Belajar
+                <span className="font-bold text-slate-700 flex items-center gap-1.5">
+                  <BookOpen size={13} className="text-[#843bab]" />
+                  <span>Skala Penugasan</span>
                   {status === 'selesai' && (
                     <Award size={13} className="text-emerald-600 inline" />
                   )}
@@ -265,34 +284,87 @@ export default function MyCourseCard({ enrollment, onCancelRequest }: Props) {
                 </span>
               </div>
 
-              {/* Progress Bar */}
-              <div className="w-full h-2.5 rounded-full bg-slate-200 overflow-hidden">
-                <div
-                  className={`h-full rounded-full transition-all duration-500 ${
-                    status === 'selesai'
-                      ? 'bg-gradient-to-r from-emerald-500 to-teal-400'
-                      : 'bg-gradient-to-r from-[#843bab] to-purple-500'
-                  }`}
-                  style={{ width: `${progressPercent}%` }}
-                />
-              </div>
+              {/* Visual Segmented Progress Scale (Pills Stepper) */}
+              {kursus.modul_list && kursus.modul_list.length > 0 && kursus.modul_list.length <= 8 ? (
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-1.5 w-full">
+                    {kursus.modul_list.map((m, idx) => {
+                      const isNextTask = enrollment.next_modul?.urutan === m.urutan && status === 'aktif';
+                      return (
+                        <div
+                          key={m.id || idx}
+                          title={`Modul ${m.urutan}: ${m.judul} (${m.is_lulus ? 'Lulus Kuis' : isNextTask ? 'Tugas Aktif' : 'Belum Dikerjakan'})`}
+                          className={`h-2 flex-1 rounded-full transition-all duration-300 relative ${
+                            m.is_lulus
+                              ? 'bg-emerald-500'
+                              : isNextTask
+                              ? 'bg-[#843bab] animate-pulse ring-2 ring-[#843bab]/30'
+                              : 'bg-slate-200'
+                          }`}
+                        />
+                      );
+                    })}
+                  </div>
+                </div>
+              ) : (
+                /* Fallback Continuous Progress Bar */
+                <div className="w-full h-2 rounded-full bg-slate-200 overflow-hidden">
+                  <div
+                    className={`h-full rounded-full transition-all duration-500 ${
+                      status === 'selesai'
+                        ? 'bg-gradient-to-r from-emerald-500 to-teal-400'
+                        : 'bg-gradient-to-r from-[#843bab] to-purple-500'
+                    }`}
+                    style={{ width: `${progressPercent}%` }}
+                  />
+                </div>
+              )}
 
-              <div className="flex items-center justify-between text-[11px] text-slate-500 pt-0.5">
-                <span>
-                  {modul_lulus} dari {totalModul} modul selesai
+              {/* Status Rincian: Berapa modul lulus, berapa tugas belum dikerjakan */}
+              <div className="flex items-center justify-between text-[11px] text-slate-600 pt-0.5 border-t border-slate-200/60">
+                <span className="font-medium">
+                  <strong className="text-slate-900 font-bold">{modul_lulus}</strong> dari{' '}
+                  <strong className="text-slate-900 font-bold">{totalModul}</strong> modul lulus
                   {kursus.total_durasi_menit ? (
-                    <strong className="text-slate-700 ml-1">
+                    <span className="text-slate-400 ml-1">
                       ({enrollment.durasi_selesai_menit || 0}/{kursus.total_durasi_menit} mnt)
-                    </strong>
-                  ) : ''}
+                    </span>
+                  ) : null}
                 </span>
-                {status === 'selesai' && (
+                {status === 'selesai' ? (
                   <span className="font-bold text-emerald-600 flex items-center gap-1">
                     <CheckCircle2 size={12} />
-                    Lulus
+                    Lulus 100%
+                  </span>
+                ) : (
+                  <span className="font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200/70 text-[10px]">
+                    {totalModul - modul_lulus} tugas tersisa
                   </span>
                 )}
               </div>
+
+              {/* Callout Tugas Berikutnya yang Belum Dikerjakan */}
+              {status === 'aktif' && enrollment.next_modul && (
+                <div className="p-2.5 rounded-xl bg-purple-50/70 border border-purple-200/80 text-[11px] text-slate-700 flex items-start gap-2">
+                  <Sparkles size={13} className="text-[#843bab] shrink-0 mt-0.5" />
+                  <div className="min-w-0 flex-1 leading-snug">
+                    <div className="font-bold text-slate-900 truncate">
+                      Tugas Berikutnya: Modul {enrollment.next_modul.urutan}
+                    </div>
+                    <div className="text-slate-600 truncate text-[10.5px]">
+                      {enrollment.next_modul.judul}
+                    </div>
+                    <div className="mt-1 flex items-center gap-1.5">
+                      <span className={`inline-block w-1.5 h-1.5 rounded-full ${
+                        enrollment.next_modul.is_read ? 'bg-amber-500' : 'bg-[#843bab]'
+                      }`} />
+                      <span className="text-[10px] font-semibold text-slate-700">
+                        {enrollment.next_modul.is_read ? 'Kuis Menunggu Dikerjakan' : 'Pelajari Materi & Video'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 

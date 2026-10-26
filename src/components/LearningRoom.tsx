@@ -368,6 +368,41 @@ export default function LearningRoom({
                 </div>
               </div>
 
+              {/* Segmented Task Scale Meter */}
+              <div className="mb-3.5 space-y-1.5 p-3 rounded-xl bg-purple-50/50 border border-purple-100">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-bold text-slate-700 text-[11px]">
+                    Skala Penugasan Modul
+                  </span>
+                  <span className="font-extrabold text-[#843bab] text-[11px]">
+                    {progressPercent}%
+                  </span>
+                </div>
+                <div className="flex items-center gap-1 w-full">
+                  {modules.map((m) => {
+                    const isMPassed = m.status_akses === 'lulus';
+                    const isMCurrent = m.urutan === activeUrutan;
+                    return (
+                      <div
+                        key={m.modul_id}
+                        title={`Modul ${m.urutan}: ${m.judul} (${isMPassed ? 'Lulus Kuis' : isMCurrent ? 'Modul Aktif' : m.status_akses})`}
+                        className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${
+                          isMPassed
+                            ? 'bg-emerald-500'
+                            : isMCurrent
+                            ? 'bg-[#843bab] animate-pulse ring-1 ring-[#843bab]/40'
+                            : 'bg-slate-200'
+                        }`}
+                      />
+                    );
+                  })}
+                </div>
+                <div className="text-[10px] text-slate-500 flex items-center justify-between">
+                  <span>{totalLulus} dari {modules.length} modul selesai</span>
+                  <span>{modules.length - totalLulus > 0 ? `${modules.length - totalLulus} tugas tersisa` : 'Semua lulus'}</span>
+                </div>
+              </div>
+
               {/* Kotak Pencarian Judul Modul */}
               <div className="relative mb-3">
                 <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -481,9 +516,13 @@ export default function LearningRoom({
                           <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 border border-slate-200">
                             Terkunci
                           </span>
+                        ) : m.materi_dibaca_pada ? (
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-50 text-amber-800 border border-amber-200 flex items-center gap-1 animate-pulse">
+                            Kuis Siap
+                          </span>
                         ) : (
                           <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-purple-50 text-[#843bab] border border-purple-200">
-                            Aktif
+                            Pelajari
                           </span>
                         )}
                       </div>

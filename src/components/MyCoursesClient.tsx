@@ -16,6 +16,9 @@ import {
   ArrowRight,
   AlertTriangle,
   GraduationCap,
+  Sparkles,
+  Printer,
+  Compass,
 } from 'lucide-react';
 import LoadingSpinner from '@/components/LoadingSpinner';
 
@@ -115,6 +118,25 @@ export default function MyCoursesClient({ initialCourses, userProfile }: Props) 
     const diff = new Date(item.batas_bayar).getTime() - Date.now();
     return diff > 0 && diff <= 6 * 60 * 60 * 1000;
   });
+
+  // Kalkulasi Skala Pengerjaan Penugasan Siswa (Modul & Kuis)
+  const activeOrCompleted = initialCourses.filter((c) => c.status === 'aktif' || c.status === 'selesai');
+  const totalTugasTerdaftar = activeOrCompleted.reduce((acc, c) => acc + (c.kursus.total_modul || 0), 0);
+  const totalTugasLulus = activeOrCompleted.reduce((acc, c) => acc + (c.modul_lulus || 0), 0);
+  const totalTugasPending = Math.max(0, totalTugasTerdaftar - totalTugasLulus);
+  const totalDurasiSelesaiMenit = activeOrCompleted.reduce((acc, c) => acc + (c.durasi_selesai_menit || 0), 0);
+  const totalDurasiSemuaMenit = activeOrCompleted.reduce((acc, c) => acc + (c.kursus.total_durasi_menit || 0), 0);
+  const skalaPersen = totalTugasTerdaftar > 0 ? Math.min(100, Math.round((totalTugasLulus / totalTugasTerdaftar) * 100)) : 0;
+
+  // Cari kursus aktif yang memiliki modul/tugas berikutnya untuk notifikasi ajakan belajar
+  const activeCourseWithNextTask = initialCourses.find(
+    (c) => c.status === 'aktif' && c.next_modul
+  );
+
+  // Cari kursus selesai terbaru yang sertifikatnya siap
+  const recentlyCompletedCourse = initialCourses.find(
+    (c) => c.status === 'selesai' && c.sertifikat?.nomor_sertifikat
+  );
 
   return (
     <div className="min-h-screen bg-slate-50/50 pb-20">
@@ -262,36 +284,184 @@ export default function MyCoursesClient({ initialCourses, userProfile }: Props) 
             </div>
           </div>
 
-          {/* Banner Pengingat Batas Bayar Mendesak (< 6 Jam) */}
-          {urgentPayments.length > 0 && (
-            <div className="mt-6 p-4 rounded-2xl bg-amber-500/10 border-2 border-amber-500/40 text-amber-950 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
-              <div className="flex items-start gap-3">
-                <div className="p-2.5 rounded-xl bg-amber-500 text-slate-950 shrink-0 mt-0.5">
-                  <Clock size={20} className="animate-pulse" />
+          {/* =========================================================
+              NOTIFIKASI PINTAR & PENGINGAT PESERTA (In-App Smart Alerts)
+             ========================================================= */}
+          <div className="space-y-3 mt-6">
+            {/* 1. Pengingat Batas Bayar Mendesak (< 6 Jam) */}
+            {urgentPayments.length > 0 && (
+              <div className="p-4 rounded-2xl bg-amber-500/10 border-2 border-amber-500/40 text-amber-950 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
+                <div className="flex items-start gap-3">
+                  <div className="p-2.5 rounded-xl bg-amber-500 text-slate-950 shrink-0 mt-0.5">
+                    <Clock size={20} className="animate-pulse" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-sm sm:text-base text-slate-900 flex items-center gap-2">
+                      <span>Batas Waktu Pembayaran Segera Berakhir</span>
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-200 text-amber-900 border border-amber-300">
+                        Penting
+                      </span>
+                    </h3>
+                    <p className="text-xs sm:text-sm text-amber-900 leading-relaxed mt-0.5">
+                      Anda memiliki {urgentPayments.length} kursus (&quot;{urgentPayments.map((p) => p.kursus.judul).join(', ')}&quot;) dengan batas waktu pembayaran kurang dari 6 jam. Harap selesaikan pembayaran sebelum kuota kursi dibatalkan secara otomatis.
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-bold text-sm sm:text-base text-slate-900 flex items-center gap-2">
-                    <span>Batas Waktu Pembayaran Segera Berakhir</span>
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-200 text-amber-900 border border-amber-300">
-                      Penting
-                    </span>
-                  </h3>
-                  <p className="text-xs sm:text-sm text-amber-900 leading-relaxed mt-0.5">
-                    Anda memiliki {urgentPayments.length} kursus (&quot;{urgentPayments.map((p) => p.kursus.judul).join(', ')}&quot;) dengan batas waktu pembayaran kurang dari 6 jam. Harap selesaikan pembayaran sebelum kuota kursi dibatalkan secara otomatis.
-                  </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveTab('menunggu_bayar');
+                    setSearchQuery('');
+                  }}
+                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs whitespace-nowrap shadow-xs transition-all cursor-pointer shrink-0"
+                >
+                  <span>Bayar Sekarang</span>
+                  <ArrowRight size={14} />
+                </button>
+              </div>
+            )}
+
+            {/* 2. Notifikasi Tugas Belajar (Resume Learning Nudge) */}
+            {activeCourseWithNextTask && (
+              <div className="p-4 rounded-2xl bg-white border border-[#843bab]/30 text-slate-900 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
+                <div className="flex items-start gap-3">
+                  <div className="p-2.5 rounded-xl bg-purple-100 text-[#843bab] shrink-0 mt-0.5">
+                    <Sparkles size={20} className="animate-pulse" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-bold text-sm sm:text-base text-slate-900">
+                        Lanjutkan Penugasan Belajar
+                      </h3>
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-[#843bab] border border-purple-200">
+                        Tugas Aktif
+                      </span>
+                    </div>
+                    <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mt-0.5">
+                      Pada kursus <strong className="text-slate-900">{activeCourseWithNextTask.kursus.judul}</strong>: tugas Anda berikutnya adalah{' '}
+                      <strong className="text-[#843bab]">
+                        Modul {activeCourseWithNextTask.next_modul?.urutan}: {activeCourseWithNextTask.next_modul?.judul}
+                      </strong>{' '}
+                      ({activeCourseWithNextTask.next_modul?.is_read ? 'Kuis Evaluasi Menunggu Dikerjakan' : 'Pelajari Materi & Video'}).
+                    </p>
+                  </div>
+                </div>
+                <Link
+                  href={`/belajar/${activeCourseWithNextTask.kursus.slug}`}
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#843bab] hover:bg-[#722f96] text-white font-bold text-xs whitespace-nowrap shadow-xs hover:shadow-md transition-all shrink-0"
+                >
+                  <span>Kerjakan Tugas Sekarang</span>
+                  <ArrowRight size={14} />
+                </Link>
+              </div>
+            )}
+
+            {/* 3. Notifikasi Kelulusan & Sertifikat Siap Diunduh */}
+            {!activeCourseWithNextTask && recentlyCompletedCourse && (
+              <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-slate-900 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
+                <div className="flex items-start gap-3">
+                  <div className="p-2.5 rounded-xl bg-emerald-600 text-white shrink-0 mt-0.5">
+                    <Award size={20} />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-bold text-sm sm:text-base text-slate-900">
+                        Sertifikat Kompetensi Resmi Telah Terbit
+                      </h3>
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                        Lulus 100%
+                      </span>
+                    </div>
+                    <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mt-0.5">
+                      Selamat! Anda telah menuntaskan seluruh penugasan modul pada <strong className="text-slate-900">{recentlyCompletedCourse.kursus.judul}</strong>. Nomor Sertifikat: <strong className="font-mono text-[#843bab]">{recentlyCompletedCourse.sertifikat?.nomor_sertifikat}</strong>.
+                    </p>
+                  </div>
+                </div>
+                <Link
+                  href={`/sertifikat/${recentlyCompletedCourse.id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs whitespace-nowrap shadow-xs hover:shadow-md transition-all shrink-0"
+                >
+                  <span>Lihat & Cetak Sertifikat</span>
+                  <Printer size={14} />
+                </Link>
+              </div>
+            )}
+          </div>
+
+          {/* =========================================================
+              SKALA PENGERJAAN & CAPAIAN TUGAS BELAJAR (Student Progress Scale)
+             ========================================================= */}
+          {totalTugasTerdaftar > 0 && (
+            <div className="mt-6 p-5 sm:p-6 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-xl bg-purple-50 text-[#843bab] flex items-center justify-center font-bold">
+                    <Compass size={18} />
+                  </div>
+                  <div>
+                    <h2 className="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2">
+                      <span>Skala Pengerjaan Penugasan Kursus</span>
+                    </h2>
+                    <p className="text-xs text-slate-500">
+                      Pantauan skala penyelesaian modul &amp; kuis otomatis pada kursus Anda
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-semibold text-slate-600">
+                    <strong className="text-slate-900 font-extrabold">{totalTugasLulus}</strong> dari{' '}
+                    <strong className="text-slate-900 font-extrabold">{totalTugasTerdaftar}</strong> Modul Lulus
+                  </span>
+                  <span className="px-2.5 py-1 rounded-full text-xs font-black bg-purple-100 text-[#843bab]">
+                    {skalaPersen}%
+                  </span>
                 </div>
               </div>
-              <button
-                type="button"
-                onClick={() => {
-                  setActiveTab('menunggu_bayar');
-                  setSearchQuery('');
-                }}
-                className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs whitespace-nowrap shadow-xs transition-all cursor-pointer shrink-0"
-              >
-                <span>Bayar Sekarang</span>
-                <ArrowRight size={14} />
-              </button>
+
+              {/* Visual Scale Meter Bar */}
+              <div className="w-full h-3 rounded-full bg-slate-100 overflow-hidden p-0.5 border border-slate-200/60">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-[#843bab] via-purple-500 to-emerald-500 transition-all duration-500"
+                  style={{ width: `${skalaPersen}%` }}
+                />
+              </div>
+
+              {/* Sub-Metrics Breakdown */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
+                <div className="p-3 rounded-xl bg-slate-50 border border-slate-100">
+                  <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Tugas Selesai</div>
+                  <div className="text-lg sm:text-xl font-black text-emerald-600 mt-0.5">
+                    {totalTugasLulus} Modul
+                  </div>
+                  <div className="text-[10px] text-slate-400">Kuis lulus &ge; 80%</div>
+                </div>
+
+                <div className="p-3 rounded-xl bg-slate-50 border border-slate-100">
+                  <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Belum Dikerjakan</div>
+                  <div className="text-lg sm:text-xl font-black text-amber-600 mt-0.5">
+                    {totalTugasPending} Modul
+                  </div>
+                  <div className="text-[10px] text-slate-400">Perlu dipelajari/kuis</div>
+                </div>
+
+                <div className="p-3 rounded-xl bg-slate-50 border border-slate-100">
+                  <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Waktu Efektif</div>
+                  <div className="text-lg sm:text-xl font-black text-slate-800 mt-0.5">
+                    {totalDurasiSelesaiMenit} mnt
+                  </div>
+                  <div className="text-[10px] text-slate-400">Dari {totalDurasiSemuaMenit} mnt materi</div>
+                </div>
+
+                <div className="p-3 rounded-xl bg-slate-50 border border-slate-100">
+                  <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Sertifikat</div>
+                  <div className="text-lg sm:text-xl font-black text-[#843bab] mt-0.5">
+                    {selesaiCount} Diraih
+                  </div>
+                  <div className="text-[10px] text-slate-400">Standar industri resmi</div>
+                </div>
+              </div>
             </div>
           )}
 

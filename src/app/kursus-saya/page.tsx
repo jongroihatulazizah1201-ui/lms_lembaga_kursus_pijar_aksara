@@ -55,12 +55,15 @@ export default async function KursusSayaPage() {
         ),
         modul (
           id,
+          urutan,
+          judul,
           durasi_menit
         )
       ),
       progres_modul (
         id,
         modul_id,
+        materi_dibaca_pada,
         lulus_pada
       ),
       sertifikat (
@@ -80,21 +83,46 @@ export default async function KursusSayaPage() {
   const coursesList: EnrollmentItem[] = (enrollments || []).map((e: any) => {
     const k = e.kursus || {};
     const instruktur = Array.isArray(k.instruktur) ? k.instruktur[0] : k.instruktur;
-    const modulList = Array.isArray(k.modul) ? k.modul : [];
+    const rawModulList = Array.isArray(k.modul) ? k.modul : [];
+    const modulList = [...rawModulList].sort((a: any, b: any) => (a.urutan || 0) - (b.urutan || 0));
     const totalModul = modulList.length;
-    const modulLulus = (e.progres_modul || []).filter((pm: any) => pm.lulus_pada !== null).length;
+
+    // Petakan progres modul peserta
+    const progresMap = new Map<string, any>();
+    (e.progres_modul || []).forEach((pm: any) => {
+      progresMap.set(pm.modul_id, pm);
+    });
+
+    const modulSummaryList = modulList.map((m: any) => {
+      const pm = progresMap.get(m.id);
+      return {
+        id: m.id,
+        urutan: m.urutan || 0,
+        judul: m.judul || '',
+        durasi_menit: Number(m.durasi_menit) || 0,
+        is_lulus: !!pm?.lulus_pada,
+        is_read: !!pm?.materi_dibaca_pada,
+      };
+    });
+
+    const modulLulus = modulSummaryList.filter((m) => m.is_lulus).length;
     const sertifikatItem = Array.isArray(e.sertifikat) ? e.sertifikat[0] : e.sertifikat;
 
     // Kalkulasi total durasi menit dan durasi menit yang sudah diselesaikan peserta
     const totalDurasiMenit = modulList.reduce((acc: number, m: any) => acc + (Number(m.durasi_menit) || 0), 0);
-    const passedModulIds = new Set(
-      (e.progres_modul || [])
-        .filter((pm: any) => pm.lulus_pada !== null)
-        .map((pm: any) => pm.modul_id)
-    );
-    const durasiSelesaiMenit = modulList.reduce((acc: number, m: any) => {
-      return passedModulIds.has(m.id) ? acc + (Number(m.durasi_menit) || 0) : acc;
+    const durasiSelesaiMenit = modulSummaryList.reduce((acc: number, m) => {
+      return m.is_lulus ? acc + m.durasi_menit : acc;
     }, 0);
+
+    // Cari modul/tugas berikutnya yang belum lulus (hanya untuk kursus aktif)
+    const nextModulItem = modulSummaryList.find((m) => !m.is_lulus);
+    const nextModul = nextModulItem
+      ? {
+          urutan: nextModulItem.urutan,
+          judul: nextModulItem.judul,
+          is_read: nextModulItem.is_read,
+        }
+      : null;
 
     return {
       id: e.id,
@@ -113,9 +141,11 @@ export default async function KursusSayaPage() {
         instruktur_nama: instruktur?.nama_lengkap || 'Instruktur Pijar Aksara',
         total_modul: totalModul,
         total_durasi_menit: totalDurasiMenit,
+        modul_list: modulSummaryList,
       },
       modul_lulus: modulLulus,
       durasi_selesai_menit: durasiSelesaiMenit,
+      next_modul: nextModul,
       sertifikat: sertifikatItem
         ? {
             id: sertifikatItem.id,
