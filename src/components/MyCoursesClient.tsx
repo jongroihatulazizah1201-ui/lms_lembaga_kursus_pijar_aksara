@@ -57,17 +57,22 @@ export default function MyCoursesClient({ initialCourses, userProfile }: Props) 
   const [cancelSuccess, setCancelSuccess] = useState<string | null>(null);
 
   // Hitung jumlah statistik
-  const totalCount = initialCourses.length;
   const aktifCount = initialCourses.filter((c) => c.status === 'aktif').length;
   const menungguCount = initialCourses.filter((c) => c.status === 'menunggu_bayar').length;
   const selesaiCount = initialCourses.filter((c) => c.status === 'selesai').length;
   const batalCount = initialCourses.filter((c) => c.status === 'dibatalkan' || c.status === 'kedaluwarsa').length;
+  // Total kursus yang sedang atau pernah diikuti (valid): tidak mengikutsertakan kursus batal/kedaluwarsa
+  const totalDiikuti = aktifCount + menungguCount + selesaiCount;
 
   // Filter kursus berdasarkan Tab dan Search
   const filteredCourses = initialCourses.filter((item) => {
     // 1. Filter Tab
     let matchesTab = true;
-    if (activeTab === 'aktif') matchesTab = item.status === 'aktif';
+    if (activeTab === 'semua') {
+      // Tab 'semua' menampilkan kursus yang diikuti (aktif, selesai, menunggu bayar)
+      // Kursus yang dibatalkan / kedaluwarsa dipisahkan ke tab 'dibatalkan' agar tidak membingungkan
+      matchesTab = item.status !== 'dibatalkan' && item.status !== 'kedaluwarsa';
+    } else if (activeTab === 'aktif') matchesTab = item.status === 'aktif';
     else if (activeTab === 'menunggu_bayar') matchesTab = item.status === 'menunggu_bayar';
     else if (activeTab === 'selesai') matchesTab = item.status === 'selesai';
     else if (activeTab === 'dibatalkan') matchesTab = item.status === 'dibatalkan' || item.status === 'kedaluwarsa';
@@ -175,7 +180,7 @@ export default function MyCoursesClient({ initialCourses, userProfile }: Props) 
                     : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-200 hover:bg-slate-50'
                 }`}
               >
-                Semua ({totalCount})
+                Semua ({totalDiikuti})
               </button>
               <button
                 type="button"
@@ -382,7 +387,7 @@ export default function MyCoursesClient({ initialCourses, userProfile }: Props) 
 
           {/* Quick Stats Grid (Clickable to switch tab) */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
-            {/* Card 1: Total */}
+            {/* Card 1: Total Kursus Diikuti */}
             <button
               type="button"
               onClick={() => setActiveTab('semua')}
@@ -393,11 +398,19 @@ export default function MyCoursesClient({ initialCourses, userProfile }: Props) 
               }`}
             >
               <div className="flex items-center justify-between mb-1">
-                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Kursus</span>
+                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Kursus Diikuti</span>
                 <BookOpen size={16} className="text-slate-400" />
               </div>
-              <div className="text-2xl sm:text-3xl font-black text-slate-900">{totalCount}</div>
-              <div className="text-[11px] text-slate-500 mt-1">Seluruh riwayat pendaftaran</div>
+              <div className="text-2xl sm:text-3xl font-black text-slate-900">{totalDiikuti}</div>
+              <div className="text-[11px] text-slate-500 mt-1">
+                {batalCount > 0 ? (
+                  <span>
+                    Aktif &amp; selesai ({batalCount} dibatalkan)
+                  </span>
+                ) : (
+                  <span>Aktif, selesai, &amp; proses</span>
+                )}
+              </div>
             </button>
 
             {/* Card 2: Aktif Belajar */}
@@ -515,35 +528,61 @@ export default function MyCoursesClient({ initialCourses, userProfile }: Props) 
               {searchQuery
                 ? 'Kursus Tidak Ditemukan'
                 : activeTab === 'semua'
-                ? 'Belum Ada Kursus yang Terdaftar'
+                ? 'Belum Ada Kursus yang Diikuti'
+                : activeTab === 'dibatalkan'
+                ? 'Tidak Ada Kursus yang Dibatalkan'
                 : 'Tidak Ada Kursus di Kategori Ini'}
             </h3>
             <p className="text-slate-500 text-sm leading-relaxed mb-6 max-w-md mx-auto">
               {searchQuery
                 ? `Tidak ada kursus yang cocok dengan pencarian "${searchQuery}". Silakan coba kata kunci lain.`
                 : activeTab === 'semua'
-                ? 'Anda belum mendaftar kursus apapun. Temukan kurikulum vokasi praktis di katalog kursus kami.'
+                ? batalCount > 0
+                  ? `Saat ini tidak ada kursus aktif atau selesai yang sedang Anda ikuti. Anda memiliki ${batalCount} pendaftaran yang telah dibatalkan atau kedaluwarsa.`
+                  : 'Anda belum mendaftar kursus apapun. Temukan kurikulum vokasi praktis di katalog kursus kami.'
+                : activeTab === 'dibatalkan'
+                ? 'Tidak ada riwayat pendaftaran kursus yang dibatalkan atau kedaluwarsa.'
                 : 'Tidak ada kursus yang sesuai dengan filter yang Anda pilih saat ini.'}
             </p>
             {activeTab !== 'semua' || searchQuery ? (
-              <button
-                type="button"
-                onClick={() => {
-                  setActiveTab('semua');
-                  setSearchQuery('');
-                }}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-slate-200 hover:border-slate-300 text-slate-700 text-sm font-bold bg-slate-50 hover:bg-slate-100 transition-all cursor-pointer"
-              >
-                <span>Reset Filter & Pencarian</span>
-              </button>
+              <div className="flex flex-wrap items-center justify-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveTab('semua');
+                    setSearchQuery('');
+                  }}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-slate-200 hover:border-slate-300 text-slate-700 text-sm font-bold bg-slate-50 hover:bg-slate-100 transition-all cursor-pointer"
+                >
+                  <span>Reset Filter & Pencarian</span>
+                </button>
+                <Link
+                  href="/kursus"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#843bab] hover:bg-[#722f96] text-white font-bold text-sm shadow-xs hover:shadow-md transition-all"
+                >
+                  <span>Lihat Katalog Kursus</span>
+                  <ArrowRight size={16} />
+                </Link>
+              </div>
             ) : (
-              <Link
-                href="/kursus"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#843bab] hover:bg-[#722f96] text-white font-bold text-sm shadow-xs hover:shadow-md transition-all"
-              >
-                <span>Lihat Katalog Kursus</span>
-                <ArrowRight size={16} />
-              </Link>
+              <div className="flex flex-wrap items-center justify-center gap-3">
+                {batalCount > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('dibatalkan')}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-slate-200 hover:border-slate-300 text-slate-700 text-sm font-bold bg-slate-50 hover:bg-slate-100 transition-all cursor-pointer"
+                  >
+                    <span>Lihat Kursus Dibatalkan ({batalCount})</span>
+                  </button>
+                )}
+                <Link
+                  href="/kursus"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#843bab] hover:bg-[#722f96] text-white font-bold text-sm shadow-xs hover:shadow-md transition-all"
+                >
+                  <span>Lihat Katalog Kursus</span>
+                  <ArrowRight size={16} />
+                </Link>
+              </div>
             )}
           </div>
         ) : (

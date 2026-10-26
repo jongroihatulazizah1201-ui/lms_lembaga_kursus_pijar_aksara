@@ -797,7 +797,9 @@ export default function StudentDashboardClient({
                                 ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                                 : c.status === 'selesai'
                                 ? 'bg-purple-50 text-[#843bab] border border-purple-200'
-                                : 'bg-amber-50 text-amber-700 border border-amber-200'
+                                : c.status === 'menunggu_bayar'
+                                ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                                : 'bg-slate-100 text-slate-600 border border-slate-200'
                             }`}
                           >
                             {c.status.replace('_', ' ')}
@@ -862,12 +864,20 @@ export default function StudentDashboardClient({
                             <span>Lihat Sertifikat</span>
                             <Award size={13} />
                           </Link>
-                        ) : (
+                        ) : c.status === 'menunggu_bayar' ? (
                           <Link
                             href={`/kursus-saya/${c.id}/bayar`}
                             className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-700 hover:text-amber-800"
                           >
                             <span>Selesaikan Pembayaran</span>
+                            <ArrowRight size={13} />
+                          </Link>
+                        ) : (
+                          <Link
+                            href={`/kursus/${c.kursus.slug}`}
+                            className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-slate-900"
+                          >
+                            <span>Daftar Kembali Kursus</span>
                             <ArrowRight size={13} />
                           </Link>
                         )}

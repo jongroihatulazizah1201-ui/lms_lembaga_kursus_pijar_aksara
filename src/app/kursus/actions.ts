@@ -135,5 +135,6 @@ export async function batalkanPendaftaranAction(pendaftaranId: string) {
   }
 
   revalidatePath('/kursus-saya');
+  revalidatePath('/dashboard');
   return { success: true, message: 'Pendaftaran berhasil dibatalkan.' };
 }

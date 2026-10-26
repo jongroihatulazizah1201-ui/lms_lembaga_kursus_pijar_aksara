@@ -80,6 +80,7 @@ export default async function DashboardSiswaPage() {
       )
     `)
     .eq('peserta_id', user.id)
+    .in('status', ['aktif', 'selesai', 'menunggu_bayar'])
     .order('didaftarkan_pada', { ascending: false });
 
   if (error) {
