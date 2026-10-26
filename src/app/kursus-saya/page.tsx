@@ -33,6 +33,13 @@ export default async function KursusSayaPage() {
     .eq('id', user.id)
     .single();
 
+  // Jika bukan peserta, arahkan ke dashboard peran masing-masing
+  if (profile?.peran === 'admin') {
+    redirect('/admin/dashboard');
+  } else if (profile?.peran === 'instruktur') {
+    redirect('/instruktur');
+  }
+
   // 2. Ambil seluruh data pendaftaran milik peserta (RLS pendaftaran hanya izinkan user melihat miliknya, BR-12)
   const { data: enrollments, error } = await supabase
     .from('pendaftaran')
