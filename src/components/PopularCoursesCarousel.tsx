@@ -2,9 +2,10 @@
 
 import React, { useRef, useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ChevronLeft, ChevronRight, User, Users, Lock, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, User, Users, Lock, ArrowRight } from 'lucide-react';
 import { CourseData, formatRupiah } from './CourseCard';
 import CourseIllustration from './CourseIllustration';
+import MarqueeBanner from './MarqueeBanner';
 
 interface Props {
   courses: CourseData[];
@@ -42,38 +43,6 @@ export default function PopularCoursesCarousel({ courses }: Props) {
       left: direction === 'left' ? -scrollAmount : scrollAmount,
       behavior: 'smooth',
     });
-  };
-
-  // Tone Warna Gradasi Ungu Elegan (Nuansa #843bab dengan variasi tone di atas & di bawahnya)
-  const getPurpleGradientRibbon = (course: CourseData, index: number) => {
-    const purpleGradients = [
-      {
-        text: course.harga === 0 ? 'Akses Belajar Gratis' : 'Kurikulum Standar Industri',
-        gradient: 'bg-gradient-to-r from-[#843bab] to-[#5e2182]',
-      },
-      {
-        text: 'Praktik Langsung Siap Kerja',
-        gradient: 'bg-gradient-to-r from-[#74319c] to-[#531b73]',
-      },
-      {
-        text: 'Program Pelatihan Unggulan',
-        gradient: 'bg-gradient-to-r from-[#9142bc] to-[#6d2994]',
-      },
-      {
-        text: 'Bimbingan Tutor Berpengalaman',
-        gradient: 'bg-gradient-to-r from-[#6b258e] to-[#883cb0]',
-      },
-      {
-        text: 'Sertifikat Nomor Registrasi',
-        gradient: 'bg-gradient-to-r from-[#7d33a6] to-[#591d7b]',
-      },
-      {
-        text: 'Materi Bertahap Aplikatif',
-        gradient: 'bg-gradient-to-r from-[#8c3eb5] to-[#67248c]',
-      },
-    ];
-
-    return purpleGradients[index % purpleGradients.length];
   };
 
   return (
@@ -130,14 +99,18 @@ export default function PopularCoursesCarousel({ courses }: Props) {
         </div>
       </div>
 
-      {/* Horizontal Scroll Track dengan Pita Gradasi Ungu Elegan */}
+      {/* Marquee Auto-Scrolling Strip di Bagian Atas Pamflet Kursus */}
+      <div className="py-0.5">
+        <MarqueeBanner />
+      </div>
+
+      {/* Horizontal Scroll Track Pamflet Kursus */}
       <div
         ref={scrollRef}
         className="flex gap-5 overflow-x-auto pb-4 pt-1 snap-x snap-mandatory scroll-smooth no-scrollbar"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
-        {courses.map((course, idx) => {
-          const ribbon = getPurpleGradientRibbon(course, idx);
+        {courses.map((course) => {
           const isFree = course.harga === 0;
           const isFull = course.sisa_kursi <= 0;
           const isLastSeat = course.sisa_kursi === 1;
@@ -147,12 +120,6 @@ export default function PopularCoursesCarousel({ courses }: Props) {
               key={course.id}
               className="w-[290px] sm:w-[320px] shrink-0 snap-start bg-white rounded-2xl border border-slate-200 hover:border-[#843bab]/40 shadow-xs hover:shadow-lg transition-all duration-200 flex flex-col justify-between overflow-hidden group"
             >
-              {/* Ribbon Header Gradasi Ungu Elegan Sesuai Tone Pijar Aksara */}
-              <div className={`px-4 py-2.5 ${ribbon.gradient} flex items-center justify-between text-[11px] font-extrabold text-white tracking-wide shadow-xs`}>
-                <span className="truncate">{ribbon.text}</span>
-                {isFree && <CheckCircle2 size={13} className="shrink-0 text-white/90" />}
-              </div>
-
               {/* Konten Utama Kartu */}
               <div className="p-4 sm:p-5 space-y-3 flex-1 flex flex-col">
                 {/* Banner Ilustrasi Top */}
@@ -168,9 +135,16 @@ export default function PopularCoursesCarousel({ courses }: Props) {
                   <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#843bab] bg-purple-50 border border-purple-100 px-2.5 py-0.5 rounded-md">
                     {course.kategori}
                   </span>
-                  <span className="text-[11px] font-semibold text-slate-500">
-                    {course.jumlah_modul || 5} Modul
-                  </span>
+                  <div className="flex items-center gap-2">
+                    {isFree && (
+                      <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        Gratis
+                      </span>
+                    )}
+                    <span className="text-[11px] font-semibold text-slate-500">
+                      {course.jumlah_modul || 5} Modul
+                    </span>
+                  </div>
                 </div>
 
                 {/* Judul Kursus */}
