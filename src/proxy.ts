@@ -54,8 +54,8 @@ export async function proxy(request: NextRequest) {
   const isInstrukturRoute = path.startsWith('/instruktur');
   const isPesertaRoute = path.startsWith('/kursus-saya') || path.startsWith('/belajar') || path.startsWith('/dashboard');
   const isAuthRoute = path.startsWith('/login') || path.startsWith('/register') || path.startsWith('/daftar');
-  // Rute sertifikat pemilik (/sertifikat/[id]) wajib login, sedangkan /sertifikat/cek publik untuk tamu
-  const isCertificateOwnerRoute = path.startsWith('/sertifikat/') && !path.startsWith('/sertifikat/cek');
+  // Seluruh rute sertifikat (/sertifikat/[id]) wajib login (privat untuk peserta terkait sesuai BR-11 & BR-12)
+  const isCertificateOwnerRoute = path.startsWith('/sertifikat');
 
   // 1. Jika pengguna sudah login mencoba membuka halaman auth (/login, /register, /daftar):
   // Segera alihkan ke halaman utama sesuai peran tanpa menampilkan halaman login

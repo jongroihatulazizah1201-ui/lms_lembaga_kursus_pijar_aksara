@@ -109,8 +109,8 @@ export default function StudentDashboardClient({
       a: 'Sertifikat kompetensi otomatis diterbitkan oleh sistem segera setelah Anda menuntaskan 100% modul dan seluruh kuis dinyatakan lulus. Anda dapat melihat, mengunduh file cetak PDF beresolusi tinggi, dan memverifikasi nomor registrasinya kapan saja.',
     },
     {
-      q: 'Bagaimana pihak HRD atau rekruter memverifikasi keaslian sertifikat saya?',
-      a: 'Setiap sertifikat resmi dilengkapi Nomor Sertifikat unik berformat baku PA-TAHUN-NOMOR (contoh: PA-2026-0001) dan QR Code digital. Siapa pun dapat memindai QR Code tersebut menuju /sertifikat/cek?nomor=PA-... atau memasukkan nomor sertifikat ke halaman publik untuk memeriksa nama peserta, judul kursus, dan tanggal penerbitan yang terdaftar di basis data institusi.',
+      q: 'Bagaimana cara mengakses sertifikat kelulusan saya?',
+      a: 'Sertifikat kompetensi resmi bersifat privat dan dapat diakses eksklusif oleh peserta melalui menu Kursus Saya setelah menyelesaikan seluruh modul dan lulus kuis (sesuai aturan BR-11 & BR-12). Setiap sertifikat dilengkapi nomor registrasi unik berformat PA-TAHUN-NOMOR dan tanda tangan digital resmi.',
     },
     {
       q: 'Berapa lama batas waktu pembayaran setelah mendaftar kursus?',
@@ -258,16 +258,6 @@ export default function StudentDashboardClient({
               >
                 <BookOpen size={16} className="text-slate-500" />
                 <span>Katalog Kursus</span>
-              </Link>
-              <Link
-                href="/sertifikat/cek"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 hover:border-[#843bab]/40 hover:text-[#843bab] text-slate-600 font-bold text-xs shadow-2xs transition-all"
-                title="Cek Keaslian Sertifikat Digital"
-              >
-                <ShieldCheck size={15} />
-                <span>Cek Sertifikat</span>
               </Link>
             </div>
           </div>
@@ -650,9 +640,9 @@ export default function StudentDashboardClient({
                     <ShieldCheck size={16} />
                   </div>
                   <div>
-                    <h4 className="font-bold text-slate-900 text-sm">QR Code Verifikasi Publik</h4>
+                    <h4 className="font-bold text-slate-900 text-sm">Akses Privat Kursus Saya</h4>
                     <p className="mt-0.5">
-                      Setiap sertifikat dilengkapi QR Code resmi. Rekruter atau HRD perusahaan dapat memindai kode tersebut langsung menuju portal verifikasi publik Pijar Aksara untuk membuktikan keaslian dokumen tanpa rekayasa.
+                      Sertifikat resmi bersifat privat dan eksklusif bagi peserta yang bersangkutan (BR-11 &amp; BR-12). Akses sertifikat, nomor registrasi, dan QR code resmi tersedia langsung di menu Kursus Saya.
                     </p>
                   </div>
                 </div>
@@ -685,12 +675,10 @@ export default function StudentDashboardClient({
                   <div className="text-xs text-slate-600">Atas keberhasilan menuntaskan kurikulum vokasi praktis dengan predikat kompeten.</div>
                 </div>
                 <Link
-                  href="/sertifikat/cek"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="/kursus-saya"
                   className="inline-flex items-center gap-1.5 text-xs font-bold text-[#843bab] hover:underline"
                 >
-                  <span>Buka Portal Verifikasi Sertifikat</span>
+                  <span>Lihat di Halaman Kursus Saya</span>
                   <ExternalLink size={12} />
                 </Link>
               </div>

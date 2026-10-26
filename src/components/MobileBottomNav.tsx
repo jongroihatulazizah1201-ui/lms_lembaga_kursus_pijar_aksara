@@ -11,7 +11,6 @@ import {
   GraduationCap,
   LayoutDashboard,
   UserCircle,
-  ShieldCheck,
 } from 'lucide-react';
 
 interface Props {
@@ -64,7 +63,6 @@ export default function MobileBottomNav({ user, profile }: Props) {
   // Helper untuk cek status tab aktif
   const isHomeActive = pathname === '/';
   const isKatalogActive = pathname === '/kursus' || (pathname.startsWith('/kursus/') && !pathname.startsWith('/kursus-saya'));
-  const isCekSertifikatActive = pathname === '/sertifikat/cek';
   const isMasukActive = pathname === '/login';
   const isDaftarActive = pathname === '/register' || pathname === '/daftar';
 
@@ -75,10 +73,10 @@ export default function MobileBottomNav({ user, profile }: Props) {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-[99999] bg-white/95 backdrop-blur-md border-t border-slate-200 md:hidden shadow-[0_-4px_20px_rgba(0,0,0,0.08)] pb-[env(safe-area-inset-bottom,0px)]">
-      <div className={`grid ${!user ? 'grid-cols-5' : 'grid-cols-4'} h-16 max-w-md mx-auto items-center px-1`}>
+      <div className="grid grid-cols-4 h-16 max-w-md mx-auto items-center px-1">
         {/* ===================================================================
             KONDISI 1: PENGGUNA BELUM MASUK (Tamu / Publik)
-            5 tab: Home, Katalog, Cek Sertifikat, Masuk, Daftar
+            4 tab: Home, Katalog, Masuk, Daftar
            =================================================================== */}
         {!user ? (
           <>
@@ -112,22 +110,6 @@ export default function MobileBottomNav({ user, profile }: Props) {
               )}
               <BookOpen size={20} className={isKatalogActive ? 'stroke-[2.5]' : ''} />
               <span className="text-[11px] mt-1">Katalog</span>
-            </Link>
-
-            {/* Tab 3: Cek Sertifikat */}
-            <Link
-              href="/sertifikat/cek"
-              className={`flex flex-col items-center justify-center h-full min-h-[48px] py-1 transition-colors relative ${
-                isCekSertifikatActive
-                  ? 'text-[#843bab] font-bold'
-                  : 'text-slate-500 hover:text-slate-900 font-medium'
-              }`}
-            >
-              {isCekSertifikatActive && (
-                <span className="absolute top-0 w-8 h-0.5 bg-[#843bab] rounded-full" />
-              )}
-              <ShieldCheck size={20} className={isCekSertifikatActive ? 'stroke-[2.5]' : ''} />
-              <span className="text-[10px] mt-1 text-center truncate px-0.5">Sertifikat</span>
             </Link>
 
             {/* Tab 4: Masuk */}

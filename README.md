@@ -15,7 +15,7 @@ Aplikasi mengimplementasikan 3 peran pengguna dengan hak akses terisolasi melalu
    - **Pembayaran Ganda:** Pembayaran instan otomatis QRIS (Mayar) via event `payment.received` dan transfer bank manual (BCA, Mandiri, BRI) dengan unggah bukti struk ke storage bucket privat `bukti_bayar` (BR-07).
    - **Ruang Belajar Sekuensial:** Modul disusun berurutan; modul berikutnya terkunci sampai kuis modul sebelumnya lulus (BR-08).
    - **Ruang Kuis Evaluasi:** Penilaian otomatis dieksekusi di database server via RPC `submit_kuis` (BR-09). Kunci jawaban tidak pernah dikirim ke browser. Maksimal 3 kali percobaan kuis per modul (BR-10).
-   - **Sertifikat Digital & QR Code:** Terbit otomatis setelah 100% modul lulus (BR-11) dengan format baku `PA-TAHUN-NOMOR` (contoh: `PA-2026-0001`) dan dapat diverifikasi publik di `/sertifikat/cek?nomor=...`.
+   - **Sertifikat Digital & QR Code:** Terbit otomatis setelah 100% modul lulus (BR-11) dengan format baku `PA-TAHUN-NOMOR` (contoh: `PA-2026-0001`) dan dapat diakses secara privat oleh peserta di menu Kursus Saya (`/kursus-saya` -> `/sertifikat/[id]`).
 
 2. **Instruktur:**
    - **Manajemen Kursus:** Penyusunan silabus, materi teks, tautan video, penentuan KKM kursus (rentang 50–100, bawaan 70 sesuai BR-03), dan perancangan kuis evaluasi.
@@ -31,7 +31,7 @@ Aplikasi mengimplementasikan 3 peran pengguna dengan hak akses terisolasi melalu
 
 4. **Publik & Tamu:**
    - Halaman landing resmi institusi.
-   - Portal verifikasi publik sertifikat di `/sertifikat/cek`.
+   - Katalog kursus vokasi interaktif dengan filter kategori.
 
 ---
 

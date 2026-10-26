@@ -37,7 +37,7 @@ Sistem memiliki pembagian 4 hak akses peran yang terisolasi secara ketat (*Row-L
 ```mermaid
 graph TD
     User([Pengguna Masuk]) --> Router{Proxy Middleware & Layout Guard}
-    Router -->|Tamu / Belum Login| Public[Area Publik: Katalog, Landing, Cek Sertifikat]
+    Router -->|Tamu / Belum Login| Public[Area Publik: Katalog, Landing]
     Router -->|Peran: Peserta| SiswaSpace[Ruang Siswa: Dashboard, Belajar, Kuis, Sertifikat Saya]
     Router -->|Peran: Instruktur| InstrukturSpace[Ruang Instruktur: Kurikulum, Editor Modul & Kuis, Gradebook]
     Router -->|Peran: Admin| AdminSpace[Ruang Admin: Antrean Verifikasi, Review Kursus, Analisis, Audit]
@@ -61,8 +61,7 @@ Berikut adalah daftar lengkap seluruh rute halaman web yang telah dibangun dan a
 | `/kursus-saya/[id]/bayar` | Ruang Pembayaran | Siswa (Peserta) | Pilihan pembayaran ganda: QRIS Otomatis (Mayar) atau Transfer Bank Manual (BCA, Mandiri, BRI) + upload ke bucket `bukti_bayar` |
 | `/belajar/[slug]` | Ruang Belajar Modul | Siswa Terdaftar | Pemutar video pembelajaran, artikel materi instruktur, navigasi sekuensial, dan tombol tandai baca |
 | `/belajar/[slug]/kuis` | Ruang Kuis Evaluasi | Siswa Terdaftar | Pengerjaan kuis, timer real-time, skoring di server (BR-09), batas maks. 3 percobaan (BR-10), kunci jawaban dirahasiakan |
-| `/sertifikat/[id]` | Sertifikat Kelulusan Resmi | Siswa Terkait | Sertifikat digital resmi beresolusi tinggi, nomor `PA-TAHUN-NOMOR`, QR Code verifikasi, dan mode cetak PDF |
-| `/sertifikat/cek` | Portal Verifikasi Publik | Publik / HRD | Verifikasi keaslian dokumen sertifikat melalui pemindaian QR Code (`?nomor=`) atau input nomor registrasi sertifikat |
+| `/sertifikat/[id]` | Sertifikat Kelulusan Resmi | Siswa Terkait | Sertifikat digital resmi beresolusi tinggi, nomor `PA-TAHUN-NOMOR`, QR Code privat, dan mode cetak PDF |
 | `/profil` | Pengaturan Profil | Terautentikasi | Pengelolaan nama lengkap, nomor WhatsApp, foto profil avatar, reset kata sandi, dan tombol keluar akun |
 | `/instruktur` | Dasbor Instruktur | Instruktur | Ringkasan kursus yang diampu, jumlah siswa aktif, dan statistik kelulusan siswa |
 | `/instruktur/kursus` | Kelola Kursus Instruktur | Instruktur | Daftar kursus milik instruktur dengan filter status (*draf*, *ditinjau*, *terbit*, *ditutup*) |
@@ -118,9 +117,9 @@ Berikut adalah daftar lengkap seluruh rute halaman web yang telah dibangun dan a
    - **Auto-Grading di Server:** Penilaian otomatis dieksekusi di database via RPC `submit_kuis`.
    - **Batas Maksimal 3 Percobaan (BR-10):** Setiap modul paling banyak 3 percobaan kuis per pendaftaran. Modul yang sudah lulus tidak bisa dikerjakan ulang. Percobaan ke-4 ditolak oleh database.
    - **Hasil Evaluasi:** Klien hanya menerima skor nilai akhir, jumlah soal benar, sisa kesempatan percobaan, dan status kelulusan tanpa membocorkan kunci pembahasan per butir soal.
-7. **Sertifikat Digital & Verifikasi (`/sertifikat/[id]` & `/sertifikat/cek`)**:
+7. **Sertifikat Digital Privat (`/sertifikat/[id]`)**:
    - Desain sertifikat resmi institusi vokasi berstandar industri dengan nomor registrasi unik berformat `PA-TAHUN-NOMOR` (contoh: `PA-2026-0001`) sesuai BR-11.
-   - QR Code digital yang memuat tautan `/sertifikat/cek?nomor=PA-...` yang dapat dipindai oleh HRD/perusahaan untuk memvalidasi keabsahan dokumen di portal publik.
+   - Sesuai PRD Bagian 14 (Di Luar Lingkup) &amp; BR-11/BR-12, sertifikat bersifat privat dan hanya dapat diakses secara eksklusif oleh peserta yang bersangkutan melalui menu Kursus Saya setelah menyelesaikan seluruh modul.
    - Fasilitas cetak (*Print Mode*) ke PDF beresolusi tinggi tanpa batasan masa berlaku (*Lifetime Access*).
 
 ---
@@ -168,9 +167,8 @@ Berikut adalah daftar lengkap seluruh rute halaman web yang telah dibangun dan a
 ### D. Halaman Publik & Tamu
 1. **Landing Page Institusi (`/`)**:
    - Menampilkan reputasi LKP Pijar Aksara, program pelatihan terpopuler, keunggulan instruktur praktisi, dan garansi sertifikat resmi.
-2. **Portal Publik Verifikasi Sertifikat (`/sertifikat/cek`)**:
-   - Halaman terbuka bagi publik, pihak rekruter perusahaan, atau instansi pemerintah untuk membuktikan legalitas sertifikat kompetensi siswa secara instan tanpa perlu mendaftar akun.
-   - Menerima parameter URL `?nomor=PA-TAHUN-NOMOR`.
+2. **Katalog Kursus Vokasi (`/kursus`, `/kursus/[slug]`)**:
+   - Menjelajahi katalog program vokasi resmi berstatus `terbit`, silabus modul, dan unduh brosur informasi kursus.
 3. **Autentikasi Terproteksi Anti-Flash (`/login`, `/register`, `/daftar`)**:
    - Mekanisme pengalihan sisi server (*Server-Side Redirect Guard*) yang memastikan pengguna yang telah memiliki sesi login langsung diarahkan ke dasbor perannya tanpa kedipan halaman (*flash of login page*).
 

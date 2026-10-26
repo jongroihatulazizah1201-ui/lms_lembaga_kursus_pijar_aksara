@@ -60,27 +60,15 @@ export default function Footer() {
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 mb-4">
               Kepercayaan &amp; Legalitas
             </h4>
-            <Link
-              href="/sertifikat/cek"
-              className="group block bg-white/90 hover:bg-white p-4 rounded-2xl border border-[#843bab]/20 hover:border-[#843bab] shadow-sm hover:shadow-md transition-all cursor-pointer space-y-2.5"
-              title="Klik untuk membuka halaman Cek Keaslian Sertifikat"
-            >
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2 text-emerald-700 text-xs font-bold">
-                  <ShieldCheck size={16} />
-                  <span>Terverifikasi &amp; Bersertifikat</span>
-                </div>
-                <span className="text-xs text-[#843bab] font-bold group-hover:translate-x-1 transition-transform">
-                  &rarr;
-                </span>
+            <div className="bg-white/90 p-4 rounded-2xl border border-[#843bab]/20 shadow-sm space-y-2.5">
+              <div className="flex items-center gap-2 text-emerald-700 text-xs font-bold">
+                <ShieldCheck size={16} />
+                <span>Terverifikasi &amp; Bersertifikat</span>
               </div>
               <p className="text-xs text-slate-600 leading-normal">
-                Sertifikat kelulusan resmi bertanda tangan digital dengan kode verifikasi unik PA-TAHUN-NOMOR.
+                Sertifikat kelulusan resmi bertanda tangan digital dapat diakses secara eksklusif oleh peserta di menu Kursus Saya setelah menyelesaikan seluruh materi.
               </p>
-              <div className="inline-flex items-center gap-1.5 text-xs font-bold text-[#843bab] group-hover:text-[#722f96] pt-1 transition-colors">
-                <span>Klik untuk Cek Keaslian Sertifikat &rarr;</span>
-              </div>
-            </Link>
+            </div>
           </div>
         </div>
 
@@ -90,9 +78,6 @@ export default function Footer() {
             © {new Date().getFullYear()} Lembaga Kursus Pijar Aksara. Seluruh hak cipta dilindungi.
           </div>
           <div className="flex items-center gap-6 font-medium">
-            <Link href="/sertifikat/cek" className="hover:text-[#843bab] transition-colors">
-              Cek Sertifikat
-            </Link>
             <span className="hover:text-[#843bab] cursor-pointer transition-colors">Syarat &amp; Ketentuan</span>
             <span className="hover:text-[#843bab] cursor-pointer transition-colors">Kebijakan Privasi</span>
           </div>

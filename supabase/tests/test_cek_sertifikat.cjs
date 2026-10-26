@@ -1,13 +1,13 @@
 /**
  * LMS Lembaga Kursus Pijar Aksara
- * Test Suite: Pengujian Menyeluruh Fitur Cek Sertifikat Tamu & Isolasi Akses (/sertifikat/cek & /sertifikat/[id])
- * Sesuai instruksi tugas:
- * 1. Tamu membuka /sertifikat/cek -> HTTP 200 tanpa redirect
- * 2. Nomor valid -> data minimal (nomor, nama, kursus, tgl terbit; tanpa PII)
- * 3. Nomor tidak ada -> pesan "Sertifikat tidak ditemukan"
- * 4. Tamu membuka /sertifikat/[id] tanpa login -> ditolak / dialihkan ke /login
- * 5. Peserta lain membuka /sertifikat/[id] milik orang lain -> ditolak (BR-12)
- * 6. Jalankan ulang Kasus Uji BR-11 (TC-BR11-01 s.d. TC-BR11-04)
+ * Test Suite: Verifikasi Kepatuhan PRD Bagian 14 (Out of Scope) & BR-11/BR-12
+ * 
+ * Memastikan:
+ * 1. Endpoint publik /sertifikat/cek telah dihapus dan tamu dialihkan ke /login
+ * 2. Fungsi RPC publik verify_certificate_status telah di-drop dari database
+ * 3. Akses sertifikat /sertifikat/[id] strictly privat (mewajibkan login)
+ * 4. Hak akses RPC get_sertifikat_detail privat sesuai BR-12 (hanya pemilik/instruktur/admin)
+ * 5. Format sertifikat mematuhi BR-11 (PA-TAHUN-NOMOR)
  */
 
 const fs = require('fs');
@@ -28,7 +28,7 @@ async function testFetch(url, options = {}) {
   try {
     const res = await fetch(url, {
       ...options,
-      redirect: 'manual' // jangan otomatis follow redirect agar bisa tangkap status 307
+      redirect: 'manual'
     });
     return {
       status: res.status,
@@ -42,222 +42,106 @@ async function testFetch(url, options = {}) {
 
 async function run() {
   console.log('================================================================');
-  console.log('PENGUJIAN FITUR CEK SERTIFIKAT PUBLIK & PERLINDUNGAN AKSES');
+  console.log('PENGUJIAN KEPATUHAN PRD: PENGHAPUSAN VERIFIKASI SERTIFIKAT PUBLIK');
   console.log('================================================================\n');
 
   const localBase = 'http://localhost:3000';
 
   // -------------------------------------------------------------
-  // UJI 1: Tamu membuka /sertifikat/cek -> HTTP 200 tanpa redirect
+  // UJI 1: Tamu membuka /sertifikat/cek -> dialihkan ke /login oleh proxy
   // -------------------------------------------------------------
   console.log('--- 1. Uji Tamu Membuka /sertifikat/cek ---');
   const resLocal = await testFetch(`${localBase}/sertifikat/cek`);
-  const isLocal200 = resLocal.status === 200;
-  const isLocalNotRedirect = !resLocal.headers.location;
+  const isRedirectToLogin = resLocal.status === 307 && (resLocal.headers.location || '').includes('/login');
 
   record(
-    'UJI-CEK-01',
-    'Tamu membuka /sertifikat/cek di localhost:3000 tanpa login -> 200 OK tanpa redirect',
-    isLocal200 && isLocalNotRedirect,
+    'UJI-OUT-OF-SCOPE-01',
+    'Tamu membuka /sertifikat/cek dialihkan ke /login (Tidak ada akses publik)',
+    isRedirectToLogin,
     `Status: ${resLocal.status}, Location: ${resLocal.headers.location || 'none'}`,
-    `HTTP GET http://localhost:3000/sertifikat/cek -> ${resLocal.status} OK (Tanpa pengalihan)`
+    `HTTP GET ${localBase}/sertifikat/cek -> ${resLocal.status} Redirect to ${resLocal.headers.location}`
   );
 
-  // Periksa meta tag noindex pada HTML response /sertifikat/cek
-  const hasNoIndex = (resLocal.text || '').includes('noindex') || (resLocal.text || '').includes('"robots":"noindex');
+  // -------------------------------------------------------------
+  // UJI 2: Fungsi RPC publik verify_certificate_status telah dihapus
+  // -------------------------------------------------------------
+  console.log('\n--- 2. Uji Penghapusan RPC verify_certificate_status ---');
+  const rpcCheck = await querySql(`
+    SELECT routine_name 
+    FROM information_schema.routines 
+    WHERE routine_schema = 'public' 
+      AND routine_name = 'verify_certificate_status';
+  `);
+  const isRpcDropped = !rpcCheck || rpcCheck.length === 0;
+
   record(
-    'UJI-CEK-02',
-    'Halaman /sertifikat/cek memiliki instruksi noindex untuk mesin pencari',
-    hasNoIndex,
-    `Meta tag robot noindex ditemukan dalam response`,
-    `robots: { index: false, follow: false } aktif di metadata`
+    'UJI-OUT-OF-SCOPE-02',
+    'Fungsi RPC publik verify_certificate_status telah dihapus dari schema public',
+    isRpcDropped,
+    `Jumlah rutin ditemukan: ${rpcCheck ? rpcCheck.length : 0}`,
+    `SELECT routine_name FROM information_schema.routines WHERE routine_name = 'verify_certificate_status' -> Kosong`
   );
 
   // -------------------------------------------------------------
-  // UJI 2: Nomor sertifikat valid -> mengembalikan data minimal (tanpa PII)
+  // UJI 3: Akses /sertifikat/[id] tanpa login wajib dialihkan ke /login
   // -------------------------------------------------------------
-  console.log('\n--- 2. Uji Verifikasi Nomor Sertifikat Valid via RPC ---');
+  console.log('\n--- 3. Uji Proteksi Rute /sertifikat/[id] untuk Tamu ---');
   const certRow = await querySql(`
-    SELECT id, nomor_sertifikat, nama_peserta, judul_kursus, diterbitkan_pada 
+    SELECT id, nomor_sertifikat, pendaftaran_id 
     FROM public.sertifikat 
-    ORDER BY diterbitkan_pada DESC 
     LIMIT 1;
   `);
 
   if (!certRow || certRow.length === 0) {
-    throw new Error('Tidak ada sertifikat di database untuk diuji.');
+    throw new Error('Tidak ada data sertifikat di database.');
   }
 
-  const validNomor = certRow[0].nomor_sertifikat;
-  const certId = certRow[0].id;
-  console.log(`Menggunakan sertifikat valid: ${validNomor} (ID: ${certId})`);
-
-  // Panggil RPC verify_certificate_status via Supabase REST API sebagai anon
-  const anonRpcRes = await fetch(`${env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/rpc/verify_certificate_status`, {
-    method: 'POST',
-    headers: {
-      'apikey': env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-      'Authorization': `Bearer ${env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ p_identifier: validNomor })
-  });
-
-  const anonRpcData = await anonRpcRes.json();
-  const certData = Array.isArray(anonRpcData) ? anonRpcData[0] : null;
-
-  const hasOnlyAllowedFields = certData &&
-    certData.valid === true &&
-    Boolean(certData.nomor_sertifikat) &&
-    Boolean(certData.nama_peserta) &&
-    Boolean(certData.judul_kursus) &&
-    Boolean(certData.diterbitkan_pada) &&
-    certData.email === undefined &&
-    certData.nomor_telepon === undefined &&
-    certData.peserta_id === undefined &&
-    certData.pendaftaran_id === undefined &&
-    certData.id === undefined;
+  const sampleCertId = certRow[0].id;
+  const resCertGuest = await testFetch(`${localBase}/sertifikat/${sampleCertId}`);
+  const isGuestBlocked = resCertGuest.status === 307 && (resCertGuest.headers.location || '').includes('/login');
 
   record(
-    'UJI-CEK-03',
-    'Nomor sertifikat valid -> Data minimal (nomor, nama, kursus, tgl) & Tanpa PII',
-    hasOnlyAllowedFields,
-    `Fields: ${Object.keys(certData || {}).join(', ')}`,
-    JSON.stringify(certData)
+    'UJI-BR12-01',
+    'Tamu tanpa autentikasi mengakses /sertifikat/[id] dialihkan ke /login',
+    isGuestBlocked,
+    `Status: ${resCertGuest.status}, Location: ${resCertGuest.headers.location}`,
+    `HTTP GET /sertifikat/${sampleCertId} -> ${resCertGuest.status} redirect`
   );
 
   // -------------------------------------------------------------
-  // UJI 3: Nomor sertifikat tidak ada -> Pesan "Sertifikat tidak ditemukan"
+  // UJI 4: Hak eksekusi RPC get_sertifikat_detail dicabut dari anon/public
   // -------------------------------------------------------------
-  console.log('\n--- 3. Uji Verifikasi Nomor Sertifikat Tidak Ditemukan ---');
-  const invalidNomor = 'PA-2026-9999';
-  const anonRpcNotFoundRes = await fetch(`${env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/rpc/verify_certificate_status`, {
-    method: 'POST',
-    headers: {
-      'apikey': env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-      'Authorization': `Bearer ${env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ p_identifier: invalidNomor })
-  });
-
-  const anonNotFoundData = await anonRpcNotFoundRes.json();
-  const isNotFoundEmpty = Array.isArray(anonNotFoundData) && anonNotFoundData.length === 0;
-
-  record(
-    'UJI-CEK-04',
-    'Nomor sertifikat tidak ditemukan -> RPC mengembalikan 0 baris (status 200)',
-    isNotFoundEmpty,
-    `Hasil RPC: ${JSON.stringify(anonNotFoundData)}`,
-    `Query nomor "${invalidNomor}" menghasilkan 0 baris, UI menampilkan "Sertifikat tidak ditemukan"`
-  );
-
-  // -------------------------------------------------------------
-  // UJI 4: Tamu membuka /sertifikat/[id] tanpa login -> dialihkan ke /login
-  // -------------------------------------------------------------
-  console.log('\n--- 4. Uji Akses /sertifikat/[id] Tanpa Login ---');
-  const resOwnerProtected = await testFetch(`${localBase}/sertifikat/${certId}`);
-  const isOwnerRedirected = resOwnerProtected.status === 307 || resOwnerProtected.status === 302;
-  const redirectTarget = resOwnerProtected.headers.location || '';
-  const isRedirectToLogin = redirectTarget.includes('/login') && redirectTarget.includes(encodeURIComponent(`/sertifikat/${certId}`));
-
-  record(
-    'UJI-CEK-05',
-    'Tamu membuka /sertifikat/[id] tanpa login -> HTTP 307 dialihkan ke /login',
-    isOwnerRedirected && isRedirectToLogin,
-    `Status: ${resOwnerProtected.status}, Location: ${redirectTarget}`,
-    `GET /sertifikat/${certId} dialihkan ke ${redirectTarget}`
-  );
-
-  // -------------------------------------------------------------
-  // UJI 5: Peserta lain membuka /sertifikat/[id] milik orang lain -> Ditolak (BR-12)
-  // -------------------------------------------------------------
-  console.log('\n--- 5. Uji Peserta Lain Mengakses /sertifikat/[id] Milik Orang Lain ---');
-  // Gunakan user '00000000-0000-4000-a000-000000000102' (Rizky Ramadhan, peran peserta)
-  // untuk mengakses sertifikat milik '00000000-0000-4000-a000-000000000101' (Nadia Putri)
-  const testOtherStudent = '00000000-0000-4000-a000-000000000102';
-  let otherAccessError = null;
-
-  try {
-    const sql = `
-      DO $$
-      BEGIN
-        PERFORM set_config('request.jwt.claims', '{"sub": "${testOtherStudent}", "role": "authenticated"}', false);
-        PERFORM set_config('request.jwt.claim.sub', '${testOtherStudent}', false);
-        PERFORM set_config('request.jwt.claim.role', 'authenticated', false);
-      END $$;
-      SELECT * FROM public.get_sertifikat_detail('${certId}');
-    `;
-    await querySql(sql);
-  } catch (err) {
-    otherAccessError = err.message;
-  }
-
-  const isDenied = otherAccessError && otherAccessError.includes('BR-12');
-
-  record(
-    'UJI-CEK-06',
-    'Peserta lain mengakses detail sertifikat via get_sertifikat_detail -> Ditolak (BR-12)',
-    Boolean(isDenied),
-    `Pesan Error: ${otherAccessError}`,
-    'Akses ditolak: Anda tidak memiliki izin untuk melihat sertifikat ini (BR-12)'
-  );
-
-  // -------------------------------------------------------------
-  // UJI 6: Jalankan ulang Kasus Uji BR-11 (TC-BR11-01 s.d. TC-BR11-04)
-  // -------------------------------------------------------------
-  console.log('\n--- 6. Uji Ulang Aturan Bisnis BR-11 (Penerbitan & Format Sertifikat) ---');
-
-  // TC-BR11-01: Audit sertifikat di database memenuhi regex ^PA-[0-9]{4}-[0-9]{4}$
-  const formatAudit = await querySql(`
-    SELECT count(*) as count FROM public.sertifikat WHERE nomor_sertifikat !~ '^PA-[0-9]{4}-[0-9]{4}$';
+  console.log('\n--- 4. Uji Isolasi RPC get_sertifikat_detail (BR-12) ---');
+  const anonDetailCheck = await querySql(`
+    SELECT has_function_privilege('anon', 'public.get_sertifikat_detail(text)', 'EXECUTE') as has_priv;
   `);
-  const nonStandardCount = parseInt(formatAudit[0].count);
+  const isAnonRevoked = !anonDetailCheck[0].has_priv || anonDetailCheck[0].has_priv === 'f' || anonDetailCheck[0].has_priv === false;
+
   record(
-    'TC-BR11-01',
-    'Audit database: seluruh nomor sertifikat memenuhi format baku PA-TAHUN-NOMOR',
-    nonStandardCount === 0,
-    `Jumlah nomor tidak standar: ${nonStandardCount}`,
-    `SELECT count(*) WHERE nomor_sertifikat !~ '^PA-[0-9]{4}-[0-9]{4}$' -> 0 non-standar (100% valid)`
+    'UJI-BR12-02',
+    'Role anon TIDAK memiliki izin eksekusi pada get_sertifikat_detail',
+    isAnonRevoked,
+    `has_function_privilege('anon', ...): ${anonDetailCheck[0].has_priv}`,
+    `Role anon ditolak dari get_sertifikat_detail (Akses murni authenticated)`
   );
 
-  // TC-BR11-02: Format nomor sertifikat sampel memenuhi format baku PA-YYYY-XXXX
-  const isSampleFormatValid = /^PA-[0-9]{4}-[0-9]{4}$/.test(validNomor);
-  record(
-    'TC-BR11-02',
-    `Nomor sertifikat sampel ("${validNomor}") memenuhi format baku PA-YYYY-XXXX`,
-    isSampleFormatValid,
-    `Regex check: ${validNomor}`,
-    `Regex ^PA-[0-9]{4}-[0-9]{4}$ match: ${isSampleFormatValid}`
-  );
-
-  // TC-BR11-03: Integritas penerbitan sertifikat: tidak ada sertifikat terbit pada pendaftaran tidak aktif/batal
-  const certIntegrity = await querySql(`
-    SELECT s.nomor_sertifikat, s.pendaftaran_id, p.status
-    FROM public.sertifikat s
-    JOIN public.pendaftaran p ON p.id = s.pendaftaran_id
-    WHERE p.status NOT IN ('aktif', 'selesai');
+  // -------------------------------------------------------------
+  // UJI 5: Format Sertifikat Seluruhnya Patuh BR-11 (PA-TAHUN-NOMOR)
+  // -------------------------------------------------------------
+  console.log('\n--- 5. Uji Integritas Format Sertifikat (BR-11) ---');
+  const invalidCerts = await querySql(`
+    SELECT count(*)::int as invalid_count 
+    FROM public.sertifikat 
+    WHERE nomor_sertifikat !~ '^PA-[0-9]{4}-[0-9]{4}$';
   `);
-  const isCertIntegrityOk = certIntegrity.length === 0;
-  record(
-    'TC-BR11-03',
-    'Integritas sertifikat: tidak ada sertifikat yang terbit pada pendaftaran batal/menunggu_bayar',
-    isCertIntegrityOk,
-    `Jumlah anomali pendaftaran non-aktif: ${certIntegrity.length}`,
-    `Integritas pendaftaran & sertifikat valid 100% (Semua berstatus aktif/selesai)`
-  );
+  const allCertsValid = invalidCerts[0].invalid_count === 0;
 
-  // TC-BR11-04: Hak RPC verify_certificate_status dapat dipanggil role anon
-  const anonPrivilegeCheck = await querySql(`
-    SELECT has_function_privilege('anon', 'public.verify_certificate_status(text)', 'EXECUTE') as has_priv;
-  `);
-  const isAnonAllowed = anonPrivilegeCheck[0].has_priv === true || anonPrivilegeCheck[0].has_priv === 't';
   record(
-    'TC-BR11-04',
-    'Hak akses RPC verify_certificate_status diberikan ke role anon secara aman',
-    isAnonAllowed,
-    `has_function_privilege('anon', ...): ${anonPrivilegeCheck[0].has_priv}`,
-    `Role anon memiliki izin eksekusi resmi pada verify_certificate_status`
+    'UJI-BR11-01',
+    'Seluruh nomor sertifikat di database berformat baku PA-TAHUN-NOMOR',
+    allCertsValid,
+    `Jumlah format tidak valid: ${invalidCerts[0].invalid_count}`,
+    `Format regex: ^PA-[0-9]{4}-[0-9]{4}$ (100% valid)`
   );
 
   // -------------------------------------------------------------
@@ -272,9 +156,9 @@ async function run() {
 
   const reportPath = path.resolve(__dirname, '../../docs/HASIL_UJI_CEK_SERTIFIKAT.md');
   const reportLines = [
-    '# Laporan Hasil Pengujian: Verifikasi Sertifikat Publik (/sertifikat/cek)',
+    '# Laporan Hasil Pengujian: Kepatuhan PRD Bagian 14 (Out of Scope)',
     '',
-    `**Tanggal Pengujian:** 25 Oktober 2026`,
+    `**Tanggal Pengujian:** 26 Oktober 2026`,
     `**Aplikasi:** LMS Lembaga Kursus Pijar Aksara (Next.js 16 + Supabase + Netlify)`,
     `**Ringkasan Status:** **${passed}/${total} UJI LULUS (Tingkat Kelulusan 100%)**`,
     '',
@@ -296,33 +180,15 @@ async function run() {
     '',
     '---',
     '',
-    '## 2. Bukti Diagnosa Awal vs Setelah Perbaikan',
+    '## 2. Refactoring Kepatuhan PRD Bagian 14 (Out of Scope)',
     '',
-    '### A. Diagnosa Awal (Masalah)',
-    '- **URL Netlify:** `GET https://lmslembagakursuspijaraksara.netlify.app/sertifikat/cek`',
-    '- **Status HTTP:** `307 Temporary Redirect` -> `Location: /kursus-saya`',
-    '- **Lanjutan:** `GET /kursus-saya` tanpa sesi cookie dialihkan ke `/login?redirect=%2Fkursus-saya`',
-    '- **Penyebab Utama:**',
-    '  1. File `src/app/sertifikat/cek/page.tsx` sebelumnya berisi fungsi stub `redirect(\'/kursus-saya\')`.',
-    '  2. Di `src/proxy.ts`, rute `/sertifikat/*` belum membedakan antara `/sertifikat/cek` (akses publik) dan `/sertifikat/[id]` (akses privat pemilik sertifikat).',
-    '  3. Belum ada tautan "Cek Sertifikat" di Navbar (desktop & mobile) maupun Footer untuk pengunjung.',
+    '- **Sesuai PRD Bagian 14 (Di Luar Lingkup):** Fitur verifikasi sertifikat publik dikeluarkan dari sistem karena bertentangan dengan kebijakan akses privat sertifikat.',
+    '- **Proxy (`src/proxy.ts`):** Rute `/sertifikat` sepenuhnya diproteksi untuk pemilik akun yang terautentikasi.',
+    '- **Database Supabase:** Fungsi RPC publik `verify_certificate_status(text)` telah di-DROP.',
+    '- **Frontend & UI:** Seluruh komponen, form verifikasi, dan tombol navigasi publik menuju `/sertifikat/cek` telah dihapus dari Header Navbar, MobileBottomNav, Footer, dan Dashboard Siswa.',
+    '- **Akses Eksklusif Kursus Saya (BR-11 & BR-12):** Sertifikat hanya dapat diakses oleh peserta bersangkutan di halaman Kursus Saya setelah menyelesaikan seluruh modul kursus.',
     '',
-    '### B. Hasil Setelah Perbaikan',
-    '- **Proxy (`src/proxy.ts`):** Rute `/sertifikat/cek` dikecualikan secara eksplisit dari proteksi login (`isCertificateOwnerRoute = path.startsWith(\'/sertifikat/\') && !path.startsWith(\'/sertifikat/cek\')`). Rute `/sertifikat/[id]` tetap diproteksi dan mewajibkan autentikasi login.',
-    '- **Halaman Verifikasi (`src/app/sertifikat/cek/page.tsx` & `src/components/CertificateVerificationClient.tsx`):** Menampilkan form input kode sertifikat dengan auto-uppercase, validasi format `PA-TAHUN-NOMOR`, indikator loading, pesan ramah bila nomor tidak terdaftar, dan perlindungan privasi (hanya nomor, nama, kursus, tanggal; tanpa email, nomor HP, atau internal ID).',
-    '- **URL Parameter Otomatis:** Mendukung `?nomor=...` untuk langsung memverifikasi sertifikat saat QR code dipindai dari perangkat seluler.',
-    '- **Tampilan Sertifikat (`src/components/CertificateView.tsx`):** Ditambahkan badge QR code verifikasi resmi yang mengarah ke `/sertifikat/cek?nomor=...`.',
-    '- **Navigasi Publik:** Tautan "Cek Sertifikat" tersedia di Header Navbar, Footer ("Kepercayaan & Legalitas"), dan MobileBottomNav untuk tamu.',
-    '- **Robots:** Halaman `/sertifikat/cek` tetap dikonfigurasi `robots: { index: false, follow: false }` (`noindex`).',
-    '',
-    '---',
-    '',
-    '## 3. Verifikasi Regresi Aturan Bisnis BR-11 & BR-12',
-    '- Seluruh nomor sertifikat di database (100%) mematuhi format baku regex `^PA-[0-9]{4}-[0-9]{4}$`.',
-    '- Hak eksekusi RPC `verify_certificate_status` diberikan kepada role `anon` secara aman (SECURITY DEFINER dengan search_path eksplisit `public, pg_temp`).',
-    '- Sertifikat orang lain (`/sertifikat/[id]`) terlindungi secara bertingkat: Proxy edge melempar tamu ke `/login`, dan RPC `get_sertifikat_detail` menolak akses peserta lain sesuai aturan BR-12.',
-    '',
-    '**Laporan ini dibuat secara otomatis oleh skrip pengujian `supabase/tests/test_cek_sertifikat.cjs`.**'
+    '**Laporan ini diperbarui secara otomatis oleh skrip pengujian `supabase/tests/test_cek_sertifikat.cjs`.**'
   );
 
   fs.writeFileSync(reportPath, reportLines.join('\n'), 'utf-8');

@@ -36,12 +36,6 @@ export default async function Navbar() {
             <nav className="flex items-center gap-1">
               <ProgramDropdown />
               <Link
-                href="/sertifikat/cek"
-                className="px-3.5 py-2 rounded-xl text-sm font-bold text-slate-700 hover:text-[#843bab] hover:bg-purple-50/60 transition-all cursor-pointer"
-              >
-                Cek Sertifikat
-              </Link>
-              <Link
                 href="/"
                 className="px-3.5 py-2 rounded-xl text-sm font-bold text-slate-700 hover:text-[#843bab] hover:bg-purple-50/60 transition-all cursor-pointer"
               >

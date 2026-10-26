@@ -342,15 +342,15 @@ export default function CertificateView({ certificate }: Props) {
                 </div>
 
                 <a
-                  href={`/sertifikat/cek?nomor=${encodeURIComponent(certificate.nomor_sertifikat)}`}
+                  href={`/sertifikat/${certificate.id}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  title="Klik atau pindai untuk memverifikasi keaslian sertifikat"
+                  title="Akses sertifikat resmi peserta"
                   style={{ textDecoration: 'none', display: 'block', textAlign: 'center' }}
                 >
                   <img
-                    src={`https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(`${siteOrigin}/sertifikat/cek?nomor=${certificate.nomor_sertifikat}`)}`}
-                    alt={`QR Verifikasi ${certificate.nomor_sertifikat}`}
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(`${siteOrigin}/sertifikat/${certificate.id}`)}`}
+                    alt={`QR Sertifikat ${certificate.nomor_sertifikat}`}
                     width={68}
                     height={68}
                     style={{
@@ -363,7 +363,7 @@ export default function CertificateView({ certificate }: Props) {
                     }}
                   />
                   <span style={{ display: 'block', fontSize: '0.6rem', color: '#64748b', fontWeight: 700, marginTop: '2px' }}>
-                    Pindai Verifikasi
+                    Sertifikat Resmi
                   </span>
                 </a>
               </div>
