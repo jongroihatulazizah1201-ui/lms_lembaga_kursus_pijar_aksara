@@ -72,5 +72,12 @@ export default async function CertificatePage({ params }: Props) {
 
   const certificate = data[0];
 
-  return <CertificateView certificate={certificate} />;
+  // Ambil peran user untuk navigasi tombol kembali yang kontekstual
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('peran')
+    .eq('id', user.id)
+    .single();
+
+  return <CertificateView certificate={certificate} userRole={profile?.peran} />;
 }

@@ -18,9 +18,10 @@ interface CertificateData {
 
 interface Props {
   certificate: CertificateData;
+  userRole?: string;
 }
 
-export default function CertificateView({ certificate }: Props) {
+export default function CertificateView({ certificate, userRole }: Props) {
   const [copiedLink, setCopiedLink] = useState(false);
   const [siteOrigin, setSiteOrigin] = useState<string>(
     process.env.NEXT_PUBLIC_SITE_URL || 'https://lmslembagakursuspijaraksara.netlify.app'
@@ -61,17 +62,20 @@ export default function CertificateView({ certificate }: Props) {
     year: 'numeric'
   });
 
+  const backHref = userRole === 'admin' ? '/admin/dashboard' : userRole === 'instruktur' ? '/instruktur' : '/kursus-saya';
+  const backLabel = userRole === 'admin' ? 'Kembali ke Panel Admin' : userRole === 'instruktur' ? 'Kembali ke Panel Instruktur' : 'Kembali ke Kursus Saya';
+
   return (
     <div style={{ minHeight: '100vh', padding: '32px 16px 80px 16px' }}>
       {/* Top Action Bar (Hidden during printing) */}
       <div className="no-print container" style={{ maxWidth: '960px', marginBottom: '24px' }}>
         <div className="flex items-center justify-between flex-wrap gap-3 p-4 bg-white rounded-2xl border border-slate-200 shadow-xs">
           <Link
-            href="/kursus-saya"
+            href={backHref}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 hover:border-slate-300 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs sm:text-sm font-bold transition-all"
           >
             <ArrowLeft size={16} />
-            <span>Kembali ke Kursus Saya</span>
+            <span>{backLabel}</span>
           </Link>
 
           <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
