@@ -74,7 +74,7 @@ export default function MobileBottomNav({ user, profile }: Props) {
   const isProfilActive = pathname.startsWith('/profil');
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-[100] bg-white/95 backdrop-blur-md border-t border-slate-200 md:hidden shadow-[0_-4px_20px_rgba(0,0,0,0.06)] pb-[env(safe-area-inset-bottom,0px)]">
+    <nav className="fixed bottom-0 left-0 right-0 z-[99999] bg-white/95 backdrop-blur-md border-t border-slate-200 md:hidden shadow-[0_-4px_20px_rgba(0,0,0,0.08)] pb-[env(safe-area-inset-bottom,0px)]">
       <div className={`grid ${!user ? 'grid-cols-5' : 'grid-cols-4'} h-16 max-w-md mx-auto items-center px-1`}>
         {/* ===================================================================
             KONDISI 1: PENGGUNA BELUM MASUK (Tamu / Publik)

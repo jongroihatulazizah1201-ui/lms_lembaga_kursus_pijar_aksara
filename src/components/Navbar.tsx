@@ -77,40 +77,32 @@ export default async function Navbar() {
       </header>
 
       {/* =========================================================================
-          2. MOBILE TOP BAR (md:hidden)
+          2. MOBILE TOP BAR (md:hidden) - Bersih, rapi, dan proporsional untuk HP
          ========================================================================= */}
-      <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-md border-b border-slate-200 block md:hidden px-4 py-3 shadow-xs">
+      <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md border-b border-slate-200 block md:hidden px-4 py-3 shadow-xs">
         <div className="flex items-center justify-between">
           {/* Logo Sisi Kiri */}
           <Logo size="sm" />
 
-          {/* Navigasi Sisi Kanan */}
+          {/* Sisi Kanan: Tombol Aksi Bersih (Tanpa Teks Berdesakan) */}
           <div className="flex items-center gap-2">
-            <ProgramDropdown />
-            <Link
-              href="/sertifikat/cek"
-              className="px-2 py-1 rounded-lg text-xs font-bold text-slate-700 hover:text-[#843bab]"
-            >
-              Cek Sertifikat
-            </Link>
-            <Link
-              href="/"
-              className="px-2 py-1 rounded-lg text-xs font-bold text-slate-700 hover:text-[#843bab]"
-            >
-              Home
-            </Link>
-
-            {user ? (
-              <span className="text-xs font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded-full border border-slate-200">
-                {profile?.peran || 'peserta'}
-              </span>
+            {user && profile ? (
+              <UserNav user={user} profile={profile} />
             ) : (
-              <Link
-                href="/login"
-                className="text-xs font-bold text-slate-900 bg-[#ffdf0f] hover:bg-[#eacb0d] px-3 py-1 rounded-lg shadow-sm ml-1"
-              >
-                Masuk
-              </Link>
+              <div className="flex items-center gap-1.5">
+                <Link
+                  href="/login"
+                  className="px-3 py-1.5 rounded-xl text-xs font-bold text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-all"
+                >
+                  Masuk
+                </Link>
+                <Link
+                  href="/register"
+                  className="px-3 py-1.5 rounded-xl text-xs font-bold text-slate-900 bg-[#ffdf0f] hover:bg-[#eacb0d] shadow-xs transition-all"
+                >
+                  Daftar
+                </Link>
+              </div>
             )}
           </div>
         </div>
