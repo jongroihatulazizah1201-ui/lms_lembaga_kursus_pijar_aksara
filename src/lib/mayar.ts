@@ -24,7 +24,11 @@ export async function createMayarInvoice(params: CreateInvoiceParams) {
   const baseUrl = process.env.MAYAR_BASE_URL || 'https://api.mayar.io/hl/v2';
 
   const expiredAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
-  const siteUrl = process.env.NETLIFY_SITE_URL || 'http://localhost:3000';
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    process.env.NETLIFY_SITE_URL ||
+    process.env.URL ||
+    'http://localhost:3000';
 
   if (!apiKey) {
     console.error('MAYAR_API_KEY tidak dikonfigurasi. Pembuatan invoice dibatalkan.');

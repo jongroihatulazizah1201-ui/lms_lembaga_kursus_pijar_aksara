@@ -22,7 +22,9 @@ interface Props {
 
 export default function CertificateView({ certificate }: Props) {
   const [copiedLink, setCopiedLink] = useState(false);
-  const [siteOrigin, setSiteOrigin] = useState<string>('https://lmslembagakursuspijaraksara.netlify.app');
+  const [siteOrigin, setSiteOrigin] = useState<string>(
+    process.env.NEXT_PUBLIC_SITE_URL || 'https://lmslembagakursuspijaraksara.netlify.app'
+  );
 
   React.useEffect(() => {
     if (typeof window !== 'undefined' && window.location.origin) {

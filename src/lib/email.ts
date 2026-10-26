@@ -60,7 +60,11 @@ export async function sendEnrollmentActivatedEmail({
   courseTitle: string;
   courseSlug?: string;
 }): Promise<EmailResult> {
-  const siteUrl = process.env.NETLIFY_SITE_URL || 'https://lmslembagakursuspijaraksara.netlify.app';
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    process.env.NETLIFY_SITE_URL ||
+    process.env.URL ||
+    'https://lmslembagakursuspijaraksara.netlify.app';
   const learningUrl = courseSlug ? `${siteUrl}/belajar/${courseSlug}` : `${siteUrl}/kursus-saya`;
 
   const subject = `Pendaftaran Aktif: ${courseTitle} - Pijar Aksara`;
@@ -181,7 +185,11 @@ export async function sendPaymentReminderEmail({
   deadlineFormatted: string;
   paymentUrl?: string | null;
 }): Promise<EmailResult> {
-  const siteUrl = process.env.NETLIFY_SITE_URL || 'https://lmslembagakursuspijaraksara.netlify.app';
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    process.env.NETLIFY_SITE_URL ||
+    process.env.URL ||
+    'https://lmslembagakursuspijaraksara.netlify.app';
   const payUrl = paymentUrl || `${siteUrl}/kursus-saya`;
 
   const formattedRupiah = new Intl.NumberFormat('id-ID', {
@@ -304,7 +312,11 @@ export async function sendCertificateIssuedEmail({
   courseTitle: string;
   certificateNumber: string;
 }): Promise<EmailResult> {
-  const siteUrl = process.env.NETLIFY_SITE_URL || 'https://lmslembagakursuspijaraksara.netlify.app';
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    process.env.NETLIFY_SITE_URL ||
+    process.env.URL ||
+    'https://lmslembagakursuspijaraksara.netlify.app';
   const certificateUrl = `${siteUrl}/sertifikat/${certificateNumber}`;
 
   const subject = `Sertifikat Kelulusan Terbit: ${courseTitle} (${certificateNumber}) - Pijar Aksara`;

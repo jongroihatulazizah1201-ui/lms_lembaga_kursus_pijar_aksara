@@ -4,6 +4,7 @@ export default async (req: Request) => {
   const siteUrl =
     process.env.NETLIFY_SITE_URL ||
     process.env.NEXT_PUBLIC_SITE_URL ||
+    process.env.URL ||
     "https://lmslembagakursuspijaraksara.netlify.app";
   const cronSecret = process.env.CRON_SECRET;
 
