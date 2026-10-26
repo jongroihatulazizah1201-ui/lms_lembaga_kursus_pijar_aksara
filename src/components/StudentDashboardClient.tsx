@@ -226,37 +226,37 @@ export default function StudentDashboardClient({
       {/* =========================================================
           2. HERO HEADER: Dashboard Siswa & Pedoman Akademik
          ========================================================= */}
-      <section className="bg-gradient-to-b from-purple-50/70 via-white to-slate-50/50 border-b border-slate-200/80 pt-6 sm:pt-8 pb-8">
+      <section className="bg-gradient-to-b from-purple-50/70 via-white to-slate-50/50 border-b border-slate-200/80 pt-6 pb-7">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
             {/* Sapaan & Identitas */}
             <div>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#843bab]/10 text-[#843bab] text-xs font-bold border border-[#843bab]/20 mb-2.5 shadow-2xs">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#843bab]/10 text-[#843bab] text-[11px] font-bold border border-[#843bab]/20 mb-2">
                 <ShieldCheck size={13} className="text-[#843bab]" />
                 <span>Pusat Kendali &amp; Pedoman Siswa</span>
               </div>
-              <h1 className="text-xl sm:text-2xl lg:text-[28px] font-bold text-slate-900 tracking-tight mb-2 leading-snug">
+              <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight mb-1.5">
                 Dashboard Siswa &amp; Aturan Belajar
               </h1>
               <p className="text-slate-600 text-xs sm:text-sm max-w-2xl leading-relaxed">
-                Halo, <span className="font-semibold text-slate-800">{userProfile.nama_lengkap}</span>! Pahami pedoman kelulusan, skala penilaian kuis berstandar industri, dan pantau skala pengerjaan penugasan belajar Anda secara real-time.
+                Halo, <span className="font-semibold text-slate-900">{userProfile.nama_lengkap}</span>! Pahami pedoman kelulusan, skala penilaian kuis berstandar industri, dan pantau skala pengerjaan penugasan belajar Anda secara real-time.
               </p>
             </div>
 
             {/* Quick Action Links */}
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="flex flex-wrap items-center gap-2.5 shrink-0">
               <Link
                 href="/kursus-saya"
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#843bab] hover:bg-[#722f96] text-white font-bold text-xs sm:text-sm shadow-xs hover:shadow-md transition-all cursor-pointer"
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#843bab] hover:bg-[#722f96] text-white font-bold text-xs sm:text-sm shadow-xs hover:shadow-md transition-all cursor-pointer"
               >
-                <GraduationCap size={16} />
+                <GraduationCap size={15} />
                 <span>Buka Kursus Saya</span>
               </Link>
               <Link
                 href="/kursus"
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 font-bold text-xs sm:text-sm shadow-2xs transition-all"
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 font-bold text-xs sm:text-sm shadow-2xs transition-all"
               >
-                <BookOpen size={16} className="text-slate-500" />
+                <BookOpen size={15} className="text-slate-500" />
                 <span>Katalog Kursus</span>
               </Link>
             </div>
@@ -313,9 +313,9 @@ export default function StudentDashboardClient({
                   <div>
                     <div className="flex items-center justify-between text-emerald-800 mb-1">
                       <span className="text-[11px] font-bold uppercase tracking-wider">Tugas Selesai</span>
-                      <CheckCircle2 size={16} className="text-emerald-600" />
+                      <CheckCircle2 size={15} className="text-emerald-600" />
                     </div>
-                    <div className="text-xl sm:text-2xl font-black text-emerald-700">
+                    <div className="text-lg sm:text-xl font-extrabold text-emerald-700">
                       {totalTugasLulus} Modul
                     </div>
                   </div>
@@ -328,9 +328,9 @@ export default function StudentDashboardClient({
                   <div>
                     <div className="flex items-center justify-between text-amber-800 mb-1">
                       <span className="text-[11px] font-bold uppercase tracking-wider">Belum Dikerjakan</span>
-                      <Clock size={16} className="text-amber-600" />
+                      <Clock size={15} className="text-amber-600" />
                     </div>
-                    <div className="text-xl sm:text-2xl font-black text-amber-700">
+                    <div className="text-lg sm:text-xl font-extrabold text-amber-700">
                       {totalTugasPending} Modul
                     </div>
                   </div>
@@ -343,9 +343,9 @@ export default function StudentDashboardClient({
                   <div>
                     <div className="flex items-center justify-between text-slate-600 mb-1">
                       <span className="text-[11px] font-bold uppercase tracking-wider">Waktu Efektif</span>
-                      <BookOpen size={16} className="text-slate-400" />
+                      <BookOpen size={15} className="text-slate-400" />
                     </div>
-                    <div className="text-xl sm:text-2xl font-black text-slate-800">
+                    <div className="text-lg sm:text-xl font-extrabold text-slate-800">
                       {totalDurasiSelesaiMenit} Menit
                     </div>
                   </div>
@@ -358,9 +358,9 @@ export default function StudentDashboardClient({
                   <div>
                     <div className="flex items-center justify-between text-[#843bab] mb-1">
                       <span className="text-[11px] font-bold uppercase tracking-wider">Sertifikat Resmi</span>
-                      <Award size={16} className="text-[#843bab]" />
+                      <Award size={15} className="text-[#843bab]" />
                     </div>
-                    <div className="text-xl sm:text-2xl font-black text-[#843bab]">
+                    <div className="text-lg sm:text-xl font-extrabold text-[#843bab]">
                       {completedCourseCount} Diraih
                     </div>
                   </div>

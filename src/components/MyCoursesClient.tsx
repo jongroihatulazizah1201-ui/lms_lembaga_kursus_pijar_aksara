@@ -245,16 +245,16 @@ export default function MyCoursesClient({ initialCourses, userProfile }: Props) 
       {/* =========================================================
           1. HEADER BANNER: Profil & Ringkasan Statistik
          ========================================================= */}
-      <section className="bg-gradient-to-b from-purple-50/80 via-white to-slate-50/50 border-b border-slate-200/80 pt-8 pb-10">
+      <section className="bg-gradient-to-b from-purple-50/70 via-white to-slate-50/50 border-b border-slate-200/80 pt-6 pb-7">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
             {/* Sapaan Pengguna */}
             <div>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#843bab]/10 text-[#843bab] text-xs font-bold border border-[#843bab]/20 mb-2.5">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#843bab]/10 text-[#843bab] text-[11px] font-bold border border-[#843bab]/20 mb-2">
                 <GraduationCap size={13} />
                 <span>Area Belajar Peserta</span>
               </div>
-              <h1 className="text-xl sm:text-2xl lg:text-[28px] font-bold text-slate-900 tracking-tight mb-2 leading-snug">
+              <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight mb-1.5">
                 Kursus Saya
               </h1>
               <p className="text-slate-600 text-xs sm:text-sm max-w-xl leading-relaxed">

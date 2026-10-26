@@ -13,7 +13,7 @@ import MobileBottomNav from '@/components/MobileBottomNav';
 const outfit = Outfit({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-outfit',
+  variable: '--font-heading',
   weight: ['400', '500', '600', '700', '800'],
   preload: true,
 });
@@ -21,7 +21,7 @@ const outfit = Outfit({
 const inter = Inter({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-inter',
+  variable: '--font-body',
   weight: ['300', '400', '500', '600', '700'],
   preload: true,
 });
