@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { createClient } from '@/lib/supabase/server';
 
 export interface CourseDetailData {
@@ -33,11 +34,11 @@ export const KATEGORI_KURSUS = [
 
 export type KategoriKursus = typeof KATEGORI_KURSUS[number];
 
-export async function getPublishedCourses(
+export const getPublishedCourses = cache(async (
   category?: string,
   search?: string,
   priceFilter?: 'gratis' | 'berbayar' | 'semua'
-) {
+) => {
   const supabase = await createClient();
 
   // Memanggil security definer RPC get_kursus_katalog agar sisa kursi terhitung akurat
@@ -87,9 +88,9 @@ export async function getPublishedCourses(
   }
 
   return filtered;
-}
+});
 
-export async function getCourseBySlug(slug: string): Promise<CourseDetailData | null> {
+export const getCourseBySlug = cache(async (slug: string): Promise<CourseDetailData | null> => {
   const supabase = await createClient();
 
   // 1. Ambil data kursus dan sisa kursi dari get_kursus_katalog
@@ -130,4 +131,4 @@ export async function getCourseBySlug(slug: string): Promise<CourseDetailData | 
     gambar_url: course.gambar_url || null,
     modul: (modulList || []) as any[],
   };
-}
+});

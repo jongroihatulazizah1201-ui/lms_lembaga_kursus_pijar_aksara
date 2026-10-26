@@ -30,11 +30,13 @@ export default function CourseIllustration({
       <div
         className={`relative w-full aspect-video overflow-hidden rounded-xl bg-slate-100 flex items-center justify-center select-none ${className}`}
       >
-        <img
+        <Image
           src={photoUrl}
           alt={`Media Brosur Kursus: ${title}`}
+          fill
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 340px, 400px"
           loading="lazy"
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          className="object-cover transition-transform duration-300 group-hover:scale-105"
         />
       </div>
     );

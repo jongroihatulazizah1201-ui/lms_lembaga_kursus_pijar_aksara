@@ -108,7 +108,12 @@ export default function PopularCoursesCarousel({ courses }: Props) {
       <div
         ref={scrollRef}
         className="flex gap-5 overflow-x-auto pb-4 pt-1 snap-x snap-mandatory scroll-smooth no-scrollbar"
-        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        style={{
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
+          WebkitOverflowScrolling: 'touch',
+          overscrollBehaviorX: 'contain',
+        }}
       >
         {courses.map((course) => {
           const isFree = course.harga === 0;

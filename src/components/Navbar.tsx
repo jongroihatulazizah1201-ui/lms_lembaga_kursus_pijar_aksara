@@ -7,18 +7,29 @@ import Logo from './Logo';
 
 import ProgramDropdown from './ProgramDropdown';
 
-export default async function Navbar() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+interface NavbarProps {
+  user?: any;
+  profile?: any;
+}
 
-  let profile = null;
-  if (user) {
-    const { data } = await supabase
-      .from('profiles')
-      .select('nama_lengkap, peran')
-      .eq('id', user.id)
-      .single();
-    profile = data;
+export default async function Navbar({ user: propUser, profile: propProfile }: NavbarProps = {}) {
+  let user = propUser;
+  let profile = propProfile;
+
+  // Hanya lakukan query Supabase jika props user tidak diberikan secara eksplisit
+  if (user === undefined) {
+    const supabase = await createClient();
+    const { data } = await supabase.auth.getUser();
+    user = data.user;
+
+    if (user) {
+      const { data: prof } = await supabase
+        .from('profiles')
+        .select('nama_lengkap, peran')
+        .eq('id', user.id)
+        .single();
+      profile = prof;
+    }
   }
 
   return (

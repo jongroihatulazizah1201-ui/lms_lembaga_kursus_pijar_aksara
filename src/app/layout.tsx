@@ -2,12 +2,29 @@ import React, { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { Outfit, Inter } from 'next/font/google';
 import './globals.css';
 import { createClient } from '@/lib/supabase/server';
 import Navbar from '@/components/Navbar';
 import Sidebar from '@/components/Sidebar';
 import Footer from '@/components/Footer';
 import MobileBottomNav from '@/components/MobileBottomNav';
+
+const outfit = Outfit({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-heading',
+  weight: ['400', '500', '600', '700', '800'],
+  preload: true,
+});
+
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-body',
+  weight: ['300', '400', '500', '600', '700'],
+  preload: true,
+});
 
 export const dynamic = 'force-dynamic';
 
@@ -72,9 +89,9 @@ export default async function RootLayout({
   // Tampilkan hanya Top Navbar & Form tanpa Footer agar footer tidak pernah muncul saat proses login
   if (isAuthPage) {
     return (
-      <html lang="id" suppressHydrationWarning>
+      <html lang="id" className={`${outfit.variable} ${inter.variable}`} suppressHydrationWarning>
         <body suppressHydrationWarning className="bg-slate-50 text-slate-900 min-h-screen flex flex-col antialiased selection:bg-[#ffdf0f] selection:text-slate-900">
-          <Navbar />
+          <Navbar user={user} profile={profile} />
           <main className="flex-1 flex flex-col">
             {children}
           </main>
@@ -83,11 +100,11 @@ export default async function RootLayout({
     );
   }
 
-  // 2. JIKA DI AREA APLIKASI INTERNAL ATAU PENGGUNA TERAUTENTIKASI:
+  // 3. JIKA DI AREA APLIKASI INTERNAL ATAU PENGGUNA TERAUTENTIKASI:
   // Tampilkan antarmuka portal aplikasi dengan Sidebar Kiri, TANPA Footer publik
   if (isInternalApp || (user && profile)) {
     return (
-      <html lang="id" suppressHydrationWarning>
+      <html lang="id" className={`${outfit.variable} ${inter.variable}`} suppressHydrationWarning>
         <body suppressHydrationWarning className="bg-white text-slate-900 min-h-screen flex flex-col lg:flex-row antialiased selection:bg-[#ffdf0f] selection:text-slate-900">
           {/* Left Sidebar untuk pengguna terautentikasi (Dibalut Suspense untuk useSearchParams) */}
           <Suspense fallback={<aside className="w-72 shrink-0 border-r border-slate-200 bg-white h-screen sticky top-0 hidden lg:block z-30" />}>
@@ -108,12 +125,12 @@ export default async function RootLayout({
     );
   }
 
-  // 3. JIKA SEBAGAI TAMU DI HALAMAN PUBLIK (Landing page, Katalog Kursus, dsb.):
+  // 4. JIKA SEBAGAI TAMU DI HALAMAN PUBLIK (Landing page, Katalog Kursus, dsb.):
   // Tampilkan Top Navbar, Konten Publik, dan Footer
   return (
-    <html lang="id" suppressHydrationWarning>
+    <html lang="id" className={`${outfit.variable} ${inter.variable}`} suppressHydrationWarning>
       <body suppressHydrationWarning className="bg-white text-slate-900 min-h-screen flex flex-col antialiased selection:bg-[#ffdf0f] selection:text-slate-900">
-        <Navbar />
+        <Navbar user={user} profile={profile} />
         <main className="flex-1 pb-20 md:pb-0">
           {children}
         </main>

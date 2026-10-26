@@ -108,6 +108,7 @@ export default async function HomePage() {
                   height={564}
                   priority
                   loading="eager"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 640px"
                   className="w-full h-auto aspect-[739/564] object-contain object-bottom block align-bottom drop-shadow-[0_20px_35px_rgba(0,0,0,0.45)] pointer-events-none select-none transition-transform duration-300 hover:scale-[1.02]"
                 />
               </div>
@@ -120,7 +121,7 @@ export default async function HomePage() {
           PAKET POPULER KURSUS (Model Carousel Horizontal)
           Semua program tampil berdampingan tanpa perlu klik pop up kategori terpisah
          ========================================================================= */}
-      <section id="katalog" className="py-12 md:py-16 scroll-mt-28">
+      <section id="katalog" className="py-12 md:py-16 scroll-mt-28 content-visibility-auto">
         <div className="max-w-7xl mx-auto px-6">
           <PopularCoursesCarousel courses={courses} />
         </div>

@@ -4,7 +4,7 @@ import Logo from './Logo';
 
 export default function Footer() {
   return (
-    <footer className="border-t border-[#843bab]/20 bg-[#843bab]/20 pt-12 pb-8 mt-12 backdrop-blur-sm">
+    <footer className="border-t border-[#843bab]/20 bg-[#843bab]/20 pt-12 pb-8 mt-12 backdrop-blur-sm content-visibility-auto">
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
           {/* Brand Info */}
