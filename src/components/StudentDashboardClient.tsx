@@ -57,38 +57,6 @@ export default function StudentDashboardClient({
   const completedCourses = initialCourses.filter((c) => c.status === 'selesai');
   const pendingCourses = initialCourses.filter((c) => c.status === 'menunggu_bayar');
 
-  // Metrik Skala Penugasan Siswa
-  const totalCourses = initialCourses.length;
-  const activeCourseCount = activeCourses.length;
-  const completedCourseCount = completedCourses.length;
-
-  // Hitung total modul & kelulusan pada seluruh kursus aktif/selesai
-  const accessibleCourses = initialCourses.filter(
-    (c) => c.status === 'aktif' || c.status === 'selesai'
-  );
-
-  let totalTugasTerdaftar = 0;
-  let totalTugasLulus = 0;
-  let totalDurasiSemuaMenit = 0;
-  let totalDurasiSelesaiMenit = 0;
-
-  accessibleCourses.forEach((c) => {
-    totalTugasTerdaftar += c.kursus.total_modul || 0;
-    totalTugasLulus += c.modul_lulus || 0;
-    totalDurasiSemuaMenit += c.kursus.total_durasi_menit || 0;
-    totalDurasiSelesaiMenit += c.durasi_selesai_menit || 0;
-  });
-
-  const totalTugasPending = Math.max(0, totalTugasTerdaftar - totalTugasLulus);
-  const skalaPersen =
-    totalTugasTerdaftar > 0
-      ? Math.round((totalTugasLulus / totalTugasTerdaftar) * 100)
-      : 0;
-
-  // Cari tugas/modul berikutnya yang aktif
-  const currentActiveTaskCourse = activeCourses.find((c) => c.next_modul);
-  const nextTask = currentActiveTaskCourse?.next_modul;
-
   // FAQ Items
   const faqList = [
     {
@@ -242,146 +210,170 @@ export default function StudentDashboardClient({
           </div>
 
           {/* =========================================================
-              3. KARTU SKALA PENGERJAAN PENUGASAN SISWA (Real-Time Meter)
+              DAFTAR KURSUS & RINCIAN SKALA TUGAS BELAJAR (DI ATAS)
              ========================================================= */}
           {(activeTab === 'semua' || activeTab === 'skala_tugas') && (
-            <div className="mt-8 p-6 sm:p-7 rounded-3xl bg-white border border-slate-200 shadow-xs space-y-5">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="mt-8 p-6 sm:p-8 rounded-3xl bg-white border border-slate-200 shadow-xs space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
                 <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 rounded-2xl bg-purple-50 text-[#843bab] flex items-center justify-center font-bold shrink-0 shadow-2xs border border-purple-100">
-                    <Compass size={22} />
+                  <div className="w-10 h-10 rounded-2xl bg-purple-50 text-[#843bab] flex items-center justify-center font-bold shrink-0 border border-purple-100">
+                    <Compass size={20} />
                   </div>
                   <div>
-                    <h2 className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
-                      <span>Skala Pengerjaan Penugasan Siswa</span>
-                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-purple-100 text-[#843bab] border border-purple-200 uppercase tracking-wider">
-                        Capaian Belajar
-                      </span>
+                    <h2 className="text-lg sm:text-xl font-bold text-slate-900">
+                      Daftar Kursus &amp; Rincian Skala Tugas Belajar
                     </h2>
-                    <p className="text-xs text-slate-500">
-                      Akumulasi progres penyelesaian materi dan kuis evaluasi pada seluruh kursus terdaftar
+                    <p className="text-xs sm:text-sm text-slate-500">
+                      Status kelulusan modul dan langkah belajar berikutnya pada masing-masing kursus Anda
                     </p>
                   </div>
                 </div>
 
-                {/* Progress Summary Number */}
-                <div className="flex items-center gap-3">
-                  <div className="text-right">
-                    <div className="text-xs font-semibold text-slate-500">Total Kelulusan Modul</div>
-                    <div className="text-sm sm:text-base font-extrabold text-slate-900">
-                      <span className="text-emerald-600">{totalTugasLulus}</span> / {totalTugasTerdaftar} Modul
-                    </div>
-                  </div>
-                  <div className="px-3.5 py-1.5 rounded-2xl text-base sm:text-lg font-black bg-gradient-to-r from-[#843bab] to-purple-600 text-white shadow-2xs">
-                    {skalaPersen}%
-                  </div>
-                </div>
+                <Link
+                  href="/kursus-saya"
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-[#843bab] hover:underline"
+                >
+                  <span>Kelola di Halaman Kursus Saya</span>
+                  <ArrowRight size={14} />
+                </Link>
               </div>
 
-              {/* Visual Meter Bar */}
-              <div className="w-full h-3.5 rounded-full bg-slate-100 overflow-hidden p-0.5 border border-slate-200/70">
-                <div
-                  className="h-full rounded-full bg-gradient-to-r from-[#843bab] via-purple-500 to-emerald-500 transition-all duration-700 shadow-2xs"
-                  style={{ width: `${skalaPersen}%` }}
-                />
-              </div>
+              {/* Jika ada kursus terdaftar */}
+              {initialCourses.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {initialCourses.map((c) => {
+                    const courseProgress =
+                      c.kursus.total_modul > 0
+                        ? Math.round((c.modul_lulus / c.kursus.total_modul) * 100)
+                        : 0;
 
-              {/* 4 Kartu Metrik Rinci */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
-                <div className="p-4 rounded-2xl bg-emerald-50/60 border border-emerald-100 flex flex-col justify-between">
-                  <div>
-                    <div className="flex items-center justify-between text-emerald-800 mb-1">
-                      <span className="text-[11px] font-bold uppercase tracking-wider">Tugas Selesai</span>
-                      <CheckCircle2 size={15} className="text-emerald-600" />
-                    </div>
-                    <div className="text-lg sm:text-xl font-extrabold text-emerald-700">
-                      {totalTugasLulus} Modul
-                    </div>
-                  </div>
-                  <div className="text-[10px] text-emerald-700/80 font-medium mt-1">
-                    Kuis lulus KKM kursus (&ge; nilai lulus)
-                  </div>
-                </div>
+                    return (
+                      <div
+                        key={c.id}
+                        className="p-5 rounded-2xl bg-slate-50/70 border border-slate-200/90 hover:border-slate-300 transition-all flex flex-col justify-between space-y-4"
+                      >
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between gap-2">
+                            <span
+                              className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                                c.status === 'aktif'
+                                  ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                                  : c.status === 'selesai'
+                                  ? 'bg-purple-50 text-[#843bab] border border-purple-200'
+                                  : c.status === 'menunggu_bayar'
+                                  ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                                  : 'bg-slate-100 text-slate-600 border border-slate-200'
+                              }`}
+                            >
+                              {c.status.replace('_', ' ')}
+                            </span>
+                            <span className="text-xs font-bold text-slate-500">
+                              {c.modul_lulus} / {c.kursus.total_modul} Modul Lulus
+                            </span>
+                          </div>
 
-                <div className="p-4 rounded-2xl bg-amber-50/60 border border-amber-100 flex flex-col justify-between">
-                  <div>
-                    <div className="flex items-center justify-between text-amber-800 mb-1">
-                      <span className="text-[11px] font-bold uppercase tracking-wider">Belum Dikerjakan</span>
-                      <Clock size={15} className="text-amber-600" />
-                    </div>
-                    <div className="text-lg sm:text-xl font-extrabold text-amber-700">
-                      {totalTugasPending} Modul
-                    </div>
-                  </div>
-                  <div className="text-[10px] text-amber-700/80 font-medium mt-1">
-                    Perlu dipelajari / kuis
-                  </div>
-                </div>
+                          <h4 className="font-bold text-base text-slate-900 line-clamp-1">
+                            {c.kursus.judul}
+                          </h4>
+                          <div className="text-xs text-slate-500">
+                            Instruktur: {c.kursus.instruktur_nama}
+                          </div>
 
-                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex flex-col justify-between">
-                  <div>
-                    <div className="flex items-center justify-between text-slate-600 mb-1">
-                      <span className="text-[11px] font-bold uppercase tracking-wider">Waktu Efektif</span>
-                      <BookOpen size={15} className="text-slate-400" />
-                    </div>
-                    <div className="text-lg sm:text-xl font-extrabold text-slate-800">
-                      {totalDurasiSelesaiMenit} Menit
-                    </div>
-                  </div>
-                  <div className="text-[10px] text-slate-500 font-medium mt-1">
-                    Dari {totalDurasiSemuaMenit} menit materi
-                  </div>
-                </div>
+                          {/* Progress Bar Mini */}
+                          <div className="space-y-1 pt-1">
+                            <div className="flex justify-between text-[11px] font-semibold text-slate-600">
+                              <span>Skala Modul Lulus</span>
+                              <span className="font-bold text-slate-900">{courseProgress}%</span>
+                            </div>
+                            <div className="w-full h-2 rounded-full bg-slate-200/80 overflow-hidden">
+                              <div
+                                className="h-full rounded-full bg-[#843bab] transition-all"
+                                style={{ width: `${courseProgress}%` }}
+                              />
+                            </div>
+                          </div>
 
-                <div className="p-4 rounded-2xl bg-purple-50/60 border border-purple-100 flex flex-col justify-between">
-                  <div>
-                    <div className="flex items-center justify-between text-[#843bab] mb-1">
-                      <span className="text-[11px] font-bold uppercase tracking-wider">Sertifikat Resmi</span>
-                      <Award size={15} className="text-[#843bab]" />
-                    </div>
-                    <div className="text-lg sm:text-xl font-extrabold text-[#843bab]">
-                      {completedCourseCount} Diraih
-                    </div>
-                  </div>
-                  <div className="text-[10px] text-[#843bab]/80 font-medium mt-1">
-                    QR Code verifikasi aktif
-                  </div>
-                </div>
-              </div>
+                          {/* Callout Tugas Berikutnya */}
+                          {c.status === 'aktif' && c.next_modul && (
+                            <div className="p-2.5 rounded-xl bg-purple-50/70 border border-purple-200/80 text-[11px] text-slate-700 flex items-start gap-2">
+                              <Target size={14} className="text-[#843bab] shrink-0 mt-0.5" />
+                              <div className="min-w-0 flex-1 leading-snug">
+                                <div className="font-bold text-slate-900 truncate">
+                                  Tugas Berikutnya: Modul {c.next_modul.urutan}
+                                </div>
+                                <div className="text-slate-600 truncate">{c.next_modul.judul}</div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
 
-              {/* Target Tugas Selanjutnya (Highlight Nudge) */}
-              {currentActiveTaskCourse && nextTask && (
-                <div className="mt-2 p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-purple-50 via-white to-purple-50/40 border border-[#843bab]/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-2xs">
-                  <div className="flex items-start gap-3.5">
-                    <div className="p-2.5 rounded-xl bg-[#843bab] text-white shrink-0 mt-0.5 shadow-xs">
-                      <Target size={20} />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-bold text-sm sm:text-base text-slate-900">
-                          Target Tugas Selanjutnya Anda
-                        </h3>
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-[#ffdf0f] text-slate-900 border border-amber-300">
-                          Siap Dikerjakan
-                        </span>
+                        {/* Tombol Aksi */}
+                        <div className="pt-2 border-t border-slate-200/60 flex items-center justify-between">
+                          {c.status === 'aktif' ? (
+                            <Link
+                              href={`/belajar/${c.kursus.slug}`}
+                              className="inline-flex items-center gap-1.5 text-xs font-bold text-[#843bab] hover:text-[#722f96]"
+                            >
+                              <span>Lanjut Belajar &amp; Kuis</span>
+                              <ArrowRight size={13} />
+                            </Link>
+                          ) : c.status === 'selesai' ? (
+                            <Link
+                              href={`/sertifikat/${c.id}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 hover:text-emerald-800"
+                            >
+                              <span>Lihat Sertifikat</span>
+                              <Award size={13} />
+                            </Link>
+                          ) : c.status === 'menunggu_bayar' ? (
+                            <Link
+                              href={`/kursus-saya/${c.id}/bayar`}
+                              className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-700 hover:text-amber-800"
+                            >
+                              <span>Selesaikan Pembayaran</span>
+                              <ArrowRight size={13} />
+                            </Link>
+                          ) : (
+                            <Link
+                              href={`/kursus/${c.kursus.slug}`}
+                              className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-slate-900"
+                            >
+                              <span>Daftar Kembali Kursus</span>
+                              <ArrowRight size={13} />
+                            </Link>
+                          )}
+
+                          <span className="text-[11px] text-slate-400">
+                            {c.kursus.total_durasi_menit || 0} menit
+                          </span>
+                        </div>
                       </div>
-                      <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mt-0.5">
-                        Pada kursus <strong className="text-slate-900">{currentActiveTaskCourse.kursus.judul}</strong>: lanjutkan{' '}
-                        <strong className="text-[#843bab]">
-                          Modul {nextTask.urutan}: {nextTask.judul}
-                        </strong>{' '}
-                        ({nextTask.is_read ? 'Kuis Evaluasi Menunggu Dikerjakan' : 'Pelajari Materi & Video'}).
-                      </p>
-                    </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                /* Empty State jika belum ada kursus */
+                <div className="p-8 rounded-2xl bg-slate-50 border border-slate-200 text-center space-y-3">
+                  <div className="w-12 h-12 rounded-2xl bg-purple-100 text-[#843bab] flex items-center justify-center mx-auto">
+                    <BookOpen size={24} />
                   </div>
-
-                  <Link
-                    href={`/belajar/${currentActiveTaskCourse.kursus.slug}`}
-                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#843bab] hover:bg-[#722f96] text-white font-bold text-xs whitespace-nowrap shadow-xs hover:shadow-md transition-all shrink-0 cursor-pointer"
-                  >
-                    <span>Mulai Kerjakan Tugas</span>
-                    <ArrowRight size={14} />
-                  </Link>
+                  <h4 className="font-bold text-slate-900 text-base">
+                    Belum Ada Kursus yang Terdaftar
+                  </h4>
+                  <p className="text-xs sm:text-sm text-slate-500 max-w-md mx-auto">
+                    Anda belum mendaftar kursus vokasi apa pun. Pilih kursus bersertifikat resmi yang sesuai dengan kebutuhan peningkatan keahlian Anda di katalog kursus kami.
+                  </p>
+                  <div className="pt-2">
+                    <Link
+                      href="/kursus"
+                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#843bab] hover:bg-[#722f96] text-white font-bold text-xs shadow-xs hover:shadow-md transition-all"
+                    >
+                      <span>Jelajahi Katalog Kursus Vokasi</span>
+                      <ArrowRight size={14} />
+                    </Link>
+                  </div>
                 </div>
               )}
             </div>
@@ -404,7 +396,7 @@ export default function StudentDashboardClient({
               </div>
               <div>
                 <h3 className="text-lg sm:text-xl font-bold text-slate-900">
-                  1. Skala Penilaian &amp; Aturan Kuis Evaluasi
+                  Skala Penilaian &amp; Aturan Kuis Evaluasi
                 </h3>
                 <p className="text-xs sm:text-sm text-slate-500">
                   Standar Kriteria Ketuntasan Minimal (KKM), skala predikat nilai, dan sistem remedial otomatis
@@ -501,7 +493,7 @@ export default function StudentDashboardClient({
               </div>
               <div>
                 <h3 className="text-lg sm:text-xl font-bold text-slate-900">
-                  2. Alur Pembelajaran Sekuensial &amp; Sistem Buka Kunci
+                  Alur Pembelajaran Sekuensial &amp; Sistem Buka Kunci
                 </h3>
                 <p className="text-xs sm:text-sm text-slate-500">
                   Setiap modul disusun bertingkat. Siswa tidak dapat melompati materi demi integritas pemahaman
@@ -592,7 +584,7 @@ export default function StudentDashboardClient({
               </div>
               <div>
                 <h3 className="text-lg sm:text-xl font-bold text-slate-900">
-                  3. Standar Sertifikat Resmi &amp; Verifikasi Digital Anti-Pemalsuan
+                  Standar Sertifikat Resmi &amp; Verifikasi Digital Anti-Pemalsuan
                 </h3>
                 <p className="text-xs sm:text-sm text-slate-500">
                   Sertifikat kompetensi resmi dengan nomor registrasi unik dan QR Code resmi
@@ -676,7 +668,7 @@ export default function StudentDashboardClient({
               </div>
               <div>
                 <h3 className="text-lg sm:text-xl font-bold text-slate-900">
-                  4. Batas Waktu Pembayaran (24 Jam) &amp; Kebijakan Akses
+                  Batas Waktu Pembayaran (24 Jam) &amp; Kebijakan Akses
                 </h3>
                 <p className="text-xs sm:text-sm text-slate-500">
                   Aturan alokasi kuota kursi, metode pembayaran resmi, dan ketentuan pembatalan pesanan
@@ -725,175 +717,6 @@ export default function StudentDashboardClient({
           </section>
         )}
 
-        {/* =========================================================
-            SECTION: SKALA PENUGASAN SAYA (DAFTAR KURSUS SISWA)
-           ========================================================= */}
-        {(activeTab === 'semua' || activeTab === 'skala_tugas') && (
-          <section className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-xs space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-purple-50 text-[#843bab] flex items-center justify-center font-bold shrink-0 border border-purple-100">
-                  <Compass size={20} />
-                </div>
-                <div>
-                  <h3 className="text-lg sm:text-xl font-bold text-slate-900">
-                    5. Daftar Kursus &amp; Rincian Skala Tugas Belajar
-                  </h3>
-                  <p className="text-xs sm:text-sm text-slate-500">
-                    Status kelulusan modul dan langkah belajar berikutnya pada masing-masing kursus Anda
-                  </p>
-                </div>
-              </div>
-
-              <Link
-                href="/kursus-saya"
-                className="inline-flex items-center gap-1.5 text-xs font-bold text-[#843bab] hover:underline"
-              >
-                <span>Kelola di Halaman Kursus Saya</span>
-                <ArrowRight size={14} />
-              </Link>
-            </div>
-
-            {/* Jika ada kursus terdaftar */}
-            {initialCourses.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {initialCourses.map((c) => {
-                  const courseProgress =
-                    c.kursus.total_modul > 0
-                      ? Math.round((c.modul_lulus / c.kursus.total_modul) * 100)
-                      : 0;
-
-                  return (
-                    <div
-                      key={c.id}
-                      className="p-5 rounded-2xl bg-slate-50/70 border border-slate-200/90 hover:border-slate-300 transition-all flex flex-col justify-between space-y-4"
-                    >
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between gap-2">
-                          <span
-                            className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
-                              c.status === 'aktif'
-                                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                                : c.status === 'selesai'
-                                ? 'bg-purple-50 text-[#843bab] border border-purple-200'
-                                : c.status === 'menunggu_bayar'
-                                ? 'bg-amber-50 text-amber-700 border border-amber-200'
-                                : 'bg-slate-100 text-slate-600 border border-slate-200'
-                            }`}
-                          >
-                            {c.status.replace('_', ' ')}
-                          </span>
-                          <span className="text-xs font-bold text-slate-500">
-                            {c.modul_lulus} / {c.kursus.total_modul} Modul Lulus
-                          </span>
-                        </div>
-
-                        <h4 className="font-bold text-base text-slate-900 line-clamp-1">
-                          {c.kursus.judul}
-                        </h4>
-                        <div className="text-xs text-slate-500">
-                          Instruktur: {c.kursus.instruktur_nama}
-                        </div>
-
-                        {/* Progress Bar Mini */}
-                        <div className="space-y-1 pt-1">
-                          <div className="flex justify-between text-[11px] font-semibold text-slate-600">
-                            <span>Skala Modul Lulus</span>
-                            <span className="font-bold text-slate-900">{courseProgress}%</span>
-                          </div>
-                          <div className="w-full h-2 rounded-full bg-slate-200/80 overflow-hidden">
-                            <div
-                              className="h-full rounded-full bg-[#843bab] transition-all"
-                              style={{ width: `${courseProgress}%` }}
-                            />
-                          </div>
-                        </div>
-
-                        {/* Callout Tugas Berikutnya */}
-                        {c.status === 'aktif' && c.next_modul && (
-                          <div className="p-2.5 rounded-xl bg-purple-50/70 border border-purple-200/80 text-[11px] text-slate-700 flex items-start gap-2">
-                            <Target size={14} className="text-[#843bab] shrink-0 mt-0.5" />
-                            <div className="min-w-0 flex-1 leading-snug">
-                              <div className="font-bold text-slate-900 truncate">
-                                Tugas Berikutnya: Modul {c.next_modul.urutan}
-                              </div>
-                              <div className="text-slate-600 truncate">{c.next_modul.judul}</div>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Tombol Aksi */}
-                      <div className="pt-2 border-t border-slate-200/60 flex items-center justify-between">
-                        {c.status === 'aktif' ? (
-                          <Link
-                            href={`/belajar/${c.kursus.slug}`}
-                            className="inline-flex items-center gap-1.5 text-xs font-bold text-[#843bab] hover:text-[#722f96]"
-                          >
-                            <span>Lanjut Belajar &amp; Kuis</span>
-                            <ArrowRight size={13} />
-                          </Link>
-                        ) : c.status === 'selesai' ? (
-                          <Link
-                            href={`/sertifikat/${c.id}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 hover:text-emerald-800"
-                          >
-                            <span>Lihat Sertifikat</span>
-                            <Award size={13} />
-                          </Link>
-                        ) : c.status === 'menunggu_bayar' ? (
-                          <Link
-                            href={`/kursus-saya/${c.id}/bayar`}
-                            className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-700 hover:text-amber-800"
-                          >
-                            <span>Selesaikan Pembayaran</span>
-                            <ArrowRight size={13} />
-                          </Link>
-                        ) : (
-                          <Link
-                            href={`/kursus/${c.kursus.slug}`}
-                            className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-slate-900"
-                          >
-                            <span>Daftar Kembali Kursus</span>
-                            <ArrowRight size={13} />
-                          </Link>
-                        )}
-
-                        <span className="text-[11px] text-slate-400">
-                          {c.kursus.total_durasi_menit || 0} menit
-                        </span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              /* Empty State jika belum ada kursus */
-              <div className="p-8 rounded-2xl bg-slate-50 border border-slate-200 text-center space-y-3">
-                <div className="w-12 h-12 rounded-2xl bg-purple-100 text-[#843bab] flex items-center justify-center mx-auto">
-                  <BookOpen size={24} />
-                </div>
-                <h4 className="font-bold text-slate-900 text-base">
-                  Belum Ada Kursus yang Terdaftar
-                </h4>
-                <p className="text-xs sm:text-sm text-slate-500 max-w-md mx-auto">
-                  Anda belum mendaftar kursus vokasi apa pun. Pilih kursus bersertifikat resmi yang sesuai dengan kebutuhan peningkatan keahlian Anda di katalog kursus kami.
-                </p>
-                <div className="pt-2">
-                  <Link
-                    href="/kursus"
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#843bab] hover:bg-[#722f96] text-white font-bold text-xs shadow-xs hover:shadow-md transition-all"
-                  >
-                    <span>Jelajahi Katalog Kursus Vokasi</span>
-                    <ArrowRight size={14} />
-                  </Link>
-                </div>
-              </div>
-            )}
-          </section>
-        )}
 
         {/* =========================================================
             SECTION: TANYA JAWAB UMUM (FAQ SISWA INTERAKTIF)
