@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import {
   LayoutDashboard,
-  GraduationCap,
   Award,
   CheckCircle2,
   Clock,
@@ -228,38 +227,18 @@ export default function StudentDashboardClient({
          ========================================================= */}
       <section className="bg-gradient-to-b from-purple-50/70 via-white to-slate-50/50 border-b border-slate-200/80 pt-6 pb-7">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
+          <div>
             {/* Sapaan & Identitas */}
-            <div>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#843bab]/10 text-[#843bab] text-[11px] font-bold border border-[#843bab]/20 mb-2">
-                <ShieldCheck size={13} className="text-[#843bab]" />
-                <span>Pusat Kendali &amp; Pedoman Siswa</span>
-              </div>
-              <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight mb-1.5">
-                Dashboard Siswa &amp; Aturan Belajar
-              </h1>
-              <p className="text-slate-600 text-xs sm:text-sm max-w-2xl leading-relaxed">
-                Halo, <span className="font-semibold text-slate-900">{userProfile.nama_lengkap}</span>! Pahami pedoman kelulusan, skala penilaian kuis berstandar industri, dan pantau skala pengerjaan penugasan belajar Anda secara real-time.
-              </p>
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#843bab]/10 text-[#843bab] text-[11px] font-bold border border-[#843bab]/20 mb-2">
+              <ShieldCheck size={13} className="text-[#843bab]" />
+              <span>Pusat Kendali &amp; Pedoman Siswa</span>
             </div>
-
-            {/* Quick Action Links */}
-            <div className="flex flex-wrap items-center gap-2.5 shrink-0">
-              <Link
-                href="/kursus-saya"
-                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#843bab] hover:bg-[#722f96] text-white font-bold text-xs sm:text-sm shadow-xs hover:shadow-md transition-all cursor-pointer"
-              >
-                <GraduationCap size={15} />
-                <span>Buka Kursus Saya</span>
-              </Link>
-              <Link
-                href="/kursus"
-                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 font-bold text-xs sm:text-sm shadow-2xs transition-all"
-              >
-                <BookOpen size={15} className="text-slate-500" />
-                <span>Katalog Kursus</span>
-              </Link>
-            </div>
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight mb-1.5">
+              Dashboard Siswa &amp; Aturan Belajar
+            </h1>
+            <p className="text-slate-600 text-xs sm:text-sm max-w-2xl leading-relaxed">
+              Halo, <span className="font-semibold text-slate-900">{userProfile.nama_lengkap}</span>! Pahami pedoman kelulusan, skala penilaian kuis berstandar industri, dan pantau skala pengerjaan penugasan belajar Anda secara real-time.
+            </p>
           </div>
 
           {/* =========================================================
