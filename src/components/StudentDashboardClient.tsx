@@ -1,30 +1,27 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import {
-  LayoutDashboard,
+  GraduationCap,
   Award,
   CheckCircle2,
   Clock,
   BookOpen,
   ArrowRight,
   Target,
-  Compass,
+  Sparkles,
   ShieldCheck,
-  FileText,
-  AlertTriangle,
-  HelpCircle,
-  Lock,
-  Unlock,
-  Printer,
-  ChevronDown,
   Search,
-  Check,
-  Flame,
-  Zap,
-  Info,
   ExternalLink,
+  BookCheck,
+  TrendingUp,
+  BarChart2,
+  Calendar,
+  AlertCircle,
+  HelpCircle,
+  PlayCircle,
+  Layers,
 } from 'lucide-react';
 import { EnrollmentItem } from '@/components/MyCourseCard';
 
@@ -36,723 +33,630 @@ interface Props {
   };
 }
 
-type TabType =
-  | 'skala_tugas'
-  | 'aturan_kuis'
-  | 'alur_modul'
-  | 'sertifikat'
-  | 'pembayaran'
-  | 'faq';
-
 export default function StudentDashboardClient({
   initialCourses,
   userProfile,
 }: Props) {
-  const [activeTab, setActiveTab] = useState<TabType>('skala_tugas');
-  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
+  const [searchQuery, setSearchQuery] = useState('');
 
-  // Filter kursus berdasarkan status
+  // 1. Filter status kursus
   const activeCourses = initialCourses.filter((c) => c.status === 'aktif');
   const completedCourses = initialCourses.filter((c) => c.status === 'selesai');
   const pendingCourses = initialCourses.filter((c) => c.status === 'menunggu_bayar');
 
-  // FAQ Items
-  const faqList = [
-    {
-      q: 'Berapa standar nilai minimal kelulusan (passing grade) kuis?',
-      a: 'Standar nilai kelulusan kuis ditentukan pada masing-masing kursus dalam rentang 50 hingga 100 dengan nilai bawaan 70. Jika perolehan nilai evaluasi Anda mencapai atau melampaui nilai kelulusan kursus tersebut, modul dinyatakan LULUS dan modul selanjutnya otomatis terbuka.',
-    },
-    {
-      q: 'Berapa kali batas kesempatan mencoba kuis jika belum mencapai nilai lulus?',
-      a: 'Setiap modul memiliki batas maksimal 3 kali percobaan kuis per pendaftaran. Jika belum lulus pada percobaan sebelumnya, Anda dapat mempelajari kembali materi sebelum mencoba lagi. Setelah lulus, kuis modul tersebut tidak dapat dikerjakan ulang.',
-    },
-    {
-      q: 'Mengapa modul berikutnya masih terkunci dengan ikon gembok?',
-      a: 'Kurikulum vokasi Pijar Aksara dirancang secara sekuensial (berurutan) demi menjamin fondasi keahlian yang kokoh. Anda wajib menyelesaikan membaca materi dan lulus kuis evaluasi pada modul sebelumnya sebelum modul berikutnya terbuka secara otomatis.',
-    },
-    {
-      q: 'Kapan sertifikat kompetensi resmi diterbitkan?',
-      a: 'Sertifikat kompetensi otomatis diterbitkan oleh sistem segera setelah Anda menuntaskan 100% modul dan seluruh kuis dinyatakan lulus. Anda dapat melihat, mengunduh file cetak PDF beresolusi tinggi, dan memverifikasi nomor registrasinya kapan saja.',
-    },
-    {
-      q: 'Bagaimana cara mengakses sertifikat kelulusan saya?',
-      a: 'Sertifikat kompetensi resmi bersifat privat dan dapat diakses eksklusif oleh peserta melalui menu Kursus Saya setelah menyelesaikan seluruh modul dan lulus kuis. Setiap sertifikat dilengkapi nomor registrasi unik berformat PA-TAHUN-NOMOR dan tanda tangan digital resmi.',
-    },
-    {
-      q: 'Berapa lama batas waktu pembayaran setelah mendaftar kursus?',
-      a: 'Setiap pendaftaran memiliki batas waktu pembayaran selama 24 jam. Jika melewati 24 jam belum diselesaikan, invoice otomatis kedaluwarsa untuk mengembalikan alokasi kuota kursi kepada calon peserta lainnya.',
-    },
-    {
-      q: 'Apakah materi kursus yang sudah dibeli memiliki batas waktu kedaluwarsa akses?',
-      a: 'Tidak ada batas waktu kedaluwarsa! Setelah status kursus aktif, Anda mendapatkan Akses Seumur Hidup (Lifetime Access) 24/7. Anda dapat kembali mempelajari materi, video, dan catatan modul kapan pun dibutuhkan.',
-    },
-  ];
+  // 2. Akumulasi data agregat
+  const totalCourses = initialCourses.length;
+
+  const totalModulSemua = useMemo(() => {
+    return initialCourses.reduce((acc, c) => acc + (c.kursus.total_modul || 0), 0);
+  }, [initialCourses]);
+
+  const totalModulLulus = useMemo(() => {
+    return initialCourses.reduce((acc, c) => acc + (c.modul_lulus || 0), 0);
+  }, [initialCourses]);
+
+  const totalModulBelum = Math.max(0, totalModulSemua - totalModulLulus);
+
+  const overallProgress = useMemo(() => {
+    if (totalModulSemua === 0) return 0;
+    return Math.min(100, Math.round((totalModulLulus / totalModulSemua) * 100));
+  }, [totalModulSemua, totalModulLulus]);
+
+  const totalDurasiSemuaMenit = useMemo(() => {
+    return initialCourses.reduce((acc, c) => acc + (c.kursus.total_durasi_menit || 0), 0);
+  }, [initialCourses]);
+
+  const totalDurasiSelesaiMenit = useMemo(() => {
+    return initialCourses.reduce((acc, c) => acc + (c.durasi_selesai_menit || 0), 0);
+  }, [initialCourses]);
+
+  const totalInvestasiRp = useMemo(() => {
+    return initialCourses.reduce((acc, c) => acc + (Number(c.nominal) || 0), 0);
+  }, [initialCourses]);
+
+  // Kursus yang difilter oleh input pencarian
+  const filteredCourses = useMemo(() => {
+    if (!searchQuery.trim()) return initialCourses;
+    const q = searchQuery.toLowerCase();
+    return initialCourses.filter(
+      (c) =>
+        c.kursus.judul.toLowerCase().includes(q) ||
+        c.kursus.kategori.toLowerCase().includes(q) ||
+        c.kursus.instruktur_nama.toLowerCase().includes(q)
+    );
+  }, [initialCourses, searchQuery]);
+
+  // Visual Donut Chart SVG calculation
+  const radius = 64;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = circumference - (overallProgress / 100) * circumference;
 
   return (
     <div className="min-h-screen bg-slate-50/70 text-slate-900 pb-20 select-text">
       {/* =========================================================
-          1. STICKY TOP TAB FILTER: Navigasi Cepat Panduan & Skala Belajar
+          1. TOP APP BAR: PENGUMUMAN PANDUAN & QUICK NAV
          ========================================================= */}
-      <nav className="sticky top-[57px] lg:top-0 z-30 w-full bg-white border-b border-slate-200 shadow-xs transition-all before:absolute before:inset-x-0 before:-top-4 before:h-4 before:bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto py-2.5 sm:py-3 no-scrollbar text-xs sm:text-sm font-semibold">
-            <button
-              type="button"
-              onClick={() => setActiveTab('skala_tugas')}
-              className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl whitespace-nowrap transition-all cursor-pointer ${
-                activeTab === 'skala_tugas'
-                  ? 'bg-[#843bab] text-white shadow-xs'
-                  : 'bg-slate-100/80 text-slate-600 hover:text-slate-900 hover:bg-slate-200/80'
-              }`}
-            >
-              <Compass size={14} />
-              <span>Skala Penugasan</span>
-            </button>
+      <nav className="sticky top-[57px] lg:top-0 z-30 w-full bg-white/95 backdrop-blur-md border-b border-slate-200/90 shadow-2xs transition-all">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 sm:py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar text-xs">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-purple-50 text-[#843bab] font-bold border border-purple-200/80 shrink-0">
+              <Sparkles size={12} className="text-[#843bab]" />
+              <span>Pusat Belajar Vokasi</span>
+            </span>
+            <span className="text-slate-500 hidden md:inline truncate">
+              Pedoman kelulusan kuis, alur sekuensial, dan sertifikat resmi tersedia di halaman aturan.
+            </span>
+          </div>
 
-            <button
-              type="button"
-              onClick={() => setActiveTab('aturan_kuis')}
-              className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl whitespace-nowrap transition-all cursor-pointer ${
-                activeTab === 'aturan_kuis'
-                  ? 'bg-[#843bab] text-white shadow-xs'
-                  : 'bg-slate-100/80 text-slate-600 hover:text-slate-900 hover:bg-slate-200/80'
-              }`}
+          <div className="flex items-center gap-2 shrink-0 text-xs font-bold">
+            <Link
+              href="/aturan-belajar"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-50/90 hover:bg-purple-100 text-[#843bab] border border-purple-200 transition-colors"
             >
-              <CheckCircle2 size={14} />
-              <span>Aturan Kuis &amp; Nilai</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveTab('alur_modul')}
-              className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl whitespace-nowrap transition-all cursor-pointer ${
-                activeTab === 'alur_modul'
-                  ? 'bg-[#843bab] text-white shadow-xs'
-                  : 'bg-slate-100/80 text-slate-600 hover:text-slate-900 hover:bg-slate-200/80'
-              }`}
+              <BookCheck size={14} />
+              <span>Aturan &amp; Pedoman Kursus</span>
+            </Link>
+            <Link
+              href="/kursus-saya"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200/80 text-slate-700 transition-colors"
             >
-              <Lock size={14} />
-              <span>Alur Modul Sekuensial</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveTab('sertifikat')}
-              className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl whitespace-nowrap transition-all cursor-pointer ${
-                activeTab === 'sertifikat'
-                  ? 'bg-[#843bab] text-white shadow-xs'
-                  : 'bg-slate-100/80 text-slate-600 hover:text-slate-900 hover:bg-slate-200/80'
-              }`}
-            >
-              <Award size={14} />
-              <span>Sertifikat &amp; QR</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveTab('pembayaran')}
-              className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl whitespace-nowrap transition-all cursor-pointer ${
-                activeTab === 'pembayaran'
-                  ? 'bg-[#843bab] text-white shadow-xs'
-                  : 'bg-slate-100/80 text-slate-600 hover:text-slate-900 hover:bg-slate-200/80'
-              }`}
-            >
-              <Clock size={14} />
-              <span>Batas Bayar 24 Jam</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveTab('faq')}
-              className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl whitespace-nowrap transition-all cursor-pointer ${
-                activeTab === 'faq'
-                  ? 'bg-[#843bab] text-white shadow-xs'
-                  : 'bg-slate-100/80 text-slate-600 hover:text-slate-900 hover:bg-slate-200/80'
-              }`}
-            >
-              <HelpCircle size={14} />
-              <span>FAQ Siswa</span>
-            </button>
+              <GraduationCap size={14} />
+              <span>Kursus Saya</span>
+            </Link>
           </div>
         </div>
       </nav>
 
       {/* =========================================================
-          2. HERO HEADER: Dashboard Siswa & Pedoman Akademik
+          2. HERO GREETING & SEARCH (MIRRORING DRIBBLE REFERENCE)
          ========================================================= */}
-      <section className="bg-gradient-to-b from-purple-50/70 via-white to-slate-50/50 border-b border-slate-200/80 pt-6 pb-7">
+      <section className="bg-gradient-to-b from-purple-50/80 via-white to-slate-50/50 border-b border-slate-200/80 pt-7 pb-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div>
-            {/* Sapaan & Identitas */}
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#843bab]/10 text-[#843bab] text-[11px] font-bold border border-[#843bab]/20 mb-2">
-              <ShieldCheck size={13} className="text-[#843bab]" />
-              <span>Pusat Kendali &amp; Pedoman Siswa</span>
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                Halo, {userProfile.nama_lengkap || 'Peserta'}! 👋
+              </h1>
+              <p className="text-slate-500 text-xs sm:text-sm mt-1 max-w-xl">
+                Pantau ringkasan aktivitas belajar, progres penugasan modul vokasi, dan pencapaian kompetensi Anda secara real-time.
+              </p>
             </div>
-            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
-              Halo, {userProfile.nama_lengkap || 'Peserta'}!
-            </h1>
-          </div>
 
-          {/* =========================================================
-              DAFTAR KURSUS & RINCIAN SKALA TUGAS BELAJAR (DI ATAS)
-             ========================================================= */}
-          {activeTab === 'skala_tugas' && (
-            <div className="mt-8 p-6 sm:p-8 rounded-3xl bg-white border border-slate-200 shadow-xs space-y-6">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-2xl bg-purple-50 text-[#843bab] flex items-center justify-center font-bold shrink-0 border border-purple-100">
-                    <Compass size={20} />
-                  </div>
-                  <div>
-                    <h2 className="text-lg sm:text-xl font-bold text-slate-900">
-                      Daftar Kursus &amp; Rincian Skala Tugas Belajar
-                    </h2>
-                    <p className="text-xs sm:text-sm text-slate-500">
-                      Status kelulusan modul dan langkah belajar berikutnya pada masing-masing kursus Anda
-                    </p>
-                  </div>
-                </div>
-
-                <Link
-                  href="/kursus-saya"
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-[#843bab] hover:underline"
-                >
-                  <span>Kelola di Halaman Kursus Saya</span>
-                  <ArrowRight size={14} />
-                </Link>
+            {/* Pencarian & Tombol Aksi Cepat */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+              <div className="relative min-w-[240px] sm:w-72">
+                <Search
+                  size={15}
+                  className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
+                />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Cari program belajar..."
+                  className="w-full pl-9 pr-3 py-2 rounded-xl border border-slate-200 bg-white text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#843bab]/30 focus:border-[#843bab] transition-all shadow-2xs"
+                />
               </div>
 
-              {/* Jika ada kursus terdaftar */}
-              {initialCourses.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {initialCourses.map((c) => {
-                    const courseProgress =
-                      c.kursus.total_modul > 0
-                        ? Math.round((c.modul_lulus / c.kursus.total_modul) * 100)
-                        : 0;
-
-                    return (
-                      <div
-                        key={c.id}
-                        className="p-5 rounded-2xl bg-slate-50/70 border border-slate-200/90 hover:border-slate-300 transition-all flex flex-col justify-between space-y-4"
-                      >
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-between gap-2">
-                            <span
-                              className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
-                                c.status === 'aktif'
-                                  ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                                  : c.status === 'selesai'
-                                  ? 'bg-purple-50 text-[#843bab] border border-purple-200'
-                                  : c.status === 'menunggu_bayar'
-                                  ? 'bg-amber-50 text-amber-700 border border-amber-200'
-                                  : 'bg-slate-100 text-slate-600 border border-slate-200'
-                              }`}
-                            >
-                              {c.status.replace('_', ' ')}
-                            </span>
-                            <span className="text-xs font-bold text-slate-500">
-                              {c.modul_lulus} / {c.kursus.total_modul} Modul Lulus
-                            </span>
-                          </div>
-
-                          <h4 className="font-bold text-base text-slate-900 line-clamp-1">
-                            {c.kursus.judul}
-                          </h4>
-                          <div className="text-xs text-slate-500">
-                            Instruktur: {c.kursus.instruktur_nama}
-                          </div>
-
-                          {/* Progress Bar Mini */}
-                          <div className="space-y-1 pt-1">
-                            <div className="flex justify-between text-[11px] font-semibold text-slate-600">
-                              <span>Skala Modul Lulus</span>
-                              <span className="font-bold text-slate-900">{courseProgress}%</span>
-                            </div>
-                            <div className="w-full h-2 rounded-full bg-slate-200/80 overflow-hidden">
-                              <div
-                                className="h-full rounded-full bg-[#843bab] transition-all"
-                                style={{ width: `${courseProgress}%` }}
-                              />
-                            </div>
-                          </div>
-
-                          {/* Callout Tugas Berikutnya */}
-                          {c.status === 'aktif' && c.next_modul && (
-                            <div className="p-2.5 rounded-xl bg-purple-50/70 border border-purple-200/80 text-[11px] text-slate-700 flex items-start gap-2">
-                              <Target size={14} className="text-[#843bab] shrink-0 mt-0.5" />
-                              <div className="min-w-0 flex-1 leading-snug">
-                                <div className="font-bold text-slate-900 truncate">
-                                  Tugas Berikutnya: Modul {c.next_modul.urutan}
-                                </div>
-                                <div className="text-slate-600 truncate">{c.next_modul.judul}</div>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Tombol Aksi */}
-                        <div className="pt-2 border-t border-slate-200/60 flex items-center justify-between">
-                          {c.status === 'aktif' ? (
-                            <Link
-                              href={`/belajar/${c.kursus.slug}`}
-                              className="inline-flex items-center gap-1.5 text-xs font-bold text-[#843bab] hover:text-[#722f96]"
-                            >
-                              <span>Lanjut Belajar &amp; Kuis</span>
-                              <ArrowRight size={13} />
-                            </Link>
-                          ) : c.status === 'selesai' ? (
-                            <Link
-                              href={`/sertifikat/${c.id}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 hover:text-emerald-800"
-                            >
-                              <span>Lihat Sertifikat</span>
-                              <Award size={13} />
-                            </Link>
-                          ) : c.status === 'menunggu_bayar' ? (
-                            <Link
-                              href={`/kursus-saya/${c.id}/bayar`}
-                              className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-700 hover:text-amber-800"
-                            >
-                              <span>Selesaikan Pembayaran</span>
-                              <ArrowRight size={13} />
-                            </Link>
-                          ) : (
-                            <Link
-                              href={`/kursus/${c.kursus.slug}`}
-                              className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-slate-900"
-                            >
-                              <span>Daftar Kembali Kursus</span>
-                              <ArrowRight size={13} />
-                            </Link>
-                          )}
-
-                          <span className="text-[11px] text-slate-400">
-                            {c.kursus.total_durasi_menit || 0} menit
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                /* Empty State jika belum ada kursus */
-                <div className="p-8 rounded-2xl bg-slate-50 border border-slate-200 text-center space-y-3">
-                  <div className="w-12 h-12 rounded-2xl bg-purple-100 text-[#843bab] flex items-center justify-center mx-auto">
-                    <BookOpen size={24} />
-                  </div>
-                  <h4 className="font-bold text-slate-900 text-base">
-                    Belum Ada Kursus yang Terdaftar
-                  </h4>
-                  <p className="text-xs sm:text-sm text-slate-500 max-w-md mx-auto">
-                    Anda belum mendaftar kursus vokasi apa pun. Pilih kursus bersertifikat resmi yang sesuai dengan kebutuhan peningkatan keahlian Anda di katalog kursus kami.
-                  </p>
-                  <div className="pt-2">
-                    <Link
-                      href="/kursus"
-                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#843bab] hover:bg-[#722f96] text-white font-bold text-xs shadow-xs hover:shadow-md transition-all"
-                    >
-                      <span>Jelajahi Katalog Kursus Vokasi</span>
-                      <ArrowRight size={14} />
-                    </Link>
-                  </div>
-                </div>
-              )}
+              <Link
+                href="/kursus"
+                className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-[#843bab] hover:bg-[#722f96] text-white font-bold text-xs shadow-xs hover:shadow-md transition-all shrink-0 cursor-pointer"
+              >
+                <BookOpen size={14} />
+                <span>Katalog Kursus</span>
+              </Link>
             </div>
-          )}
+          </div>
         </div>
       </section>
 
       {/* =========================================================
-          4. KONTEN UTAMA: ATURAN MAIN & PANDUAN LENGKAP
+          3. MAIN COCKPIT DASHBOARD (INSPIRED BY REFERENCE)
          ========================================================= */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-10">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-7 space-y-6">
         {/* =========================================================
-            SECTION: RINGKASAN ATURAN MAIN (ATURAN 1 SAMPAI 5)
+            BARIS 1: ACTIVE LEARNING PROGRAMS (KIRI) & GROW STATUS (KANAN)
            ========================================================= */}
-        {activeTab === 'aturan_kuis' && (
-          <section className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-xs space-y-6">
-            <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
-              <div className="w-10 h-10 rounded-2xl bg-purple-50 text-[#843bab] flex items-center justify-center font-bold shrink-0 border border-purple-100">
-                <CheckCircle2 size={20} />
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* KARTU KIRI: PROGRAM BELAJAR AKTIF (7 COLS) */}
+          <div className="lg:col-span-7 bg-white rounded-3xl border border-slate-200/90 p-5 sm:p-6 shadow-xs flex flex-col justify-between space-y-5">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2">
+                <h2 className="font-extrabold text-base sm:text-lg text-slate-900">
+                  Program Belajar Aktif
+                </h2>
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="text-[11px] font-bold text-slate-400">
+                  ({filteredCourses.length})
+                </span>
               </div>
-              <div>
-                <h3 className="text-lg sm:text-xl font-bold text-slate-900">
-                  Skala Penilaian &amp; Aturan Kuis Evaluasi
-                </h3>
-                <p className="text-xs sm:text-sm text-slate-500">
-                  Standar Kriteria Ketuntasan Minimal (KKM), skala predikat nilai, dan sistem remedial otomatis
+
+              <Link
+                href="/kursus-saya"
+                className="inline-flex items-center gap-1 text-xs font-bold text-[#843bab] hover:underline"
+              >
+                <span>Kelola Kursus</span>
+                <ArrowRight size={13} />
+              </Link>
+            </div>
+
+            {/* List Program Belajar */}
+            {filteredCourses.length > 0 ? (
+              <div className="divide-y divide-slate-100 overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                      <th className="pb-3 font-semibold">Kursus</th>
+                      <th className="pb-3 font-semibold text-center hidden sm:table-cell">Modul</th>
+                      <th className="pb-3 font-semibold">Progres</th>
+                      <th className="pb-3 font-semibold hidden md:table-cell">Status / Target</th>
+                      <th className="pb-3 font-semibold text-right">Skor Kuis</th>
+                      <th className="pb-3 font-semibold text-right">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100/80 text-xs">
+                    {filteredCourses.map((c) => {
+                      const courseProgress =
+                        c.kursus.total_modul > 0
+                          ? Math.round((c.modul_lulus / c.kursus.total_modul) * 100)
+                          : 0;
+
+                      return (
+                        <tr key={c.id} className="hover:bg-slate-50/60 transition-colors">
+                          {/* Nama Kursus */}
+                          <td className="py-3.5 pr-3 max-w-[180px] sm:max-w-[200px]">
+                            <div className="font-bold text-slate-900 truncate">
+                              {c.kursus.judul}
+                            </div>
+                            <div className="text-[11px] text-slate-500 truncate flex items-center gap-1 mt-0.5">
+                              <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 font-semibold text-[10px]">
+                                {c.kursus.kategori}
+                              </span>
+                              <span>&bull;</span>
+                              <span className="truncate">{c.kursus.instruktur_nama}</span>
+                            </div>
+                          </td>
+
+                          {/* Modul Tuntas */}
+                          <td className="py-3.5 px-2 text-center hidden sm:table-cell">
+                            <span className="inline-flex items-center gap-1 font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-full text-[11px]">
+                              {c.modul_lulus}/{c.kursus.total_modul}
+                            </span>
+                          </td>
+
+                          {/* Progres Bar */}
+                          <td className="py-3.5 px-2 min-w-[110px]">
+                            <div className="space-y-1">
+                              <div className="flex justify-between items-center text-[10px] font-bold text-slate-600">
+                                <span>{courseProgress}%</span>
+                              </div>
+                              <div className="w-full h-1.5 rounded-full bg-slate-100 overflow-hidden">
+                                <div
+                                  className={`h-full rounded-full transition-all ${
+                                    courseProgress === 100
+                                      ? 'bg-emerald-500'
+                                      : 'bg-[#843bab]'
+                                  }`}
+                                  style={{ width: `${courseProgress}%` }}
+                                />
+                              </div>
+                            </div>
+                          </td>
+
+                          {/* Status / Target */}
+                          <td className="py-3.5 px-2 hidden md:table-cell">
+                            {c.status === 'aktif' ? (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                                Aktif Belajar
+                              </span>
+                            ) : c.status === 'selesai' ? (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-50 text-[#843bab] border border-purple-200">
+                                <Award size={11} />
+                                Lulus 100%
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                                <Clock size={11} />
+                                Menunggu Bayar
+                              </span>
+                            )}
+                          </td>
+
+                          {/* Skor Kuis */}
+                          <td className="py-3.5 px-2 text-right">
+                            {c.nilai_kuis_terbaik !== null && c.nilai_kuis_terbaik !== undefined ? (
+                              <span
+                                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-extrabold ${
+                                  c.nilai_kuis_terbaik >= 85
+                                    ? 'bg-emerald-50 text-emerald-700'
+                                    : c.nilai_kuis_terbaik >= 70
+                                    ? 'bg-purple-50 text-[#843bab]'
+                                    : 'bg-amber-50 text-amber-700'
+                                }`}
+                              >
+                                <span>⭐ {c.nilai_kuis_terbaik}</span>
+                              </span>
+                            ) : (
+                              <span className="text-slate-400 text-[11px] font-medium">-</span>
+                            )}
+                          </td>
+
+                          {/* Tombol Aksi */}
+                          <td className="py-3.5 pl-2 text-right">
+                            {c.status === 'aktif' ? (
+                              <Link
+                                href={`/belajar/${c.kursus.slug}`}
+                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#843bab] hover:bg-[#722f96] text-white font-bold text-[11px] transition-colors"
+                              >
+                                <span>Lanjut</span>
+                                <ArrowRight size={11} />
+                              </Link>
+                            ) : c.status === 'selesai' ? (
+                              <Link
+                                href={`/sertifikat/${c.id}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] transition-colors"
+                              >
+                                <span>Sertifikat</span>
+                                <ExternalLink size={10} />
+                              </Link>
+                            ) : (
+                              <Link
+                                href={`/kursus-saya/${c.id}/bayar`}
+                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-bold text-[11px] transition-colors"
+                              >
+                                <span>Bayar</span>
+                              </Link>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              /* Empty state jika belum ada kursus */
+              <div className="py-10 text-center space-y-3 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+                <BookOpen size={28} className="mx-auto text-slate-400" />
+                <div className="font-bold text-slate-800 text-sm">
+                  Belum Ada Program Belajar yang Aktif
+                </div>
+                <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                  Daftarkan diri Anda pada kursus bersertifikasi resmi Lembaga Kursus Pijar Aksara untuk memulai penugasan modul.
                 </p>
-              </div>
-            </div>
-
-            {/* Penjelasan Passing Grade Box */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200 text-slate-900">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="px-2.5 py-0.5 rounded-full text-xs font-black bg-emerald-600 text-white">
-                    Lulus Istimewa
-                  </span>
-                  <span className="text-xs font-bold text-emerald-800">Skor &ge; 85%</span>
-                </div>
-                <h4 className="font-bold text-sm text-emerald-950 mb-1">
-                  Sangat Memuaskan
-                </h4>
-                <p className="text-xs text-emerald-900 leading-relaxed">
-                  Menunjukkan pemahaman mendalam tanpa celah kesalahan. Modul tuntas dan modul berikutnya langsung terbuka.
-                </p>
-              </div>
-
-              <div className="p-4 rounded-2xl bg-purple-50/70 border border-purple-200 text-slate-900">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="px-2.5 py-0.5 rounded-full text-xs font-black bg-[#843bab] text-white">
-                    Lulus Standar
-                  </span>
-                  <span className="text-xs font-bold text-[#843bab]">&ge; Nilai Lulus Kursus</span>
-                </div>
-                <h4 className="font-bold text-sm text-slate-950 mb-1">
-                  Kompeten (Standar Vokasi)
-                </h4>
-                <p className="text-xs text-slate-700 leading-relaxed">
-                  Mencapai KKM kursus (rentang 50–100, bawaan 70). Dinyatakan LULUS dan modul selanjutnya terbuka.
-                </p>
-              </div>
-
-              <div className="p-4 rounded-2xl bg-amber-50/70 border border-amber-200 text-slate-900">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="px-2.5 py-0.5 rounded-full text-xs font-black bg-amber-500 text-slate-950">
-                    Belum Lulus
-                  </span>
-                  <span className="text-xs font-bold text-amber-800">&lt; Nilai Lulus</span>
-                </div>
-                <h4 className="font-bold text-sm text-amber-950 mb-1">
-                  Perlu Pengulangan (Maks. 3x)
-                </h4>
-                <p className="text-xs text-amber-900 leading-relaxed">
-                  Siswa dapat mempelajari kembali materi dan mengulang kuis selama sisa kesempatan (maksimal 3 percobaan).
-                </p>
-              </div>
-            </div>
-
-            {/* Aturan Main Pengerjaan Kuis */}
-            <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
-              <h4 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <Info size={16} className="text-[#843bab]" />
-                <span>Ketentuan Penting Pengerjaan Kuis:</span>
-              </h4>
-              <ul className="text-xs sm:text-sm text-slate-600 space-y-2 leading-relaxed">
-                <li className="flex items-start gap-2">
-                  <Check size={16} className="text-emerald-600 shrink-0 mt-0.5" />
-                  <span>
-                    <strong>Penilaian Aman di Server:</strong> Begitu tombol <em>&quot;Kirim Jawaban&quot;</em> ditekan, sistem server langsung menilai jawaban Anda. Kunci jawaban tidak pernah dikirim ke browser demi menjaga integritas evaluasi.
-                  </span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Check size={16} className="text-emerald-600 shrink-0 mt-0.5" />
-                  <span>
-                    <strong>Batas Maksimal 3 Percobaan:</strong> Setiap modul memiliki batas paling banyak 3 kali percobaan kuis per pendaftaran. Setelah lulus, modul tidak dapat dikerjakan ulang.
-                  </span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Check size={16} className="text-emerald-600 shrink-0 mt-0.5" />
-                  <span>
-                    <strong>Pengerjaan Mandiri:</strong> Kuis merupakan instrumen uji kompetensi resmi. Jawab seluruh soal secara mandiri untuk mengukur pemahaman nyata Anda.
-                  </span>
-                </li>
-              </ul>
-            </div>
-          </section>
-        )}
-
-        {/* =========================================================
-            SECTION: ALUR PEMBELAJARAN SEKUENSIAL (BUKA KUNCI)
-           ========================================================= */}
-        {activeTab === 'alur_modul' && (
-          <section className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-xs space-y-6">
-            <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
-              <div className="w-10 h-10 rounded-2xl bg-purple-50 text-[#843bab] flex items-center justify-center font-bold shrink-0 border border-purple-100">
-                <Lock size={20} />
-              </div>
-              <div>
-                <h3 className="text-lg sm:text-xl font-bold text-slate-900">
-                  Alur Pembelajaran Sekuensial &amp; Sistem Buka Kunci
-                </h3>
-                <p className="text-xs sm:text-sm text-slate-500">
-                  Setiap modul disusun bertingkat. Siswa tidak dapat melompati materi demi integritas pemahaman
-                </p>
-              </div>
-            </div>
-
-            {/* Diagram Alur 4 Langkah */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 relative flex flex-col justify-between">
-                <div className="space-y-2">
-                  <div className="w-7 h-7 rounded-full bg-[#843bab] text-white flex items-center justify-center text-xs font-black">
-                    1
-                  </div>
-                  <h4 className="font-bold text-sm text-slate-900">Pelajari Materi Modul</h4>
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    Baca artikel teori, panduan langkah demi langkah, dan tonton video tutorial instruktur hingga tuntas.
-                  </p>
-                </div>
-                <div className="mt-3 pt-2 border-t border-slate-200 text-[11px] font-bold text-[#843bab]">
-                  Wajib Dibaca
-                </div>
-              </div>
-
-              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 relative flex flex-col justify-between">
-                <div className="space-y-2">
-                  <div className="w-7 h-7 rounded-full bg-[#843bab] text-white flex items-center justify-center text-xs font-black">
-                    2
-                  </div>
-                  <h4 className="font-bold text-sm text-slate-900">Buka Kuis Evaluasi</h4>
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    Setelah materi disimak, tombol kuis aktif. Masuki ruang kuis untuk menguji penguasaan konsep modul.
-                  </p>
-                </div>
-                <div className="mt-3 pt-2 border-t border-slate-200 text-[11px] font-bold text-[#843bab]">
-                  Aktivasi Otomatis
-                </div>
-              </div>
-
-              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 relative flex flex-col justify-between">
-                <div className="space-y-2">
-                  <div className="w-7 h-7 rounded-full bg-[#843bab] text-white flex items-center justify-center text-xs font-black">
-                    3
-                  </div>
-                  <h4 className="font-bold text-sm text-slate-900">Lulus Kuis Modul</h4>
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    Raih nilai kuis mencapai standar kelulusan kursus (standar bawaan 70). Tersedia maksimal 3 kali percobaan per modul.
-                  </p>
-                </div>
-                <div className="mt-3 pt-2 border-t border-slate-200 text-[11px] font-bold text-emerald-600">
-                  Standar Kompetensi
-                </div>
-              </div>
-
-              <div className="p-4 rounded-2xl bg-purple-50/60 border border-purple-200 relative flex flex-col justify-between">
-                <div className="space-y-2">
-                  <div className="w-7 h-7 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-black">
-                    4
-                  </div>
-                  <h4 className="font-bold text-sm text-slate-900">Modul Berikutnya Terbuka</h4>
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    Gembok modul selanjutnya terbuka secara instan. Lanjutkan penugasan belajar hingga modul terakhir!
-                  </p>
-                </div>
-                <div className="mt-3 pt-2 border-t border-purple-200 text-[11px] font-bold text-[#843bab]">
-                  Progres Bertambah
-                </div>
-              </div>
-            </div>
-
-            <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-950 flex items-start gap-3 text-xs sm:text-sm">
-              <AlertTriangle size={18} className="text-amber-600 shrink-0 mt-0.5" />
-              <div>
-                <strong>Larangan Melompati Modul (Anti-Skip Policy):</strong> Sistem keamanan database Pijar Aksara mencegah akses langsung ke modul tingkat lanjut sebelum modul pendukungnya diselesaikan secara sah. Hal ini menjamin bahwa setiap lulusan benar-benar memiliki keterampilan vokasi yang utuh.
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* =========================================================
-            SECTION: SERTIFIKAT KOMPETENSI & VERIFIKASI QR
-           ========================================================= */}
-        {activeTab === 'sertifikat' && (
-          <section className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-xs space-y-6">
-            <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
-              <div className="w-10 h-10 rounded-2xl bg-purple-50 text-[#843bab] flex items-center justify-center font-bold shrink-0 border border-purple-100">
-                <Award size={20} />
-              </div>
-              <div>
-                <h3 className="text-lg sm:text-xl font-bold text-slate-900">
-                  Standar Sertifikat Resmi &amp; Verifikasi Digital Anti-Pemalsuan
-                </h3>
-                <p className="text-xs sm:text-sm text-slate-500">
-                  Sertifikat kompetensi resmi dengan nomor registrasi unik dan QR Code resmi
-                </p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-              <div className="space-y-4 text-xs sm:text-sm text-slate-600 leading-relaxed">
-                <div className="flex items-start gap-3">
-                  <div className="p-2 rounded-xl bg-purple-100 text-[#843bab] shrink-0">
-                    <CheckCircle2 size={16} />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-slate-900 text-sm">Syarat Kelulusan 100%</h4>
-                    <p className="mt-0.5">
-                      Sertifikat resmi hanya terbit otomatis setelah <strong>seluruh modul</strong> dan <strong>seluruh kuis</strong> dalam silabus kursus lulus passing grade.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3">
-                  <div className="p-2 rounded-xl bg-purple-100 text-[#843bab] shrink-0">
-                    <ShieldCheck size={16} />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-slate-900 text-sm">Akses Privat Kursus Saya</h4>
-                    <p className="mt-0.5">
-                      Sertifikat resmi bersifat privat dan eksklusif bagi peserta yang bersangkutan. Akses sertifikat, nomor registrasi, dan QR code resmi tersedia langsung di menu Kursus Saya.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3">
-                  <div className="p-2 rounded-xl bg-purple-100 text-[#843bab] shrink-0">
-                    <Printer size={16} />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-slate-900 text-sm">Cetak &amp; Unduh Bebas Seumur Hidup</h4>
-                    <p className="mt-0.5">
-                      Siswa dapat mengunduh dan mencetak sertifikat dalam format resolusi tinggi kapan saja dari halaman Sertifikat Saya tanpa biaya tambahan.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Mockup Preview Sertifikat */}
-              <div className="p-5 rounded-2xl bg-gradient-to-br from-purple-50 via-white to-purple-50/50 border border-[#843bab]/30 shadow-xs space-y-3 text-center">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-[11px] font-bold border border-emerald-200">
-                  <CheckCircle2 size={12} className="text-emerald-600" />
-                  <span>Format Standar Institusi Vokasi</span>
-                </div>
-                <div className="text-xs text-slate-500 font-mono">
-                  NOMOR REGISTRASI: PA-2026-0001
-                </div>
-                <div className="p-4 rounded-xl bg-white border border-slate-200 text-left space-y-2">
-                  <div className="text-[10px] text-slate-400 font-bold uppercase">Sertifikat Kompetensi</div>
-                  <div className="text-sm font-extrabold text-slate-900">Diberikan kepada: {userProfile.nama_lengkap}</div>
-                  <div className="text-xs text-slate-600">Atas keberhasilan menuntaskan kurikulum vokasi praktis dengan predikat kompeten.</div>
-                </div>
                 <Link
-                  href="/kursus-saya"
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-[#843bab] hover:underline"
+                  href="/kursus"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#843bab] hover:bg-[#722f96] text-white font-bold text-xs shadow-xs transition-all"
                 >
-                  <span>Lihat di Halaman Kursus Saya</span>
-                  <ExternalLink size={12} />
+                  <span>Jelajahi Katalog Kursus</span>
+                  <ArrowRight size={12} />
                 </Link>
               </div>
-            </div>
-          </section>
-        )}
+            )}
+          </div>
 
-        {/* =========================================================
-            SECTION: BATAS WAKTU PEMBAYARAN & PEMBATALAN
-           ========================================================= */}
-        {activeTab === 'pembayaran' && (
-          <section className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-xs space-y-6">
-            <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
-              <div className="w-10 h-10 rounded-2xl bg-purple-50 text-[#843bab] flex items-center justify-center font-bold shrink-0 border border-purple-100">
-                <Clock size={20} />
-              </div>
-              <div>
-                <h3 className="text-lg sm:text-xl font-bold text-slate-900">
-                  Batas Waktu Pembayaran (24 Jam) &amp; Kebijakan Akses
-                </h3>
-                <p className="text-xs sm:text-sm text-slate-500">
-                  Aturan alokasi kuota kursi, metode pembayaran resmi, dan ketentuan pembatalan pesanan
-                </p>
-              </div>
+          {/* KARTU KANAN: IKHTISAR STATUS BELAJAR / GROW STATUS OVERVIEW (5 COLS) */}
+          <div className="lg:col-span-5 bg-white rounded-3xl border border-slate-200/90 p-5 sm:p-6 shadow-xs flex flex-col justify-between space-y-6">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <h2 className="font-extrabold text-base sm:text-lg text-slate-900">
+                Ikhtisar Status Belajar
+              </h2>
+              <span className="text-[11px] font-bold text-slate-400">
+                {totalCourses} Kursus Terdaftar
+              </span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
-                <div className="flex items-center gap-2 text-slate-900 font-bold text-sm">
-                  <Clock size={16} className="text-amber-500" />
-                  <span>Masa Kedaluwarsa 24 Jam</span>
+            {/* Donut Chart & Legend Metrics */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 items-center">
+              {/* Donut Visual SVG */}
+              <div className="relative flex items-center justify-center">
+                <svg className="w-36 h-36 transform -rotate-90">
+                  {/* Background Track */}
+                  <circle
+                    cx="72"
+                    cy="72"
+                    r={radius}
+                    stroke="currentColor"
+                    strokeWidth="12"
+                    className="text-slate-100"
+                    fill="transparent"
+                  />
+                  {/* Progress Fill */}
+                  <circle
+                    cx="72"
+                    cy="72"
+                    r={radius}
+                    stroke="currentColor"
+                    strokeWidth="12"
+                    className="text-[#843bab] transition-all duration-700 ease-out"
+                    fill="transparent"
+                    strokeDasharray={circumference}
+                    strokeDashoffset={strokeDashoffset}
+                    strokeLinecap="round"
+                  />
+                </svg>
+
+                <div className="absolute flex flex-col items-center justify-center text-center">
+                  <span className="text-2xl font-black text-slate-900">
+                    {overallProgress}%
+                  </span>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                    Ketuntasan
+                  </span>
                 </div>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Setelah menekan tombol daftar, Anda diberikan waktu 24 jam untuk menyelesaikan transaksi. Lewat dari 24 jam, pesanan dibatalkan otomatis demi menjaga kuota kursi kelas peserta lain.
-                </p>
               </div>
 
-              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
-                <div className="flex items-center gap-2 text-slate-900 font-bold text-sm">
-                  <Zap size={16} className="text-[#843bab]" />
-                  <span>QRIS Mayar &amp; Transfer Bank</span>
-                </div>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Mendukung QRIS Mayar otomatis (lunas dalam hitungan detik) dan Transfer Bank Manual (unggah bukti struk transfer). Akses kursus terbuka seketika pembayaran diverifikasi.
-                </p>
-              </div>
-
-              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
-                <div className="flex items-center gap-2 text-slate-900 font-bold text-sm">
-                  <ShieldCheck size={16} className="text-emerald-600" />
-                  <span>Akses Seumur Hidup (Lifetime)</span>
-                </div>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Begitu status pendaftaran aktif, Anda memiliki akses penuh ke materi, modul, catatan, dan kuis selama 24 jam sehari tanpa batas waktu kedaluwarsa.
-                </p>
-              </div>
-            </div>
-
-            <div className="p-4 rounded-2xl bg-slate-100/70 border border-slate-200 text-xs sm:text-sm text-slate-700 flex items-start gap-2.5">
-              <Info size={16} className="text-slate-500 shrink-0 mt-0.5" />
-              <div>
-                <strong>Kebijakan Pembatalan Mandiri:</strong> Anda dapat membatalkan pendaftaran secara mandiri selama status masih <em>&quot;Menunggu Pembayaran&quot;</em> melalui tombol <strong>Batalkan Pendaftaran</strong> di halaman Kursus Saya. Kursus yang sudah lunas tidak dapat dibatalkan.
-              </div>
-            </div>
-          </section>
-        )}
-
-
-        {/* =========================================================
-            SECTION: TANYA JAWAB UMUM (FAQ SISWA INTERAKTIF)
-           ========================================================= */}
-        {activeTab === 'faq' && (
-          <section className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-xs space-y-6">
-            <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
-              <div className="w-10 h-10 rounded-2xl bg-purple-50 text-[#843bab] flex items-center justify-center font-bold shrink-0 border border-purple-100">
-                <HelpCircle size={20} />
-              </div>
-              <div>
-                <h3 className="text-lg sm:text-xl font-bold text-slate-900">
-                  Tanya Jawab Umum &amp; Solusi Kendala Siswa (FAQ)
-                </h3>
-                <p className="text-xs sm:text-sm text-slate-500">
-                  Jawaban cepat seputar pengerjaan modul, kuis evaluasi, kendala teknis, dan sertifikasi
-                </p>
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              {faqList.map((item, idx) => {
-                const isOpen = openFaqIndex === idx;
-                return (
-                  <div
-                    key={idx}
-                    className="border border-slate-200 rounded-2xl overflow-hidden transition-all bg-white"
-                  >
-                    <button
-                      type="button"
-                      onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
-                      className="w-full p-4 sm:p-5 text-left flex items-center justify-between gap-4 font-bold text-sm sm:text-base text-slate-900 hover:bg-slate-50 transition-colors cursor-pointer"
-                    >
-                      <span>{item.q}</span>
-                      <ChevronDown
-                        size={18}
-                        className={`text-slate-400 shrink-0 transition-transform duration-200 ${
-                          isOpen ? 'rotate-180 text-[#843bab]' : ''
-                        }`}
-                      />
-                    </button>
-                    {isOpen && (
-                      <div className="px-4 pb-4 sm:px-5 sm:pb-5 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-3 bg-slate-50/50">
-                        {item.a}
-                      </div>
-                    )}
+              {/* Legend List Status */}
+              <div className="space-y-2.5 text-xs">
+                <div className="flex items-center justify-between p-2 rounded-xl bg-purple-50/70 border border-purple-100">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#843bab]" />
+                    <span className="font-semibold text-slate-700">Modul Kompeten</span>
                   </div>
-                );
-              })}
+                  <span className="font-bold text-[#843bab]">{totalModulLulus}</span>
+                </div>
+
+                <div className="flex items-center justify-between p-2 rounded-xl bg-slate-50 border border-slate-200/80">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-slate-300" />
+                    <span className="font-semibold text-slate-700">Sisa Modul</span>
+                  </div>
+                  <span className="font-bold text-slate-800">{totalModulBelum}</span>
+                </div>
+
+                <div className="flex items-center justify-between p-2 rounded-xl bg-emerald-50/70 border border-emerald-100">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+                    <span className="font-semibold text-slate-700">Kursus Aktif</span>
+                  </div>
+                  <span className="font-bold text-emerald-800">{activeCourses.length}</span>
+                </div>
+
+                <div className="flex items-center justify-between p-2 rounded-xl bg-amber-50/70 border border-amber-100">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
+                    <span className="font-semibold text-slate-700">Sertifikat Resmi</span>
+                  </div>
+                  <span className="font-bold text-amber-800">{completedCourses.length}</span>
+                </div>
+              </div>
             </div>
-          </section>
-        )}
+
+            {/* Slider / Range Indicator */}
+            <div className="pt-3 border-t border-slate-100 space-y-1.5">
+              <div className="flex justify-between items-center text-xs font-bold">
+                <span className="text-slate-600">Total Modul Terdaftar:</span>
+                <span className="text-slate-900">{totalModulSemua} Modul</span>
+              </div>
+              <div className="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-[#843bab] to-emerald-500 transition-all duration-500"
+                  style={{ width: `${overallProgress}%` }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* =========================================================
+            BARIS 2: 3 CARDS SEJAJAR (PERFORMA, SPENDING/OVERVIEW, WAKTU/RATE)
+           ========================================================= */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* CARD 1: PERFORMA BELAJAR PER KURSUS */}
+          <div className="bg-white rounded-3xl border border-slate-200/90 p-5 sm:p-6 shadow-xs flex flex-col justify-between space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2">
+                <TrendingUp size={16} className="text-[#843bab]" />
+                <h3 className="font-extrabold text-sm sm:text-base text-slate-900">
+                  Performa Kuis &amp; Modul
+                </h3>
+              </div>
+              <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                KKM &ge; 70
+              </span>
+            </div>
+
+            {/* Bar Performa per Kursus */}
+            {initialCourses.length > 0 ? (
+              <div className="space-y-3.5 flex-1">
+                {initialCourses.slice(0, 4).map((c) => {
+                  const score = c.nilai_kuis_terbaik ?? (c.modul_lulus > 0 ? 75 : 0);
+                  const isPassed = score >= 70;
+
+                  return (
+                    <div key={c.id} className="space-y-1 text-xs">
+                      <div className="flex justify-between items-center">
+                        <span className="font-bold text-slate-800 truncate max-w-[170px]">
+                          {c.kursus.judul}
+                        </span>
+                        <span className="font-black text-slate-900">
+                          {c.nilai_kuis_terbaik !== null ? `${c.nilai_kuis_terbaik}/100` : `${c.modul_lulus}/${c.kursus.total_modul} Modul`}
+                        </span>
+                      </div>
+                      <div className="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
+                        <div
+                          className={`h-full rounded-full transition-all ${
+                            isPassed ? 'bg-amber-400' : 'bg-slate-300'
+                          }`}
+                          style={{ width: `${Math.min(100, Math.max(10, score))}%` }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="py-8 text-center text-xs text-slate-400">
+                Belum ada data penilaian kuis
+              </div>
+            )}
+
+            <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/80 text-[11px] text-slate-600 leading-relaxed">
+              Kuis evaluasi dirancang berstandar industri dengan maksimal 3 kali percobaan untuk mencapai KKM kelulusan.
+            </div>
+          </div>
+
+          {/* CARD 2: ALOKASI & INVESTASI PEMBELAJARAN */}
+          <div className="bg-white rounded-3xl border border-slate-200/90 p-5 sm:p-6 shadow-xs flex flex-col justify-between space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2">
+                <Layers size={16} className="text-[#843bab]" />
+                <h3 className="font-extrabold text-sm sm:text-base text-slate-900">
+                  Ikhtisar Silabus &amp; Akses
+                </h3>
+              </div>
+              <span className="text-[11px] font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded-full border border-purple-200">
+                Akses Seumur Hidup
+              </span>
+            </div>
+
+            <div className="space-y-3 flex-1">
+              {/* Total Investasi */}
+              <div className="p-3.5 rounded-2xl bg-gradient-to-r from-purple-50/70 to-white border border-purple-100">
+                <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                  Total Nilai Kursus Terdaftar
+                </div>
+                <div className="text-xl font-extrabold text-[#843bab] mt-0.5">
+                  Rp {totalInvestasiRp.toLocaleString('id-ID')}
+                </div>
+                <div className="text-[11px] text-slate-500 mt-0.5">
+                  Mencakup seluruh kurikulum vokasi praktis Pijar Aksara
+                </div>
+              </div>
+
+              {/* Fasilitas Silabus */}
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 text-center">
+                  <div className="font-extrabold text-slate-900 text-sm">
+                    {totalDurasiSemuaMenit} Menit
+                  </div>
+                  <div className="text-[10px] text-slate-500 font-semibold mt-0.5">
+                    Total Silabus
+                  </div>
+                </div>
+                <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 text-center">
+                  <div className="font-extrabold text-slate-900 text-sm">
+                    {totalModulSemua} Modul
+                  </div>
+                  <div className="text-[10px] text-slate-500 font-semibold mt-0.5">
+                    Modul Praktik &amp; Kuis
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="text-[11px] text-slate-500 text-center pt-2 border-t border-slate-100">
+              Hak akses belajar tidak memiliki masa kedaluwarsa setelah kursus aktif.
+            </div>
+          </div>
+
+          {/* CARD 3: STACK 2 CARDS (WAKTU BELAJAR & COMPLETION RATE CARD) */}
+          <div className="space-y-4 flex flex-col justify-between">
+            {/* Waktu Efektif Belajar Mini Card */}
+            <div className="bg-white rounded-3xl border border-slate-200/90 p-4 sm:p-5 shadow-xs space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-slate-800">
+                  <BarChart2 size={15} className="text-[#843bab]" />
+                  <span>Waktu Efektif Belajar</span>
+                </div>
+                <span className="text-[10px] font-bold text-slate-500">
+                  {totalDurasiSelesaiMenit} Menit Selesai
+                </span>
+              </div>
+
+              {/* Visual Bars Mockup */}
+              <div className="flex items-end justify-between gap-1.5 h-12 pt-2 px-2 bg-slate-50 rounded-xl border border-slate-100">
+                <div className="w-full bg-amber-300 rounded-t h-4" />
+                <div className="w-full bg-amber-400 rounded-t h-7" />
+                <div className="w-full bg-amber-400 rounded-t h-5" />
+                <div className="w-full bg-amber-500 rounded-t h-10" />
+                <div className="w-full bg-[#843bab] rounded-t h-8" />
+                <div className="w-full bg-[#843bab] rounded-t h-9" />
+                <div className="w-full bg-[#722f96] rounded-t h-11" />
+              </div>
+            </div>
+
+            {/* Tingkat Kelulusan Belajar (Primary Gradient Card) */}
+            <div className="bg-gradient-to-br from-[#843bab] via-[#722f96] to-purple-900 text-white rounded-3xl p-5 shadow-sm space-y-3">
+              <div className="flex items-center justify-between text-xs text-purple-200">
+                <span className="font-bold">Skala Kelulusan Modul</span>
+                <span className="p-1 rounded-full bg-white/10">
+                  <Award size={13} className="text-white" />
+                </span>
+              </div>
+
+              <div className="flex items-baseline justify-between">
+                <div className="text-3xl font-black">{overallProgress}%</div>
+                <div className="text-xs text-purple-100 font-semibold">
+                  {totalModulLulus} dari {totalModulSemua} Modul
+                </div>
+              </div>
+
+              {/* Progress Slider */}
+              <div className="w-full h-2 rounded-full bg-white/20 overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-white transition-all duration-700"
+                  style={{ width: `${overallProgress}%` }}
+                />
+              </div>
+
+              <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[11px]">
+                <span className="text-purple-200">Sertifikat Resmi Terbit:</span>
+                <span className="font-bold text-white">{completedCourses.length}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* =========================================================
+            CALLOUT BANNER: RUJUKAN ATURAN & PEDOMAN BELAJAR
+           ========================================================= */}
+        <div className="p-5 sm:p-6 rounded-3xl bg-gradient-to-r from-purple-50 via-white to-purple-50/50 border border-purple-200/90 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-start sm:items-center gap-3.5">
+            <div className="w-10 h-10 rounded-2xl bg-[#843bab] text-white flex items-center justify-center font-bold shrink-0 shadow-xs">
+              <BookCheck size={20} />
+            </div>
+            <div>
+              <h3 className="font-bold text-slate-900 text-sm sm:text-base">
+                Butuh Informasi Aturan Kuis, Alur Modul, atau Sertifikat?
+              </h3>
+              <p className="text-xs text-slate-600 mt-0.5">
+                Pelajari standar KKM kelulusan kuis, alur sekuensial, masa pembayaran 24 jam, dan tanya jawab di halaman panduan.
+              </p>
+            </div>
+          </div>
+
+          <Link
+            href="/aturan-belajar"
+            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#843bab] hover:bg-[#722f96] text-white font-bold text-xs shadow-xs hover:shadow-md transition-all shrink-0 cursor-pointer"
+          >
+            <span>Buka Aturan &amp; Pedoman</span>
+            <ArrowRight size={14} />
+          </Link>
+        </div>
       </main>
     </div>
   );

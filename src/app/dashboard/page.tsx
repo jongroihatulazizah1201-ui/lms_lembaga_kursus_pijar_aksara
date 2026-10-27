@@ -87,6 +87,17 @@ export default async function DashboardSiswaPage() {
     console.error('Error fetching enrollments for dashboard:', error);
   }
 
+  // 3. Ambil data percobaan kuis untuk kalkulasi performa kuis
+  const enrollmentIds = (enrollments || []).map((e: any) => e.id);
+  let allQuizAttempts: any[] = [];
+  if (enrollmentIds.length > 0) {
+    const { data: attempts } = await supabase
+      .from('percobaan_kuis')
+      .select('id, pendaftaran_id, modul_id, nomor_percobaan, nilai, lulus, dibuat_pada')
+      .in('pendaftaran_id', enrollmentIds);
+    allQuizAttempts = attempts || [];
+  }
+
   // Transform data untuk StudentDashboardClient
   const coursesList: EnrollmentItem[] = (enrollments || []).map((e: any) => {
     const k = e.kursus || {};
@@ -136,6 +147,20 @@ export default async function DashboardSiswaPage() {
         }
       : null;
 
+    // Hitung skor kuis untuk kursus ini
+    const courseAttempts = allQuizAttempts.filter((qa) => qa.pendaftaran_id === e.id);
+    const bestScore =
+      courseAttempts.length > 0
+        ? Math.max(...courseAttempts.map((qa) => Number(qa.nilai) || 0))
+        : null;
+    const avgScore =
+      courseAttempts.length > 0
+        ? Math.round(
+            courseAttempts.reduce((acc, qa) => acc + (Number(qa.nilai) || 0), 0) /
+              courseAttempts.length
+          )
+        : null;
+
     return {
       id: e.id,
       status: e.status,
@@ -165,6 +190,8 @@ export default async function DashboardSiswaPage() {
             diterbitkan_pada: sertifikatItem.diterbitkan_pada,
           }
         : null,
+      nilai_kuis_terbaik: bestScore,
+      rata_rata_kuis: avgScore,
     };
   });
 

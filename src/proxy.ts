@@ -52,7 +52,11 @@ export async function proxy(request: NextRequest) {
   // Rute yang diproteksi berdasarkan peran
   const isAdminRoute = path.startsWith('/admin');
   const isInstrukturRoute = path.startsWith('/instruktur');
-  const isPesertaRoute = path.startsWith('/kursus-saya') || path.startsWith('/belajar') || path.startsWith('/dashboard');
+  const isPesertaRoute =
+    path.startsWith('/kursus-saya') ||
+    path.startsWith('/belajar') ||
+    path.startsWith('/dashboard') ||
+    path.startsWith('/aturan-belajar');
   const isAuthRoute = path.startsWith('/login') || path.startsWith('/register') || path.startsWith('/daftar');
   // Seluruh rute sertifikat (/sertifikat/[id]) wajib login (privat untuk peserta terkait sesuai BR-11 & BR-12)
   const isCertificateOwnerRoute = path.startsWith('/sertifikat');

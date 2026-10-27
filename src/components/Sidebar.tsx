@@ -224,15 +224,22 @@ export default function Sidebar({ user, profile, urgentQueueCount: initialUrgent
             label: 'Dashboard Siswa',
             href: '/dashboard',
             icon: LayoutDashboard,
-            badge: 'Aturan & Skala',
-            badgeColor: 'bg-purple-50 text-[#843bab] border-purple-200'
+            badge: 'Ikhtisar',
+            badgeColor: 'bg-purple-50 text-[#843bab] border-purple-200',
           },
           {
             label: 'Kursus Saya',
             href: '/kursus-saya',
             icon: GraduationCap,
             badge: 'Aktif',
-            badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-200'
+            badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+          },
+          {
+            label: 'Aturan Kursus',
+            href: '/aturan-belajar',
+            icon: FileText,
+            badge: 'Pedoman',
+            badgeColor: 'bg-amber-50 text-amber-700 border-amber-200',
           },
         ],
       },
@@ -316,6 +323,11 @@ export default function Sidebar({ user, profile, urgentQueueCount: initialUrgent
     // 8. Katalog Kursus (/kursus) - Ketat: TIDAK BOLEH mencocokkan /kursus-saya!
     if (href === '/kursus') {
       return pathname === '/kursus' || pathname.startsWith('/kursus/');
+    }
+
+    // 9. Aturan Kursus (/aturan-belajar)
+    if (href === '/aturan-belajar') {
+      return pathname === '/aturan-belajar' || pathname.startsWith('/aturan-belajar/');
     }
 
     return pathname === href;

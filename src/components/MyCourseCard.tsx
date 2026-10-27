@@ -77,6 +77,8 @@ export interface EnrollmentItem {
     nomor_sertifikat: string;
     diterbitkan_pada: string;
   } | null;
+  nilai_kuis_terbaik?: number | null;
+  rata_rata_kuis?: number | null;
 }
 
 interface Props {
