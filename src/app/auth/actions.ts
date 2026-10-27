@@ -23,7 +23,7 @@ export async function loginAction(formData: FormData) {
   if (error || !data.user) {
     if (error?.message === 'Invalid login credentials') {
       return { 
-        error: 'Email atau kata sandi salah. Silakan pastikan kata sandi sudah benar (untuk akun uji coba: Latihan#2026). Klik ikon mata pada kolom kata sandi untuk memastikan tidak ada salah ketik.' 
+        error: 'Email atau kata sandi salah. Silakan pastikan kata sandi sudah benar. Klik ikon mata pada kolom kata sandi untuk memastikan tidak ada salah ketik.' 
       };
     }
     return { error: error?.message || 'Email atau kata sandi salah.' };
