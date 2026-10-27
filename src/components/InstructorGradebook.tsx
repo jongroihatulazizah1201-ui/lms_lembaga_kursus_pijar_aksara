@@ -311,62 +311,140 @@ export default function InstructorGradebook({
       </div>
 
       {/* =========================================================================
-          2. STICKY TOP HEADER: Judul Halaman, Pemilih Kursus, Ekspor, & Filter Toolbar
+          2. STICKY TOP TOOLBAR: Search, Filter, Pemilih Kursus, & Aksi Ekspor (Stay di Atas Tanpa Celah)
          ========================================================================= */}
-      <header className="sticky top-[57px] lg:top-0 z-30 w-full bg-white/95 backdrop-blur-md border-b border-slate-200/90 shadow-xs transition-all print:hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4 space-y-3.5">
-          {/* Baris 1: Judul Halaman & Kontrol Kursus / Ekspor */}
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-            {/* Sisi Kiri: Judul Halaman & Deskripsi (Tombol panah kembali dihapus) */}
-            <div className="space-y-1 max-w-2xl">
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-[#ffdf0f]/30 text-amber-900 uppercase tracking-wider border border-amber-300/40">
-                  Buku Nilai & Peserta
-                </span>
+      <header className="sticky top-[56px] lg:top-0 z-30 w-full bg-white border-b border-slate-200 shadow-xs transition-all print:hidden before:absolute before:inset-x-0 before:-top-4 before:h-4 before:bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 sm:py-3">
+          <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-2.5 sm:gap-3">
+            {/* Search & Filter Controls: Cari, Status, Progres, Urutkan */}
+            <div className="flex flex-1 flex-wrap sm:flex-nowrap items-center gap-2 min-w-0">
+              {/* Search Input */}
+              <div className="relative flex-1 min-w-[200px]">
+                <Search
+                  size={15}
+                  className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
+                />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Cari berdasarkan nama peserta, email, atau no HP..."
+                  className="w-full pl-9 pr-8 py-2 rounded-xl bg-slate-50 hover:bg-white border border-slate-200 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#843bab]/20 focus:border-[#843bab] focus:bg-white transition-all shadow-2xs"
+                />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 cursor-pointer"
+                    title="Hapus pencarian"
+                  >
+                    <X size={13} />
+                  </button>
+                )}
               </div>
-              <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-                Peserta dan Nilai Kuis
-              </h1>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                Tabel rekapitulasi peserta aktif per kursus: memantau progres belajar, nilai kuis terbaik, dan jumlah percobaan per modul kuis vokasi.
-              </p>
+
+              {/* Filter Dropdowns */}
+              <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none shrink-0">
+                {/* Filter Status */}
+                <div className="relative shrink-0">
+                  <select
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                    className="appearance-none pl-3 pr-7 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#843bab]/20 cursor-pointer shadow-2xs"
+                  >
+                    <option value="semua">Semua Status</option>
+                    <option value="aktif">Aktif Belajar</option>
+                    <option value="selesai">Selesai / Lulus</option>
+                    <option value="menunggu_bayar">Menunggu Bayar</option>
+                    <option value="dibatalkan">Dibatalkan</option>
+                  </select>
+                  <ChevronDown size={13} className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                </div>
+
+                {/* Filter Progres */}
+                <div className="relative shrink-0">
+                  <select
+                    value={progresFilter}
+                    onChange={(e) => setProgresFilter(e.target.value)}
+                    className="appearance-none pl-3 pr-7 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#843bab]/20 cursor-pointer shadow-2xs"
+                  >
+                    <option value="semua">Semua Progres</option>
+                    <option value="tuntas">Tuntas (100%)</option>
+                    <option value="berjalan">Sedang Belajar (1-99%)</option>
+                    <option value="belum_mulai">Belum Mulai (0%)</option>
+                  </select>
+                  <ChevronDown size={13} className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                </div>
+
+                {/* Sorting */}
+                <div className="relative shrink-0">
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value as any)}
+                    className="appearance-none pl-3 pr-7 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#843bab]/20 cursor-pointer shadow-2xs"
+                  >
+                    <option value="terbaru">Terbaru Terdaftar</option>
+                    <option value="nama">Nama (A-Z)</option>
+                    <option value="progres-tinggi">Progres Tertinggi</option>
+                    <option value="progres-rendah">Progres Terendah</option>
+                  </select>
+                  <ChevronDown size={13} className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                </div>
+
+                {/* Reset Filter Button */}
+                {(searchQuery || statusFilter !== 'semua' || progresFilter !== 'semua' || sortBy !== 'terbaru') && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSearchQuery('');
+                      setStatusFilter('semua');
+                      setProgresFilter('semua');
+                      setSortBy('terbaru');
+                    }}
+                    className="p-2 rounded-xl text-slate-500 hover:text-red-600 hover:bg-red-50 bg-white border border-slate-200 transition-colors cursor-pointer shrink-0"
+                    title="Reset Filter & Pencarian"
+                  >
+                    <RotateCcw size={14} />
+                  </button>
+                )}
+              </div>
             </div>
 
-            {/* Sisi Kanan: Pemilih Kursus & Aksi Dokumen */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-              {/* Dropdown Pemilih Kursus */}
-              <div className="relative min-w-[260px] lg:min-w-[300px]">
-                <label className="block text-xs font-bold text-slate-600 mb-1">
+            {/* Pemilih Kursus Aktif, Unduh CSV, & Cetak (Sejajar di Atas) */}
+            <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 shrink-0">
+              <div className="flex items-center gap-1.5 shrink-0">
+                <BookOpen size={15} className="text-[#843bab] shrink-0" />
+                <span className="text-xs font-bold text-slate-700 whitespace-nowrap hidden sm:inline">
                   Pilih Kursus Aktif:
-                </label>
-                <div className="relative">
-                  <select
-                    value={kursus_id}
-                    onChange={handleSelectCourse}
-                    className="w-full appearance-none pl-9 pr-9 py-2 rounded-xl bg-white border border-slate-300 text-slate-900 font-bold text-xs sm:text-sm shadow-2xs hover:border-[#843bab] focus:outline-none focus:ring-2 focus:ring-[#843bab]/20 focus:border-[#843bab] transition-all cursor-pointer truncate"
-                  >
-                    {instructorCourses.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.judul} {c.instruktur_nama && currentUser.peran === 'admin' ? `(Instruktur: ${c.instruktur_nama})` : ''} [{c.status}]
-                      </option>
-                    ))}
-                  </select>
-                  <BookOpen
-                    size={15}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
-                  />
-                  <ChevronDown
-                    size={15}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
-                  />
-                </div>
+                </span>
               </div>
 
-              {/* Tombol Ekspor CSV & Cetak */}
-              <div className="flex items-center gap-2 pt-0 sm:pt-5">
+              {/* Dropdown Pemilih Kursus */}
+              <div className="relative min-w-[200px] sm:min-w-[240px] lg:min-w-[270px] max-w-xs">
+                <select
+                  value={kursus_id}
+                  onChange={handleSelectCourse}
+                  className="w-full appearance-none pl-3 pr-8 py-2 rounded-xl bg-slate-50 hover:bg-white border border-slate-300 text-slate-900 font-bold text-xs shadow-2xs hover:border-[#843bab] focus:outline-none focus:ring-2 focus:ring-[#843bab]/20 focus:border-[#843bab] focus:bg-white transition-all cursor-pointer truncate"
+                  title="Pilih Kursus Aktif"
+                >
+                  {instructorCourses.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.judul} {c.instruktur_nama && currentUser.peran === 'admin' ? `(Instruktur: ${c.instruktur_nama})` : ''} [{c.status}]
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown
+                  size={14}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+                />
+              </div>
+
+              {/* Tombol Unduh CSV & Cetak */}
+              <div className="flex items-center gap-1.5 shrink-0">
                 <button
+                  type="button"
                   onClick={handleExportCSV}
-                  className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs hover:shadow transition-all cursor-pointer min-h-[38px]"
+                  className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold text-xs shadow-2xs hover:shadow-xs transition-all cursor-pointer whitespace-nowrap min-h-[36px]"
                   title="Unduh format spreadsheet CSV"
                 >
                   <FileSpreadsheet size={15} />
@@ -374,99 +452,15 @@ export default function InstructorGradebook({
                 </button>
 
                 <button
+                  type="button"
                   onClick={handlePrint}
-                  className="inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold text-xs shadow-2xs transition-all cursor-pointer min-h-[38px]"
+                  className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-slate-300 hover:bg-slate-50 active:bg-slate-100 text-slate-700 font-bold text-xs shadow-2xs transition-all cursor-pointer whitespace-nowrap min-h-[36px]"
                   title="Cetak lembar rekapitulasi"
                 >
                   <Printer size={15} />
                   <span>Cetak</span>
                 </button>
               </div>
-            </div>
-          </div>
-
-          {/* Baris 2: Search & Filter Toolbar */}
-          <div className="bg-slate-50/70 border border-slate-200/80 rounded-xl p-2.5 sm:p-3 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
-            {/* Search Input */}
-            <div className="relative flex-1 min-w-[260px]">
-              <Search
-                size={16}
-                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
-              />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Cari berdasarkan nama peserta, email, atau no HP..."
-                className="w-full pl-10 pr-10 py-2 rounded-xl bg-white border border-slate-200 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#843bab]/20 focus:border-[#843bab] transition-all"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600"
-                >
-                  <X size={14} />
-                </button>
-              )}
-            </div>
-
-            {/* Filter Dropdowns */}
-            <div className="flex flex-wrap items-center gap-2">
-              {/* Filter Status */}
-              <div className="flex items-center gap-1.5">
-                <Filter size={14} className="text-slate-400" />
-                <select
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
-                  className="px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#843bab]/20 cursor-pointer"
-                >
-                  <option value="semua">Semua Status</option>
-                  <option value="aktif">Aktif Belajar</option>
-                  <option value="selesai">Selesai / Lulus</option>
-                  <option value="menunggu_bayar">Menunggu Bayar</option>
-                  <option value="dibatalkan">Dibatalkan</option>
-                </select>
-              </div>
-
-              {/* Filter Progres */}
-              <select
-                value={progresFilter}
-                onChange={(e) => setProgresFilter(e.target.value)}
-                className="px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#843bab]/20 cursor-pointer"
-              >
-                <option value="semua">Semua Progres</option>
-                <option value="tuntas">Tuntas (100%)</option>
-                <option value="berjalan">Sedang Belajar (1-99%)</option>
-                <option value="belum_mulai">Belum Mulai (0%)</option>
-              </select>
-
-              {/* Sorting */}
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as any)}
-                className="px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#843bab]/20 cursor-pointer"
-              >
-                <option value="terbaru">Terbaru Terdaftar</option>
-                <option value="nama">Nama (A-Z)</option>
-                <option value="progres-tinggi">Progres Tertinggi</option>
-                <option value="progres-rendah">Progres Terendah</option>
-              </select>
-
-              {/* Reset Filter Button */}
-              {(searchQuery || statusFilter !== 'semua' || progresFilter !== 'semua') && (
-                <button
-                  onClick={() => {
-                    setSearchQuery('');
-                    setStatusFilter('semua');
-                    setProgresFilter('semua');
-                    setSortBy('terbaru');
-                  }}
-                  className="p-2 rounded-xl text-slate-500 hover:text-red-600 hover:bg-red-50 bg-white border border-slate-200 transition-colors cursor-pointer"
-                  title="Reset Filter"
-                >
-                  <RotateCcw size={14} />
-                </button>
-              )}
             </div>
           </div>
         </div>
@@ -477,7 +471,24 @@ export default function InstructorGradebook({
          ========================================================================= */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 sm:space-y-8">
         {/* =======================================================================
-            3. KARTU RINGKASAN METRIK (KPI CARDS)
+            1. BANNER INFORMASI HALAMAN (Bisa di-scroll, tidak stay)
+           ======================================================================= */}
+        <section aria-label="Informasi Buku Nilai" className="space-y-1.5 print:hidden">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-[#ffdf0f]/30 text-amber-900 uppercase tracking-wider border border-amber-300/40">
+              Buku Nilai &amp; Peserta
+            </span>
+          </div>
+          <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+            Peserta dan Nilai Kuis
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-3xl">
+            Tabel rekapitulasi peserta aktif per kursus: memantau progres belajar, nilai kuis terbaik, dan jumlah percobaan per modul kuis vokasi.
+          </p>
+        </section>
+
+        {/* =======================================================================
+            2. KARTU RINGKASAN METRIK (KPI CARDS)
            ======================================================================= */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8 print:grid-cols-4 print:gap-2">
           {/* Total Peserta */}
