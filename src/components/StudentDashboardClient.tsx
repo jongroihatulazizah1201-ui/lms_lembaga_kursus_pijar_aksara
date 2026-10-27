@@ -37,7 +37,6 @@ interface Props {
 }
 
 type TabType =
-  | 'semua'
   | 'skala_tugas'
   | 'aturan_kuis'
   | 'alur_modul'
@@ -49,7 +48,7 @@ export default function StudentDashboardClient({
   initialCourses,
   userProfile,
 }: Props) {
-  const [activeTab, setActiveTab] = useState<TabType>('semua');
+  const [activeTab, setActiveTab] = useState<TabType>('skala_tugas');
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
 
   // Filter kursus berdasarkan status
@@ -97,18 +96,6 @@ export default function StudentDashboardClient({
       <nav className="sticky top-[57px] lg:top-0 z-30 w-full bg-white border-b border-slate-200 shadow-xs transition-all before:absolute before:inset-x-0 before:-top-4 before:h-4 before:bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto py-2.5 sm:py-3 no-scrollbar text-xs sm:text-sm font-semibold">
-            <button
-              type="button"
-              onClick={() => setActiveTab('semua')}
-              className={`px-3.5 py-2 rounded-xl whitespace-nowrap transition-all cursor-pointer ${
-                activeTab === 'semua'
-                  ? 'bg-[#843bab] text-white shadow-xs'
-                  : 'bg-slate-100/80 text-slate-600 hover:text-slate-900 hover:bg-slate-200/80'
-              }`}
-            >
-              Semua Panduan
-            </button>
-
             <button
               type="button"
               onClick={() => setActiveTab('skala_tugas')}
@@ -212,7 +199,7 @@ export default function StudentDashboardClient({
           {/* =========================================================
               DAFTAR KURSUS & RINCIAN SKALA TUGAS BELAJAR (DI ATAS)
              ========================================================= */}
-          {(activeTab === 'semua' || activeTab === 'skala_tugas') && (
+          {activeTab === 'skala_tugas' && (
             <div className="mt-8 p-6 sm:p-8 rounded-3xl bg-white border border-slate-200 shadow-xs space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
                 <div className="flex items-center gap-3">
@@ -388,7 +375,7 @@ export default function StudentDashboardClient({
         {/* =========================================================
             SECTION: RINGKASAN ATURAN MAIN (ATURAN 1 SAMPAI 5)
            ========================================================= */}
-        {(activeTab === 'semua' || activeTab === 'aturan_kuis') && (
+        {activeTab === 'aturan_kuis' && (
           <section className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-xs space-y-6">
             <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
               <div className="w-10 h-10 rounded-2xl bg-purple-50 text-[#843bab] flex items-center justify-center font-bold shrink-0 border border-purple-100">
@@ -485,7 +472,7 @@ export default function StudentDashboardClient({
         {/* =========================================================
             SECTION: ALUR PEMBELAJARAN SEKUENSIAL (BUKA KUNCI)
            ========================================================= */}
-        {(activeTab === 'semua' || activeTab === 'alur_modul') && (
+        {activeTab === 'alur_modul' && (
           <section className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-xs space-y-6">
             <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
               <div className="w-10 h-10 rounded-2xl bg-purple-50 text-[#843bab] flex items-center justify-center font-bold shrink-0 border border-purple-100">
@@ -576,7 +563,7 @@ export default function StudentDashboardClient({
         {/* =========================================================
             SECTION: SERTIFIKAT KOMPETENSI & VERIFIKASI QR
            ========================================================= */}
-        {(activeTab === 'semua' || activeTab === 'sertifikat') && (
+        {activeTab === 'sertifikat' && (
           <section className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-xs space-y-6">
             <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
               <div className="w-10 h-10 rounded-2xl bg-purple-50 text-[#843bab] flex items-center justify-center font-bold shrink-0 border border-purple-100">
@@ -660,7 +647,7 @@ export default function StudentDashboardClient({
         {/* =========================================================
             SECTION: BATAS WAKTU PEMBAYARAN & PEMBATALAN
            ========================================================= */}
-        {(activeTab === 'semua' || activeTab === 'pembayaran') && (
+        {activeTab === 'pembayaran' && (
           <section className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-xs space-y-6">
             <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
               <div className="w-10 h-10 rounded-2xl bg-purple-50 text-[#843bab] flex items-center justify-center font-bold shrink-0 border border-purple-100">
@@ -721,7 +708,7 @@ export default function StudentDashboardClient({
         {/* =========================================================
             SECTION: TANYA JAWAB UMUM (FAQ SISWA INTERAKTIF)
            ========================================================= */}
-        {(activeTab === 'semua' || activeTab === 'faq') && (
+        {activeTab === 'faq' && (
           <section className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-xs space-y-6">
             <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
               <div className="w-10 h-10 rounded-2xl bg-purple-50 text-[#843bab] flex items-center justify-center font-bold shrink-0 border border-purple-100">
