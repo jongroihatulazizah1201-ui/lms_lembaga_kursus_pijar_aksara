@@ -15,6 +15,7 @@ const DEFAULT_PAMPHLET_MAP: Record<string, string> = {
   'dasar-pembukuan-umkm': 'https://soszunleqyzfubbrwlsz.supabase.co/storage/v1/object/public/kursus_brosur/dasar-pembukuan-umkm-v2.png',
   'public-speaking-presentasi-kantor': 'https://soszunleqyzfubbrwlsz.supabase.co/storage/v1/object/public/kursus_brosur/public-speaking-presentasi-kantor-v2.png',
   'word-surat-dinas': 'https://soszunleqyzfubbrwlsz.supabase.co/storage/v1/object/public/kursus_brosur/word-surat-dinas-v2.png',
+  'fotografi-produk-ponsel': 'https://soszunleqyzfubbrwlsz.supabase.co/storage/v1/object/public/kursus_brosur/fotografi-produk-ponsel-v2.png',
 };
 
 export default function CourseIllustration({
