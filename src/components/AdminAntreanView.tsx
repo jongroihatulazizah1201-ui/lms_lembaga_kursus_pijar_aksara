@@ -524,7 +524,7 @@ export default function AdminAntreanView({ initialData }: Props) {
               </div>
             </div>
 
-            {/* Sisi Kanan: Tombol Aksi Cepat (Segarkan & Panel Utama) */}
+            {/* Sisi Kanan: Tombol Aksi Cepat (Segarkan Antrean) */}
             <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
               <button
                 type="button"
@@ -534,20 +534,12 @@ export default function AdminAntreanView({ initialData }: Props) {
                   });
                 }}
                 disabled={isPending}
-                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-700 text-xs font-bold transition-all border border-slate-200 disabled:opacity-50 cursor-pointer shadow-2xs"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-700 text-xs font-bold transition-all border border-slate-200 disabled:opacity-50 cursor-pointer shadow-2xs"
                 title="Segarkan data antrean terbaru"
               >
                 <RefreshCw size={13} className={isPending ? 'animate-spin text-[#843bab]' : 'text-slate-500'} />
                 <span>Segarkan Antrean</span>
               </button>
-
-              <Link
-                href="/admin?tab=pendaftaran"
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#843bab] hover:bg-[#722f96] text-white text-xs font-bold transition-all shadow-xs cursor-pointer whitespace-nowrap"
-              >
-                <span>Panel Utama Admin</span>
-                <ArrowUpRight size={14} />
-              </Link>
             </div>
           </div>
         </div>

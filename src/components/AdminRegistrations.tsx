@@ -278,50 +278,30 @@ export default function AdminRegistrations({ registrations }: Props) {
 
   return (
     <div>
-      {/* 1. STICKY TOP HEADER: Judul Halaman & Toolbar Pencarian/Filter Pendaftaran */}
-      <header className="sticky top-[57px] lg:top-0 z-30 w-full bg-white/95 backdrop-blur-md border-b border-slate-200/90 shadow-xs transition-all">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4 space-y-3.5">
-          {/* Judul Halaman */}
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-purple-100 text-[#843bab] flex items-center justify-center shrink-0 shadow-2xs">
-                <CreditCard size={18} />
-              </div>
-              <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="text-lg sm:text-2xl font-black text-slate-900 tracking-tight">
-                  Pendaftaran & Pembayaran (Konfirmasi, Batal)
-                </h1>
-                {menungguBayarCount > 0 ? (
-                  <span className="px-2.5 py-0.5 rounded-full text-xs font-black bg-amber-100 text-amber-800 border border-amber-200 shadow-2xs">
-                    {menungguBayarCount} Menunggu
-                  </span>
-                ) : (
-                  <span className="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-slate-100 text-slate-700 border border-slate-200 shadow-2xs">
-                    {registrations.length}
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Filter & Search Toolbar */}
-          <div className="bg-slate-50/70 border border-slate-200/80 rounded-xl p-2.5 sm:p-3 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+      {/* =========================================================================
+          1. STICKY TOP FILTER & SEARCH BAR (TETAP STAY DI PALING ATAS TANPA CELAH)
+         ========================================================================= */}
+      <header className="sticky top-[57px] lg:top-0 z-30 w-full bg-white/95 backdrop-blur-md border-b border-slate-200/90 shadow-xs transition-all before:absolute before:inset-x-0 before:-top-4 before:h-4 before:bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 sm:py-3">
+          <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2.5 sm:gap-3">
             {/* Search Box */}
-            <div className="relative flex-1 min-w-[280px]">
-              <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+            <div className="relative flex-1 min-w-[200px] sm:min-w-[280px] max-w-md">
+              <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Cari nama peserta, email, no HP, atau kursus..."
-                className="w-full pl-10 pr-10 py-2 rounded-xl bg-white border border-slate-200 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#843bab]/20 focus:border-[#843bab] transition-all"
+                className="w-full pl-9 pr-9 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#843bab]/20 focus:border-[#843bab] focus:bg-white transition-all shadow-2xs"
               />
               {searchQuery && (
                 <button
+                  type="button"
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 cursor-pointer"
+                  title="Hapus pencarian"
                 >
-                  <X size={14} />
+                  <X size={13} />
                 </button>
               )}
             </div>
@@ -365,6 +345,40 @@ export default function AdminRegistrations({ registrations }: Props) {
           </div>
         </div>
       </header>
+
+      {/* =========================================================================
+          2. HEADER BANNER: Judul Halaman & Status Ringkasan (Bisa Di-scroll, Tidak Stay)
+         ========================================================================= */}
+      <section className="bg-gradient-to-b from-purple-50/70 via-white to-slate-50/50 border-b border-slate-200/80 pt-6 pb-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-purple-100 text-[#843bab] flex items-center justify-center shrink-0 shadow-2xs border border-purple-200/60">
+                  <CreditCard size={19} />
+                </div>
+                <div className="flex items-center gap-2.5 flex-wrap">
+                  <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                    Pendaftaran & Pembayaran (Konfirmasi, Batal)
+                  </h1>
+                  {menungguBayarCount > 0 ? (
+                    <span className="px-2.5 py-0.5 rounded-full text-xs font-black bg-amber-100 text-amber-800 border border-amber-200 shadow-2xs">
+                      {menungguBayarCount} Menunggu
+                    </span>
+                  ) : (
+                    <span className="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-slate-100 text-slate-700 border border-slate-200 shadow-2xs">
+                      {registrations.length}
+                    </span>
+                  )}
+                </div>
+              </div>
+              <p className="text-xs sm:text-sm text-slate-600 mt-2 max-w-2xl leading-relaxed">
+                Kelola konfirmasi bukti transfer manual, cek status pembayaran Mayar otomatis, dan batalkan pendaftaran dengan pencatatan audit log.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* 2. MAIN WORKSPACE CONTENT */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 sm:space-y-8">
