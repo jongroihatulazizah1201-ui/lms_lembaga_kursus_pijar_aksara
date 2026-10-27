@@ -395,33 +395,137 @@ export default function AdminAntreanView({ initialData }: Props) {
   return (
     <div className="min-h-screen bg-slate-50/60 text-slate-900 pb-24">
       {/* =========================================================================
-          STICKY TOP ACTION & FILTER BAR (LANGSUNG MENEMPEL DI ATAS TANPA DELAY / CELAH)
+          1. STICKY TOP ACTION & FILTER BAR (TETAP STAY DI PALING ATAS TANPA CELAH)
          ========================================================================= */}
-      <header className="sticky top-[57px] lg:top-0 z-30 w-full bg-white/95 backdrop-blur-md border-b border-slate-200/90 shadow-xs transition-all">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4 space-y-3.5">
-          {/* Baris 1: Judul Halaman & Tombol Aksi Cepat */}
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-purple-100 text-[#843bab] flex items-center justify-center shrink-0 shadow-2xs">
-                <Clock size={18} />
-              </div>
-              <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="text-lg sm:text-2xl font-black text-slate-900 tracking-tight">
-                  Antrean Operasional Admin
-                </h1>
-                {data.summary.totalPendingPayments > 0 ? (
-                  <span className="px-2.5 py-0.5 rounded-full text-xs font-black bg-amber-100 text-amber-800 border border-amber-200 shadow-2xs">
-                    {data.summary.totalPendingPayments} Menunggu Bayar
-                  </span>
-                ) : (
-                  <span className="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-slate-100 text-slate-700 border border-slate-200 shadow-2xs">
-                    Operasional Terkendali
-                  </span>
+      <header className="sticky top-[57px] lg:top-0 z-30 w-full bg-white/95 backdrop-blur-md border-b border-slate-200/90 shadow-xs transition-all before:absolute before:inset-x-0 before:-top-4 before:h-4 before:bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 sm:py-3">
+          <div className="flex flex-col xl:flex-row items-stretch xl:items-center justify-between gap-2.5 sm:gap-3">
+            {/* Sisi Kiri: Search Box & Tab Filter Pills */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 flex-1 min-w-0">
+              {/* Search Box */}
+              <div className="relative flex-1 min-w-[200px] sm:min-w-[240px] max-w-sm">
+                <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Cari peserta, kursus, metode..."
+                  className="w-full pl-9 pr-9 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#843bab]/20 focus:border-[#843bab] focus:bg-white transition-all shadow-2xs"
+                />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 cursor-pointer"
+                    title="Hapus pencarian"
+                  >
+                    <X size={13} />
+                  </button>
                 )}
+              </div>
+
+              {/* Tab Filter Pills */}
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('semua')}
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-colors cursor-pointer ${
+                    activeTab === 'semua'
+                      ? 'bg-slate-900 text-white shadow-xs'
+                      : 'bg-white text-slate-600 hover:bg-slate-100 hover:text-slate-900 border border-slate-200'
+                  }`}
+                >
+                  Semua Bagian
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('pembayaran')}
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-colors cursor-pointer ${
+                    activeTab === 'pembayaran'
+                      ? 'bg-[#843bab] text-white shadow-xs'
+                      : 'bg-white text-slate-600 hover:bg-purple-50 hover:text-[#843bab] border border-slate-200'
+                  }`}
+                >
+                  <span>Pembayaran Menunggu</span>
+                  <span
+                    className={`px-1.5 py-0.2 rounded-full text-[10px] font-extrabold ${
+                      activeTab === 'pembayaran'
+                        ? 'bg-[#ffdf0f] text-slate-900'
+                        : 'bg-amber-100 text-amber-800'
+                    }`}
+                  >
+                    {data.summary.totalPendingPayments}
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('tinjauan')}
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-colors cursor-pointer ${
+                    activeTab === 'tinjauan'
+                      ? 'bg-[#843bab] text-white shadow-xs'
+                      : 'bg-white text-slate-600 hover:bg-sky-50 hover:text-sky-900 border border-slate-200'
+                  }`}
+                >
+                  <span>Tinjauan Kursus</span>
+                  <span
+                    className={`px-1.5 py-0.2 rounded-full text-[10px] font-extrabold ${
+                      activeTab === 'tinjauan'
+                        ? 'bg-[#ffdf0f] text-slate-900'
+                        : 'bg-sky-100 text-sky-800'
+                    }`}
+                  >
+                    {data.summary.reviewCoursesCount}
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('kursi')}
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-colors cursor-pointer ${
+                    activeTab === 'kursi'
+                      ? 'bg-[#843bab] text-white shadow-xs'
+                      : 'bg-white text-slate-600 hover:bg-orange-50 hover:text-orange-900 border border-slate-200'
+                  }`}
+                >
+                  <span>Kursus Hampir Penuh</span>
+                  <span
+                    className={`px-1.5 py-0.2 rounded-full text-[10px] font-extrabold ${
+                      activeTab === 'kursi'
+                        ? 'bg-[#ffdf0f] text-slate-900'
+                        : 'bg-orange-100 text-orange-800'
+                    }`}
+                  >
+                    {data.summary.almostFullCoursesCount}
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('kedaluwarsa')}
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-colors cursor-pointer ${
+                    activeTab === 'kedaluwarsa'
+                      ? 'bg-slate-800 text-white shadow-xs'
+                      : 'bg-white text-slate-600 hover:bg-slate-100 hover:text-slate-900 border border-slate-200'
+                  }`}
+                >
+                  <span>Kedaluwarsa (7 Hari)</span>
+                  <span
+                    className={`px-1.5 py-0.2 rounded-full text-[10px] font-extrabold ${
+                      activeTab === 'kedaluwarsa'
+                        ? 'bg-white/20 text-white'
+                        : 'bg-slate-100 text-slate-700'
+                    }`}
+                  >
+                    {data.summary.expiredCount}
+                  </span>
+                </button>
               </div>
             </div>
 
-            <div className="flex items-center gap-2.5 self-start sm:self-center shrink-0">
+            {/* Sisi Kanan: Tombol Aksi Cepat (Segarkan & Panel Utama) */}
+            <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
               <button
                 type="button"
                 onClick={() => {
@@ -430,148 +534,58 @@ export default function AdminAntreanView({ initialData }: Props) {
                   });
                 }}
                 disabled={isPending}
-                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-700 text-xs font-bold transition-all border border-slate-200 disabled:opacity-50 cursor-pointer shadow-2xs"
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-700 text-xs font-bold transition-all border border-slate-200 disabled:opacity-50 cursor-pointer shadow-2xs"
                 title="Segarkan data antrean terbaru"
               >
-                <RefreshCw size={14} className={isPending ? 'animate-spin text-[#843bab]' : 'text-slate-500'} />
+                <RefreshCw size={13} className={isPending ? 'animate-spin text-[#843bab]' : 'text-slate-500'} />
                 <span>Segarkan Antrean</span>
               </button>
 
               <Link
                 href="/admin?tab=pendaftaran"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#843bab] hover:bg-[#722f96] text-white text-xs font-bold transition-all shadow-xs cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#843bab] hover:bg-[#722f96] text-white text-xs font-bold transition-all shadow-xs cursor-pointer whitespace-nowrap"
               >
                 <span>Panel Utama Admin</span>
                 <ArrowUpRight size={14} />
               </Link>
             </div>
           </div>
+        </div>
+      </header>
 
-          {/* Baris 2: Toolbar Pencarian & Filter Kategori (SESUAI GAMBAR SCREENSHOT USER) */}
-          <div className="bg-slate-50/70 border border-slate-200/80 rounded-xl p-2.5 sm:p-3 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
-            {/* Search Box */}
-            <div className="relative flex-1 min-w-[260px]">
-              <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Cari peserta, kursus, metode..."
-                className="w-full pl-10 pr-10 py-2 rounded-xl bg-white border border-slate-200 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#843bab]/20 focus:border-[#843bab] transition-all"
-              />
-              {searchQuery && (
-                <button
-                  type="button"
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 cursor-pointer"
-                  title="Hapus pencarian"
-                >
-                  <X size={14} />
-                </button>
-              )}
-            </div>
-
-            {/* Tab Filter Pills */}
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
-              <button
-                type="button"
-                onClick={() => setActiveTab('semua')}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-colors cursor-pointer ${
-                  activeTab === 'semua'
-                    ? 'bg-slate-900 text-white shadow-xs'
-                    : 'bg-white text-slate-600 hover:bg-slate-100 hover:text-slate-900 border border-slate-200'
-                }`}
-              >
-                Semua Bagian
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setActiveTab('pembayaran')}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-colors cursor-pointer ${
-                  activeTab === 'pembayaran'
-                    ? 'bg-[#843bab] text-white shadow-xs'
-                    : 'bg-white text-slate-600 hover:bg-purple-50 hover:text-[#843bab] border border-slate-200'
-                }`}
-              >
-                <span>Pembayaran Menunggu</span>
-                <span
-                  className={`px-1.5 py-0.2 rounded-full text-[10px] font-extrabold ${
-                    activeTab === 'pembayaran'
-                      ? 'bg-[#ffdf0f] text-slate-900'
-                      : 'bg-amber-100 text-amber-800'
-                  }`}
-                >
-                  {data.summary.totalPendingPayments}
-                </span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setActiveTab('tinjauan')}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-colors cursor-pointer ${
-                  activeTab === 'tinjauan'
-                    ? 'bg-[#843bab] text-white shadow-xs'
-                    : 'bg-white text-slate-600 hover:bg-sky-50 hover:text-sky-900 border border-slate-200'
-                }`}
-              >
-                <span>Tinjauan Kursus</span>
-                <span
-                  className={`px-1.5 py-0.2 rounded-full text-[10px] font-extrabold ${
-                    activeTab === 'tinjauan'
-                      ? 'bg-[#ffdf0f] text-slate-900'
-                      : 'bg-sky-100 text-sky-800'
-                  }`}
-                >
-                  {data.summary.reviewCoursesCount}
-                </span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setActiveTab('kursi')}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-colors cursor-pointer ${
-                  activeTab === 'kursi'
-                    ? 'bg-[#843bab] text-white shadow-xs'
-                    : 'bg-white text-slate-600 hover:bg-orange-50 hover:text-orange-900 border border-slate-200'
-                }`}
-              >
-                <span>Kursus Hampir Penuh</span>
-                <span
-                  className={`px-1.5 py-0.2 rounded-full text-[10px] font-extrabold ${
-                    activeTab === 'kursi'
-                      ? 'bg-[#ffdf0f] text-slate-900'
-                      : 'bg-orange-100 text-orange-800'
-                  }`}
-                >
-                  {data.summary.almostFullCoursesCount}
-                </span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setActiveTab('kedaluwarsa')}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-colors cursor-pointer ${
-                  activeTab === 'kedaluwarsa'
-                    ? 'bg-slate-800 text-white shadow-xs'
-                    : 'bg-white text-slate-600 hover:bg-slate-100 hover:text-slate-900 border border-slate-200'
-                }`}
-              >
-                <span>Kedaluwarsa (7 Hari)</span>
-                <span
-                  className={`px-1.5 py-0.2 rounded-full text-[10px] font-extrabold ${
-                    activeTab === 'kedaluwarsa'
-                      ? 'bg-white/20 text-white'
-                      : 'bg-slate-100 text-slate-700'
-                  }`}
-                >
-                  {data.summary.expiredCount}
-                </span>
-              </button>
+      {/* =========================================================================
+          2. HEADER BANNER: Judul Antrean & Status Ringkasan (Bisa Di-scroll, Tidak Stay)
+         ========================================================================= */}
+      <section className="bg-gradient-to-b from-purple-50/70 via-white to-slate-50/50 border-b border-slate-200/80 pt-6 pb-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-purple-100 text-[#843bab] flex items-center justify-center shrink-0 shadow-2xs border border-purple-200/60">
+                  <Clock size={19} />
+                </div>
+                <div className="flex items-center gap-2.5 flex-wrap">
+                  <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                    Antrean Operasional Admin
+                  </h1>
+                  {data.summary.totalPendingPayments > 0 ? (
+                    <span className="px-2.5 py-0.5 rounded-full text-xs font-black bg-amber-100 text-amber-900 border border-amber-300 shadow-2xs">
+                      {data.summary.totalPendingPayments} Menunggu Bayar
+                    </span>
+                  ) : (
+                    <span className="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-200 shadow-2xs">
+                      Operasional Terkendali
+                    </span>
+                  )}
+                </div>
+              </div>
+              <p className="text-xs sm:text-sm text-slate-600 mt-2 max-w-2xl leading-relaxed">
+                Pusat tindak lanjut berkala transaksi peserta, verifikasi pendaftaran transfer manual, dan pemantauan ketersediaan kuota kursi kelas secara real-time.
+              </p>
             </div>
           </div>
         </div>
-      </header>
+      </section>
 
       {/* KONTEN UTAMA HALAMAN */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 sm:space-y-8">
