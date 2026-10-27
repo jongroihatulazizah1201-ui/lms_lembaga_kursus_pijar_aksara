@@ -5,7 +5,7 @@ import StudentDashboardClient from '@/components/StudentDashboardClient';
 import { EnrollmentItem } from '@/components/MyCourseCard';
 
 export const metadata: Metadata = {
-  title: 'Dashboard Siswa & Aturan Belajar | Lembaga Kursus Pijar Aksara',
+  title: 'Dashboard Siswa | Lembaga Kursus Pijar Aksara',
   description:
     'Pusat kendali belajar siswa, skala penugasan modul, aturan penilaian kuis kelulusan, alur sekuensial, dan panduan sertifikat kompetensi resmi Lembaga Kursus Pijar Aksara.',
   robots: {

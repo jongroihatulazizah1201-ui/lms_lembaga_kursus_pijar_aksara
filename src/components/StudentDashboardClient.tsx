@@ -188,12 +188,9 @@ export default function StudentDashboardClient({
               <ShieldCheck size={13} className="text-[#843bab]" />
               <span>Pusat Kendali &amp; Pedoman Siswa</span>
             </div>
-            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight mb-1.5">
-              Dashboard Siswa &amp; Aturan Belajar
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+              Halo, {userProfile.nama_lengkap || 'Peserta'}!
             </h1>
-            <p className="text-slate-600 text-xs sm:text-sm max-w-2xl leading-relaxed">
-              Halo, <span className="font-semibold text-slate-900">{userProfile.nama_lengkap}</span>! Pahami pedoman kelulusan, skala penilaian kuis berstandar industri, dan pantau skala pengerjaan penugasan belajar Anda secara real-time.
-            </p>
           </div>
 
           {/* =========================================================
