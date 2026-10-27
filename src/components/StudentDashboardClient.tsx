@@ -9,19 +9,11 @@ import {
   Clock,
   BookOpen,
   ArrowRight,
-  Target,
-  Sparkles,
   ShieldCheck,
   Search,
   ExternalLink,
   BookCheck,
   TrendingUp,
-  BarChart2,
-  Calendar,
-  AlertCircle,
-  HelpCircle,
-  PlayCircle,
-  Layers,
 } from 'lucide-react';
 import { EnrollmentItem } from '@/components/MyCourseCard';
 
@@ -62,18 +54,6 @@ export default function StudentDashboardClient({
     return Math.min(100, Math.round((totalModulLulus / totalModulSemua) * 100));
   }, [totalModulSemua, totalModulLulus]);
 
-  const totalDurasiSemuaMenit = useMemo(() => {
-    return initialCourses.reduce((acc, c) => acc + (c.kursus.total_durasi_menit || 0), 0);
-  }, [initialCourses]);
-
-  const totalDurasiSelesaiMenit = useMemo(() => {
-    return initialCourses.reduce((acc, c) => acc + (c.durasi_selesai_menit || 0), 0);
-  }, [initialCourses]);
-
-  const totalInvestasiRp = useMemo(() => {
-    return initialCourses.reduce((acc, c) => acc + (Number(c.nominal) || 0), 0);
-  }, [initialCourses]);
-
   // Kursus yang difilter oleh input pencarian
   const filteredCourses = useMemo(() => {
     if (!searchQuery.trim()) return initialCourses;
@@ -100,7 +80,7 @@ export default function StudentDashboardClient({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 sm:py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2 overflow-x-auto no-scrollbar text-xs">
             <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-purple-50 text-[#843bab] font-bold border border-purple-200/80 shrink-0">
-              <Sparkles size={12} className="text-[#843bab]" />
+              <GraduationCap size={14} className="text-[#843bab]" />
               <span>Pusat Belajar Vokasi</span>
             </span>
             <span className="text-slate-500 hidden md:inline truncate">
@@ -462,10 +442,10 @@ export default function StudentDashboardClient({
         </div>
 
         {/* =========================================================
-            BARIS 2: 3 CARDS SEJAJAR (PERFORMA, SPENDING/OVERVIEW, WAKTU/RATE)
+            BARIS 2: 2 KARTU SEJAJAR (PERFORMA KUIS & SKALA KELULUSAN)
            ========================================================= */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* CARD 1: PERFORMA BELAJAR PER KURSUS */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* KARTU 1: PERFORMA BELAJAR PER KURSUS */}
           <div className="bg-white rounded-3xl border border-slate-200/90 p-5 sm:p-6 shadow-xs flex flex-col justify-between space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div className="flex items-center gap-2">
@@ -481,27 +461,29 @@ export default function StudentDashboardClient({
 
             {/* Bar Performa per Kursus */}
             {initialCourses.length > 0 ? (
-              <div className="space-y-3.5 flex-1">
-                {initialCourses.slice(0, 4).map((c) => {
+              <div className="space-y-4 flex-1">
+                {initialCourses.slice(0, 5).map((c) => {
                   const score = c.nilai_kuis_terbaik ?? (c.modul_lulus > 0 ? 75 : 0);
                   const isPassed = score >= 70;
 
                   return (
-                    <div key={c.id} className="space-y-1 text-xs">
+                    <div key={c.id} className="space-y-1.5 text-xs">
                       <div className="flex justify-between items-center">
-                        <span className="font-bold text-slate-800 truncate max-w-[170px]">
+                        <span className="font-bold text-slate-800 truncate max-w-[220px] sm:max-w-[280px]">
                           {c.kursus.judul}
                         </span>
                         <span className="font-black text-slate-900">
-                          {c.nilai_kuis_terbaik !== null ? `${c.nilai_kuis_terbaik}/100` : `${c.modul_lulus}/${c.kursus.total_modul} Modul`}
+                          {c.nilai_kuis_terbaik !== null
+                            ? `${c.nilai_kuis_terbaik}/100`
+                            : `${c.modul_lulus}/${c.kursus.total_modul} Modul`}
                         </span>
                       </div>
-                      <div className="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
+                      <div className="w-full h-2.5 rounded-full bg-slate-100 overflow-hidden">
                         <div
                           className={`h-full rounded-full transition-all ${
                             isPassed ? 'bg-amber-400' : 'bg-slate-300'
                           }`}
-                          style={{ width: `${Math.min(100, Math.max(10, score))}%` }}
+                          style={{ width: `${Math.min(100, Math.max(8, score))}%` }}
                         />
                       </div>
                     </div>
@@ -514,119 +496,65 @@ export default function StudentDashboardClient({
               </div>
             )}
 
-            <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/80 text-[11px] text-slate-600 leading-relaxed">
-              Kuis evaluasi dirancang berstandar industri dengan maksimal 3 kali percobaan untuk mencapai KKM kelulusan.
+            <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 text-[11px] text-slate-600 leading-relaxed">
+              Kuis evaluasi dirancang berstandar industri vokasi dengan batas maksimal 3 kali percobaan untuk mencapai KKM kelulusan.
             </div>
           </div>
 
-          {/* CARD 2: ALOKASI & INVESTASI PEMBELAJARAN */}
-          <div className="bg-white rounded-3xl border border-slate-200/90 p-5 sm:p-6 shadow-xs flex flex-col justify-between space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+          {/* KARTU 2: SKALA KELULUSAN MODUL (PRIMARY GRADIENT CARD) */}
+          <div className="bg-gradient-to-br from-[#843bab] via-[#722f96] to-purple-900 text-white rounded-3xl p-6 sm:p-7 shadow-sm flex flex-col justify-between space-y-6">
+            <div className="flex items-center justify-between text-xs text-purple-200 pb-3 border-b border-white/10">
               <div className="flex items-center gap-2">
-                <Layers size={16} className="text-[#843bab]" />
-                <h3 className="font-extrabold text-sm sm:text-base text-slate-900">
-                  Ikhtisar Silabus &amp; Akses
-                </h3>
+                <Award size={16} className="text-white" />
+                <span className="font-bold uppercase tracking-wider text-[11px]">
+                  Skala Kelulusan Modul
+                </span>
               </div>
-              <span className="text-[11px] font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded-full border border-purple-200">
-                Akses Seumur Hidup
+              <span className="px-2.5 py-0.5 rounded-full bg-white/15 text-white font-bold text-[10px]">
+                Kurikulum Vokasi
               </span>
             </div>
 
-            <div className="space-y-3 flex-1">
-              {/* Total Investasi */}
-              <div className="p-3.5 rounded-2xl bg-gradient-to-r from-purple-50/70 to-white border border-purple-100">
-                <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                  Total Nilai Kursus Terdaftar
-                </div>
-                <div className="text-xl font-extrabold text-[#843bab] mt-0.5">
-                  Rp {totalInvestasiRp.toLocaleString('id-ID')}
-                </div>
-                <div className="text-[11px] text-slate-500 mt-0.5">
-                  Mencakup seluruh kurikulum vokasi praktis Pijar Aksara
-                </div>
-              </div>
-
-              {/* Fasilitas Silabus */}
-              <div className="grid grid-cols-2 gap-2 text-xs">
-                <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 text-center">
-                  <div className="font-extrabold text-slate-900 text-sm">
-                    {totalDurasiSemuaMenit} Menit
-                  </div>
-                  <div className="text-[10px] text-slate-500 font-semibold mt-0.5">
-                    Total Silabus
-                  </div>
-                </div>
-                <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 text-center">
-                  <div className="font-extrabold text-slate-900 text-sm">
-                    {totalModulSemua} Modul
-                  </div>
-                  <div className="text-[10px] text-slate-500 font-semibold mt-0.5">
-                    Modul Praktik &amp; Kuis
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="text-[11px] text-slate-500 text-center pt-2 border-t border-slate-100">
-              Hak akses belajar tidak memiliki masa kedaluwarsa setelah kursus aktif.
-            </div>
-          </div>
-
-          {/* CARD 3: STACK 2 CARDS (WAKTU BELAJAR & COMPLETION RATE CARD) */}
-          <div className="space-y-4 flex flex-col justify-between">
-            {/* Waktu Efektif Belajar Mini Card */}
-            <div className="bg-white rounded-3xl border border-slate-200/90 p-4 sm:p-5 shadow-xs space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5 text-xs font-bold text-slate-800">
-                  <BarChart2 size={15} className="text-[#843bab]" />
-                  <span>Waktu Efektif Belajar</span>
-                </div>
-                <span className="text-[10px] font-bold text-slate-500">
-                  {totalDurasiSelesaiMenit} Menit Selesai
-                </span>
-              </div>
-
-              {/* Visual Bars Mockup */}
-              <div className="flex items-end justify-between gap-1.5 h-12 pt-2 px-2 bg-slate-50 rounded-xl border border-slate-100">
-                <div className="w-full bg-amber-300 rounded-t h-4" />
-                <div className="w-full bg-amber-400 rounded-t h-7" />
-                <div className="w-full bg-amber-400 rounded-t h-5" />
-                <div className="w-full bg-amber-500 rounded-t h-10" />
-                <div className="w-full bg-[#843bab] rounded-t h-8" />
-                <div className="w-full bg-[#843bab] rounded-t h-9" />
-                <div className="w-full bg-[#722f96] rounded-t h-11" />
-              </div>
-            </div>
-
-            {/* Tingkat Kelulusan Belajar (Primary Gradient Card) */}
-            <div className="bg-gradient-to-br from-[#843bab] via-[#722f96] to-purple-900 text-white rounded-3xl p-5 shadow-sm space-y-3">
-              <div className="flex items-center justify-between text-xs text-purple-200">
-                <span className="font-bold">Skala Kelulusan Modul</span>
-                <span className="p-1 rounded-full bg-white/10">
-                  <Award size={13} className="text-white" />
-                </span>
-              </div>
-
+            <div className="space-y-3">
               <div className="flex items-baseline justify-between">
-                <div className="text-3xl font-black">{overallProgress}%</div>
-                <div className="text-xs text-purple-100 font-semibold">
-                  {totalModulLulus} dari {totalModulSemua} Modul
+                <div className="text-4xl sm:text-5xl font-black">{overallProgress}%</div>
+                <div className="text-xs sm:text-sm text-purple-100 font-semibold">
+                  {totalModulLulus} dari {totalModulSemua} Modul Selesai
                 </div>
               </div>
 
               {/* Progress Slider */}
-              <div className="w-full h-2 rounded-full bg-white/20 overflow-hidden">
+              <div className="w-full h-3 rounded-full bg-white/20 overflow-hidden">
                 <div
                   className="h-full rounded-full bg-white transition-all duration-700"
                   style={{ width: `${overallProgress}%` }}
                 />
               </div>
+            </div>
 
-              <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[11px]">
-                <span className="text-purple-200">Sertifikat Resmi Terbit:</span>
-                <span className="font-bold text-white">{completedCourses.length}</span>
+            {/* Grid Ringkasan Metrik */}
+            <div className="grid grid-cols-2 gap-3 pt-3 border-t border-white/10">
+              <div className="p-3 rounded-2xl bg-white/10 backdrop-blur-xs">
+                <div className="text-[10px] uppercase font-bold text-purple-200">
+                  Modul Kompeten
+                </div>
+                <div className="text-lg font-black text-white mt-0.5">
+                  {totalModulLulus} Modul
+                </div>
               </div>
+              <div className="p-3 rounded-2xl bg-white/10 backdrop-blur-xs">
+                <div className="text-[10px] uppercase font-bold text-purple-200">
+                  Sertifikat Resmi
+                </div>
+                <div className="text-lg font-black text-white mt-0.5">
+                  {completedCourses.length} Terbit
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between text-[11px] text-purple-200 pt-1 border-t border-white/10">
+              <span>Sisa modul yang belum tuntas:</span>
+              <span className="font-bold text-white">{totalModulBelum} Modul</span>
             </div>
           </div>
         </div>

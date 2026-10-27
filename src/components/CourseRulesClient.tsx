@@ -19,7 +19,6 @@ import {
   Zap,
   Info,
   Check,
-  Sparkles,
 } from 'lucide-react';
 
 interface Props {
