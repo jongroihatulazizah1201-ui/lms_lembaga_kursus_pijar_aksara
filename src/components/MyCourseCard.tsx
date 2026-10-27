@@ -27,6 +27,7 @@ import {
   Target,
   QrCode,
   HelpCircle,
+  FileText,
 } from 'lucide-react';
 import { getOrCreateMayarPaymentUrlAction } from '@/app/kursus-saya/actions';
 import LoadingSpinner from '@/components/LoadingSpinner';
@@ -64,6 +65,7 @@ export interface EnrollmentItem {
   nominal: number;
   metode_bayar: string;
   batas_bayar: string | null;
+  bukti_bayar_path?: string | null;
   didaftarkan_pada: string;
   mayar_invoice_id: string | null;
   kursus: EnrollmentCourseData;
@@ -181,6 +183,14 @@ export default function MyCourseCard({ enrollment, onCancelRequest }: Props) {
           </span>
         );
       case 'menunggu_bayar':
+        if (enrollment.bukti_bayar_path) {
+          return (
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-900 border border-amber-300 shadow-2xs">
+              <Clock size={13} className="text-amber-600 animate-pulse" />
+              Menunggu Konfirmasi Admin
+            </span>
+          );
+        }
         return (
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200 shadow-2xs">
             <Clock size={13} className="text-amber-600" />
@@ -402,13 +412,22 @@ export default function MyCourseCard({ enrollment, onCancelRequest }: Props) {
                     <span>{timeLeft || '24:00:00'}</span>
                   </div>
                 </div>
+
+                {enrollment.bukti_bayar_path && (
+                  <div className="mt-2 pt-2 border-t border-amber-200/80 bg-amber-100/70 -mx-1 -mb-1 p-2 rounded-lg flex items-start gap-2">
+                    <FileText size={14} className="text-[#843bab] shrink-0 mt-0.5" />
+                    <p className="text-[11px] text-amber-950 leading-snug">
+                      <span className="font-extrabold">Bukti transfer telah dikirim.</span> Menunggu verifikasi Admin untuk membuka akses kelas.
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           )}
 
           {/* =========================================================
               BAGIAN: SERTIFIKAT INFO (Untuk status 'selesai')
-             ========================================================= */}
+              ========================================================= */}
           {status === 'selesai' && sertifikat?.nomor_sertifikat && (
             <div className="flex items-center justify-between text-xs bg-purple-50/60 border border-purple-100 rounded-lg px-3 py-2 text-purple-900">
               <span className="text-slate-500">Nomor Sertifikat:</span>
@@ -420,7 +439,7 @@ export default function MyCourseCard({ enrollment, onCancelRequest }: Props) {
 
           {/* =========================================================
               BAGIAN: NOTICE BATAL / KEDALUWARSA
-             ========================================================= */}
+              ========================================================= */}
           {(status === 'dibatalkan' || status === 'kedaluwarsa') && (
             <div className="bg-slate-50 rounded-xl p-3 border border-slate-200 text-xs text-slate-500 leading-relaxed">
               {status === 'dibatalkan'
@@ -454,8 +473,17 @@ export default function MyCourseCard({ enrollment, onCancelRequest }: Props) {
               href={`/kursus-saya/${id}/bayar`}
               className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#843bab] hover:bg-[#722f96] text-white font-bold text-xs shadow-xs hover:shadow-md transition-all cursor-pointer"
             >
-              <CreditCardCheck size={14} className="text-[#ffdf0f]" />
-              <span>Bayar Kursus (Mayar / Transfer)</span>
+              {enrollment.bukti_bayar_path ? (
+                <>
+                  <FileText size={14} className="text-[#ffdf0f]" />
+                  <span>Lihat / Perbarui Bukti Transfer</span>
+                </>
+              ) : (
+                <>
+                  <CreditCardCheck size={14} className="text-[#ffdf0f]" />
+                  <span>Bayar Kursus (Mayar / Transfer)</span>
+                </>
+              )}
               <ArrowRight size={14} />
             </Link>
 

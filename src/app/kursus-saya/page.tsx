@@ -49,6 +49,7 @@ export default async function KursusSayaPage() {
       nominal,
       metode_bayar,
       batas_bayar,
+      bukti_bayar_path,
       mayar_invoice_id,
       didaftarkan_pada,
       kursus:kursus_id (
@@ -137,6 +138,7 @@ export default async function KursusSayaPage() {
       nominal: e.nominal,
       metode_bayar: e.metode_bayar,
       batas_bayar: e.batas_bayar,
+      bukti_bayar_path: e.bukti_bayar_path || null,
       didaftarkan_pada: e.didaftarkan_pada,
       mayar_invoice_id: e.mayar_invoice_id,
       kursus: {
