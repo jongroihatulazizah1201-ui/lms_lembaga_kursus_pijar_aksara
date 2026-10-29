@@ -25,6 +25,7 @@ import {
   ChevronDown,
 } from 'lucide-react';
 import { ubahPeranPenggunaAction, ubahStatusPenggunaAction } from '@/app/admin/actions';
+import AdminPagination from '@/components/AdminPagination';
 
 export interface UserItem {
   id: string;
@@ -46,6 +47,8 @@ export default function AdminUserManagement({ users, currentAdminId }: Props) {
   const [filterRole, setFilterRole] = useState<string>('semua');
   const [filterStatus, setFilterStatus] = useState<string>('semua');
   const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const ITEMS_PER_PAGE = 20;
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [feedbackMsg, setFeedbackMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
@@ -90,6 +93,17 @@ export default function AdminUserManagement({ users, currentAdminId }: Props) {
       return matchesSearch && matchesRole && matchesStatus;
     });
   }, [users, searchQuery, filterRole, filterStatus]);
+
+  // Reset ke halaman 1 saat pencarian atau filter peran/status berubah
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, filterRole, filterStatus]);
+
+  // Data Pengguna Terpaginasi (20 per halaman)
+  const paginatedUsers = useMemo(() => {
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    return filteredUsers.slice(start, start + ITEMS_PER_PAGE);
+  }, [filteredUsers, currentPage, ITEMS_PER_PAGE]);
 
   // Action: Eksekusi Ubah Peran (BR-12)
   const handleExecuteUbahPeran = async () => {
@@ -431,7 +445,7 @@ export default function AdminUserManagement({ users, currentAdminId }: Props) {
                   </td>
                 </tr>
               ) : (
-                filteredUsers.map((u, idx) => {
+                paginatedUsers.map((u, idx) => {
                   const isCurrentAdmin = u.id === currentAdminId;
 
                   return (
@@ -441,7 +455,7 @@ export default function AdminUserManagement({ users, currentAdminId }: Props) {
                     >
                       {/* No */}
                       <td className="py-4 px-4 text-center text-xs text-slate-400 font-semibold">
-                        {idx + 1}
+                        {(currentPage - 1) * ITEMS_PER_PAGE + idx + 1}
                       </td>
 
                       {/* Nama Pengguna */}
@@ -555,6 +569,15 @@ export default function AdminUserManagement({ users, currentAdminId }: Props) {
             </tbody>
           </table>
         </div>
+
+        {/* Paginasi Data Pengguna (20 Baris per Halaman) */}
+        <AdminPagination
+          currentPage={currentPage}
+          totalItems={filteredUsers.length}
+          itemsPerPage={ITEMS_PER_PAGE}
+          onPageChange={setCurrentPage}
+          itemLabel="pengguna"
+        />
       </div>
       </div>
 

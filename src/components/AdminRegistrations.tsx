@@ -29,6 +29,7 @@ import {
 } from 'lucide-react';
 import { konfirmasiPembayaranAction, batalkanPendaftaranAction, cekStatusMayarAction } from '@/app/admin/actions';
 import { getSignedBuktiBayarUrlAction } from '@/app/kursus-saya/actions';
+import AdminPagination from '@/components/AdminPagination';
 
 export interface RegistrationItem {
   id: string;
@@ -64,6 +65,8 @@ export default function AdminRegistrations({ registrations }: Props) {
   const router = useRouter();
   const [filterStatus, setFilterStatus] = useState<string>('semua');
   const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const ITEMS_PER_PAGE = 20;
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [loadingMayarId, setLoadingMayarId] = useState<string | null>(null);
   const [feedbackMsg, setFeedbackMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
@@ -153,6 +156,17 @@ export default function AdminRegistrations({ registrations }: Props) {
       return matchesSearch && matchesStatus;
     });
   }, [registrations, searchQuery, filterStatus]);
+
+  // Reset ke halaman 1 saat pencarian atau filter status berubah
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, filterStatus]);
+
+  // Data Pendaftaran Terpaginasi (20 per halaman)
+  const paginatedRegistrations = useMemo(() => {
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    return filteredRegistrations.slice(start, start + ITEMS_PER_PAGE);
+  }, [filteredRegistrations, currentPage, ITEMS_PER_PAGE]);
 
   // Action: Eksekusi Konfirmasi Pembayaran (menunggu_bayar -> aktif, BR-07)
   const handleExecuteKonfirmasi = async () => {
@@ -516,7 +530,7 @@ export default function AdminRegistrations({ registrations }: Props) {
                   </td>
                 </tr>
               ) : (
-                filteredRegistrations.map((reg, idx) => {
+                paginatedRegistrations.map((reg, idx) => {
                   const isMenungguBayar = reg.status === 'menunggu_bayar';
                   const isAktif = reg.status === 'aktif';
                   const canCancel = isMenungguBayar || isAktif;
@@ -528,7 +542,7 @@ export default function AdminRegistrations({ registrations }: Props) {
                     >
                       {/* No */}
                       <td className="py-4 px-4 text-center text-xs text-slate-400 font-semibold">
-                        {idx + 1}
+                        {(currentPage - 1) * ITEMS_PER_PAGE + idx + 1}
                       </td>
 
                       {/* Peserta */}
@@ -692,6 +706,15 @@ export default function AdminRegistrations({ registrations }: Props) {
             </tbody>
           </table>
         </div>
+
+        {/* Paginasi Data Admin (20 Baris per Halaman) */}
+        <AdminPagination
+          currentPage={currentPage}
+          totalItems={filteredRegistrations.length}
+          itemsPerPage={ITEMS_PER_PAGE}
+          onPageChange={setCurrentPage}
+          itemLabel="pendaftaran"
+        />
       </div>
       </div>
 

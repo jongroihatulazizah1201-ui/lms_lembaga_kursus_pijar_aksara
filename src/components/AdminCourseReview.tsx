@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ubahStatusKursusAction, ubahKuotaKursusAction } from '@/app/admin/actions';
 import { formatRupiah } from '@/components/CourseCard';
 import CourseStatusBadge from '@/components/CourseStatusBadge';
+import AdminPagination from '@/components/AdminPagination';
 import {
   CheckCircle2,
   XCircle,
@@ -92,15 +93,30 @@ export default function AdminCourseReview({ courses }: Props) {
 
   // Syllabus Preview State
   const [previewCourseId, setPreviewCourseId] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const ITEMS_PER_PAGE = 20;
 
-  const filteredCourses = courses.filter((c) => {
-    const matchesStatus = filterStatus === 'semua' || c.status === filterStatus;
-    const matchesSearch =
-      c.judul.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      c.instruktur.nama_lengkap.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      c.kategori.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesStatus && matchesSearch;
-  });
+  const filteredCourses = useMemo(() => {
+    return courses.filter((c) => {
+      const matchesStatus = filterStatus === 'semua' || c.status === filterStatus;
+      const matchesSearch =
+        c.judul.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        c.instruktur.nama_lengkap.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        c.kategori.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesStatus && matchesSearch;
+    });
+  }, [courses, filterStatus, searchQuery]);
+
+  // Reset ke halaman 1 jika pencarian atau filter status berubah
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filterStatus, searchQuery]);
+
+  // Data Kursus Terpaginasi (20 per halaman)
+  const paginatedCourses = useMemo(() => {
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    return filteredCourses.slice(start, start + ITEMS_PER_PAGE);
+  }, [filteredCourses, currentPage, ITEMS_PER_PAGE]);
 
   const pendingReviewCount = courses.filter((c) => c.status === 'ditinjau').length;
 
@@ -356,7 +372,7 @@ export default function AdminCourseReview({ courses }: Props) {
             </p>
           </div>
         ) : (
-          filteredCourses.map((c) => {
+          paginatedCourses.map((c) => {
             const isPreviewOpen = previewCourseId === c.id;
             const totalModul = c.modul?.length || 0;
             let totalSoal = 0;
@@ -611,6 +627,19 @@ export default function AdminCourseReview({ courses }: Props) {
           })
         )}
       </div>
+
+      {/* Paginasi Daftar Kursus Admin (20 Baris per Halaman) */}
+      {filteredCourses.length > 0 && (
+        <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-2xs mt-4">
+          <AdminPagination
+            currentPage={currentPage}
+            totalItems={filteredCourses.length}
+            itemsPerPage={ITEMS_PER_PAGE}
+            onPageChange={setCurrentPage}
+            itemLabel="kursus"
+          />
+        </div>
+      )}
       </div>
 
       {/* Modal Kembalikan ke Draf (BR-02: Catatan Minimal 10 Karakter) */}

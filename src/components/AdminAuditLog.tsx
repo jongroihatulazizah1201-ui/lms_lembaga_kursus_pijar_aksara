@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
+import AdminPagination from '@/components/AdminPagination';
 import {
   FileText,
   Search,
@@ -46,7 +47,9 @@ interface Props {
 export default function AdminAuditLog({ logs }: Props) {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterCategory, setFilterCategory] = useState<string>('semua');
+  const [currentPage, setCurrentPage] = useState<number>(1);
   const [expandedLogId, setExpandedLogId] = useState<string | number | null>(null);
+  const ITEMS_PER_PAGE = 20;
 
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleDateString('id-ID', {
@@ -114,6 +117,17 @@ export default function AdminAuditLog({ logs }: Props) {
       return matchesSearch && matchesCategory;
     });
   }, [logs, searchQuery, filterCategory]);
+
+  // Reset ke halaman 1 saat pencarian atau filter kategori berubah
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, filterCategory]);
+
+  // Data Log Terpaginasi (20 per halaman)
+  const paginatedLogs = useMemo(() => {
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    return filteredLogs.slice(start, start + ITEMS_PER_PAGE);
+  }, [filteredLogs, currentPage, ITEMS_PER_PAGE]);
 
   const toggleExpand = (logId: string | number) => {
     setExpandedLogId((prev) => (prev === logId ? null : logId));
@@ -415,7 +429,7 @@ export default function AdminAuditLog({ logs }: Props) {
                   </td>
                 </tr>
               ) : (
-                filteredLogs.map((log, idx) => {
+                paginatedLogs.map((log, idx) => {
                   const isExpanded = expandedLogId === log.id;
                   const hasChanges = log.data_sebelum || log.data_sesudah;
 
@@ -428,7 +442,7 @@ export default function AdminAuditLog({ logs }: Props) {
                       >
                         {/* No */}
                         <td className="py-4 px-4 text-center text-xs text-slate-400 font-semibold">
-                          {idx + 1}
+                          {(currentPage - 1) * ITEMS_PER_PAGE + idx + 1}
                         </td>
 
                         {/* Waktu */}
@@ -551,6 +565,15 @@ export default function AdminAuditLog({ logs }: Props) {
             </tbody>
           </table>
         </div>
+
+        {/* Paginasi Riwayat Audit (20 Baris per Halaman) */}
+        <AdminPagination
+          currentPage={currentPage}
+          totalItems={filteredLogs.length}
+          itemsPerPage={ITEMS_PER_PAGE}
+          onPageChange={setCurrentPage}
+          itemLabel="catatan log"
+        />
       </div>
       </div>
     </div>

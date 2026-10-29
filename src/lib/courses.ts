@@ -107,12 +107,20 @@ export const getCourseBySlug = cache(async (slug: string): Promise<CourseDetailD
     return null;
   }
 
-  // 2. Ambil silabus modul (judul dan durasi saja sesuai BR-01 & BR-08)
-  const { data: modulList } = await supabase
-    .from('modul')
-    .select('id, urutan, judul, durasi_menit')
-    .eq('kursus_id', course.id)
-    .order('urutan', { ascending: true });
+  // 2. Ambil silabus modul secara aman (judul dan durasi saja, tanpa membocorkan isi_materi ke publik)
+  const { data: rpcSilabus, error: silabusErr } = await supabase.rpc('get_silabus_kursus', {
+    p_kursus_id: course.id,
+  });
+
+  const modulList = (rpcSilabus && !silabusErr)
+    ? rpcSilabus
+    : (
+        await supabase
+          .from('modul')
+          .select('id, urutan, judul, durasi_menit')
+          .eq('kursus_id', course.id)
+          .order('urutan', { ascending: true })
+      ).data;
 
   return {
     id: course.id,
