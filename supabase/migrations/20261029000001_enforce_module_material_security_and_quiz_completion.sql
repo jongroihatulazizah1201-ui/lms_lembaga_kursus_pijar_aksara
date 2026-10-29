@@ -108,3 +108,4 @@ CREATE POLICY "progres_modul_admin_all" ON public.progres_modul
 FOR ALL TO authenticated
 USING (public.current_user_role() = 'admin')
 WITH CHECK (public.current_user_role() = 'admin');
+
